@@ -3,9 +3,6 @@
 
 #include <QMainWindow>
 #include <QtSql>
-#include <QSqlTableModel>
-#include <QTableView>
-#include <QVBoxLayout>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -27,6 +24,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    bool IsDBLoaded = false;
     QSqlDatabase DB_Connection;
 };
 #endif // MAINWINDOW_H
