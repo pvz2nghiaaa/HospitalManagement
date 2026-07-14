@@ -1,5 +1,4 @@
-#ifndef USER_H
-#define USER_H
+#pragma once
 #include <QApplication>
 #include <QSqlQuery>
 #include <QSqlError>
@@ -17,9 +16,19 @@ private:
     QString PhoneNumber;
     bool IsActive;
     static bool UserLoaded;
+    static User* activeUser;
+    User(int nID,
+         QString Username,
+         QString EncryptedPassword,
+         QString FullName,
+         QString PhoneNumber,
+         bool IsActive);
 public:
-    User();
     static bool initTable();
+    bool hasPermission(Permission);
+    static void login(QString nUsername, QString nPassword);
+    static void logout();
+    static User* getCurrentUser();
+    static QString GetEncryptPassword(QString nPassword);
+    ~User();
 };
-
-#endif // USER_H

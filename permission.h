@@ -1,6 +1,6 @@
-#ifndef PERMISSION_H
-#define PERMISSION_H
+#pragma once
 
+#include "user.h"
 #include <QSqlQuery>
 #include <QSqlError>
 
@@ -30,9 +30,8 @@ public:
     constexpr Permission(Type type);
     constexpr operator Type() const;
     static bool initTable();
+    static bool changeUserPermission(User& manager, User& other, Permission per, bool isOn);
 private:
     Type Val;
     static bool PermissionLoaded;
 };
-
-#endif // PERMISSION_H

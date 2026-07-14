@@ -17,6 +17,11 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
+        permission.h
+        permission.cpp
+        user.h
+        user.cpp
+
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
