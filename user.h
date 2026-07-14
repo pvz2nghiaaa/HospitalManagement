@@ -32,7 +32,6 @@ public:
     static QString GetEncryptPassword(QString nPassword);
     void appendPermission(Permission);
     void erasePermission(Permission);
-    int GetID();
     // fast set attribute
     User& SetID(int nID);
     User& SetUsername(QString nUsername);
@@ -40,6 +39,14 @@ public:
     User& SetFullName(QString nFullName);
     User& SetPhoneNumber(QString nPhoneNumber);
     User& SetIsActive(bool nIsActive);
+    bool UpdatePermissionFromDatabase();
+    // get methods
+    int GetID();
+    QString GetUsername();
+    QString GetEncryptedPassword();
+    QString GetFullName();
+    QString GetPhoneNumber();
+    bool GetIsActive();
     // prevent copy and assignment constructors
     User(const User&) = delete;
     User& operator=(const User&) = delete;

@@ -55,3 +55,16 @@ Permission::operator Type() const {
 int Permission::toUnderlying() const {
     return qToUnderlying(Val);
 }
+
+QList<Permission> Permission::GetActiveUserPermission(){
+    QList<Permission> list;
+    QSqlQuery query;
+    query.prepare("SELECT PermissionType FROM Permission WHERE UserID = :id");
+    query.bindValue(":id", User::GetActiveUser().GetID());
+    if (query.exec()){
+        while(query.next())
+            list.append(static_cast<Permission::Type>(query.value("PermissionType").toInt()));
+    }
+    else qDebug() << query.lastError().text();
+    return list;
+}

@@ -47,13 +47,28 @@ bool User::login(QString nUsername, QString nPassword) {
             .SetFullName(query.value("FullName").toString())
             .SetPhoneNumber(query.value("PhoneNumber").toString())
             .SetIsActive(query.value("IsActive").toBool());
-        return true;
+        if (GetActiveUser().GetIsActive() && GetActiveUser().UpdatePermissionFromDatabase())
+            return true;
+        logout();
+        return false;
     }
     return false;
 }
 
 void User::logout(){
+    GetActiveUser().SetID(-1)
+        .SetUsername("")
+        .SetEncryptedPassword("")
+        .SetFullName("")
+        .SetPhoneNumber("")
+        .SetIsActive(false);
+}
 
+bool User::UpdatePermissionFromDatabase(){
+    ListPermission = Permission::GetActiveUserPermission();
+    if (ListPermission.empty())
+        return false;
+    return true;
 }
 
 QString User::GetEncryptPassword(QString nPassword){
@@ -70,10 +85,6 @@ void User::erasePermission(Permission per){
     if (!GetActiveUser().hasPermission(Permission::manageUsers))
         return ;
     ListPermission.removeAll(per);
-}
-
-int User::GetID(){
-    return ID;
 }
 
 User& User::GetActiveUser(){
@@ -104,4 +115,22 @@ User& User::SetPhoneNumber(QString nPhoneNumber){
 User& User::SetIsActive(bool nIsActive){
     IsActive = nIsActive;
     return *this;
+}
+int User::GetID(){
+    return ID;
+}
+QString User::GetUsername(){
+    return Username;
+}
+QString User::GetEncryptedPassword() {
+    return EncryptedPassword;
+}
+QString User::GetFullName() {
+    return FullName;
+}
+QString User::GetPhoneNumber() {
+    return PhoneNumber;
+}
+bool User::GetIsActive() {
+    return IsActive;
 }

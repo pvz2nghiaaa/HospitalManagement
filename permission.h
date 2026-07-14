@@ -1,6 +1,7 @@
 #pragma once
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QList>
 
 class User;
 
@@ -31,6 +32,7 @@ public:
     operator Type() const; // automatically convert Permission to Type
     static bool initTable();
     static bool changeUserPermission(User& other, Permission per, bool isOn);
+    static QList<Permission> GetActiveUserPermission();
     int toUnderlying() const; // convert enum type to int, for example, Permission::viewlog -> int(0)
 private:
     Type Val;
