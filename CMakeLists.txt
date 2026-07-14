@@ -21,16 +21,18 @@ set(PROJECT_SOURCES
         permission.cpp
         user.h
         user.cpp
-
+        attendancelog.h
+        attendancelog.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(HospitalManagement
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-
-        user.h user.cpp
-        permission.h permission.cpp
+        LoginWindow.ui
+        AdminWindow.ui
+        adminwindow.h
+        adminwindow.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET HospitalManagement APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
