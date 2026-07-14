@@ -2,8 +2,7 @@
 #include "./ui_mainwindow.h"
 #include "permission.h"
 #include "user.h"
-
-bool User::UserLoaded = false;
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -37,8 +36,15 @@ bool MainWindow::checkConnection(){
 
 void MainWindow::on_pushButton_clicked()
 {
+    // database first
     checkConnection();
     User::initTable();
     Permission::initTable();
+    // login step
+    QString username = ui->usernameField->text();
+    QString password = ui->passwordField->text();
+    if (User::login(username, password))
+        QMessageBox::information(this, "Welcome Message", "User: " + username + "\nWelcome to Hospital Management!");
+    else QMessageBox::information(this, "Error Box", "Invalid username or password!");
 }
 

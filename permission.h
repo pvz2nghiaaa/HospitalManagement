@@ -1,8 +1,8 @@
 #pragma once
-
-#include "user.h"
 #include <QSqlQuery>
 #include <QSqlError>
+
+class User;
 
 class Permission
 {
@@ -27,11 +27,11 @@ public:
         // services (add, edit drugs' info, x-ray fee, etc)
         manageDrugs
     };
-    constexpr Permission(Type type);
-    constexpr operator Type() const;
+    Permission(Type type); // automatically convert enum Type to Permission
+    operator Type() const; // automatically convert Permission to Type
     static bool initTable();
-    static bool changeUserPermission(User& manager, User& other, Permission per, bool isOn);
+    static bool changeUserPermission(User& other, Permission per, bool isOn);
+    int toUnderlying() const; // convert enum type to int, for example, Permission::viewlog -> int(0)
 private:
     Type Val;
-    static bool PermissionLoaded;
 };

@@ -1,14 +1,14 @@
 #include "permission.h"
-
-bool Permission::PermissionLoaded = false;
+#include "user.h"
+#include <utility>
+using namespace std;
 
 Permission::Permission() {
 
 }
-constexpr Permission::Permission(Type type) : Val(type){}
-constexpr Permission::operator Type() const {return Val;}
 
 bool Permission::initTable(){
+    static bool PermissionLoaded = false;
     if (!PermissionLoaded){
         QSqlQuery query;
         PermissionLoaded = query.exec("CREATE TABLE IF NOT EXISTS Permission ("
@@ -23,25 +23,35 @@ bool Permission::initTable(){
     }
     return true;
 }
-bool Permission::changeUserPermission(User &manager, User &other, Permission per, bool isOn){
-    if (!manager.hasPermission(Permission::changePermission))
+bool Permission::changeUserPermission(User &other, Permission per, bool isOn){
+    if (!User::GetActiveUser().hasPermission(Permission::changePermission))
         return false;
     if (isOn){
         if (other.hasPermission(per))
             return true;
-        manager.ListPermission.append(per);
+        other.appendPermission(per);
         QSqlQuery query;
         query.prepare("INSERT INTO Permission(UserID, PermissionType) VALUES(:id, :type)");
-        query.bindValue(":id", other.id);
-        query.bindValue(":type", per);
+        query.bindValue(":id", other.GetID());
+        query.bindValue(":type", per.toUnderlying());
         return query.exec();
     }
     if (!other.hasPermission(per))
         return true;
-    manager.ListPermission.removeAll(per);
+    other.erasePermission(per);
     QSqlQuery query;
     query.prepare("DELETE FROM Permission WHERE UserID = :id and PermissionType = :type");
-    query.bindValue(":id", other.id);
-    query.bindValue(":type", per);
+    query.bindValue(":id", other.GetID());
+    query.bindValue(":type", per.toUnderlying());
     return query.exec();
+}
+
+Permission::Permission(Type type) : Val(type){}
+
+Permission::operator Type() const {
+    return Val;
+}
+
+int Permission::toUnderlying() const {
+    return qToUnderlying(Val);
 }

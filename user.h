@@ -5,30 +5,46 @@
 #include <QString>
 #include <QList>
 #include "permission.h"
+
 class User
 {
 private:
-    int id;
+    int ID;
     QString Username;
     QString EncryptedPassword;
     QList<Permission> ListPermission;
     QString FullName;
     QString PhoneNumber;
     bool IsActive;
-    static bool UserLoaded;
-    static User* activeUser;
     User(int nID,
          QString Username,
          QString EncryptedPassword,
          QString FullName,
          QString PhoneNumber,
          bool IsActive);
+    User();
 public:
     static bool initTable();
     bool hasPermission(Permission);
-    static void login(QString nUsername, QString nPassword);
+    static bool login(QString nUsername, QString nPassword);
     static void logout();
     static User* getCurrentUser();
     static QString GetEncryptPassword(QString nPassword);
-    ~User();
+    void appendPermission(Permission);
+    void erasePermission(Permission);
+    int GetID();
+    // fast set attribute
+    User& SetID(int nID);
+    User& SetUsername(QString nUsername);
+    User& SetEncryptedPassword(QString nEncryptedPassword);
+    User& SetFullName(QString nFullName);
+    User& SetPhoneNumber(QString nPhoneNumber);
+    User& SetIsActive(bool nIsActive);
+    // prevent copy and assignment constructors
+    User(const User&) = delete;
+    User& operator=(const User&) = delete;
+    User(User&&) = delete;
+    User& operator=(const User&&) = delete;
+    // Meyers' Singleton
+    static User& GetActiveUser();
 };
