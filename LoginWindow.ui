@@ -1,26 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>LoginWindow</class>
+ <widget class="QMainWindow" name="LoginWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1227</width>
+    <height>736</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget#centralwidget {
+    /* Soft glowing spotlight in the center, fading to dark slate at the corners */
+    background: qradialgradient(
+        cx: 0.5, cy: 0.5, radius: 0.8,
+        fx: 0.5, fy: 0.5,
+        stop: 0 rgb(30, 41, 59),    /* Slate-800 glow center */
+        stop: 1 rgb(15, 23, 42)     /* Slate-900 dark corners */
+    );
+}</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QLabel" name="lblTitle">
     <property name="geometry">
      <rect>
-      <x>120</x>
+      <x>0</x>
       <y>40</y>
-      <width>591</width>
-      <height>111</height>
+      <width>1227</width>
+      <height>60</height>
      </rect>
     </property>
     <property name="font">
@@ -29,6 +40,9 @@
       <pointsize>25</pointsize>
       <bold>true</bold>
      </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(6, 182, 212)</string>
     </property>
     <property name="lineWidth">
      <number>1</number>
@@ -42,166 +56,252 @@
     <property name="scaledContents">
      <bool>false</bool>
     </property>
-   </widget>
-   <widget class="QLabel" name="lblLogin">
-    <property name="geometry">
-     <rect>
-      <x>360</x>
-      <y>130</y>
-      <width>121</width>
-      <height>111</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Segoe UI</family>
-      <pointsize>22</pointsize>
-      <bold>true</bold>
-      <underline>false</underline>
-     </font>
-    </property>
-    <property name="lineWidth">
-     <number>1</number>
-    </property>
-    <property name="midLineWidth">
-     <number>0</number>
-    </property>
-    <property name="text">
-     <string>Login</string>
-    </property>
-    <property name="scaledContents">
-     <bool>false</bool>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="lblCopyright">
+   <widget class="QFrame" name="loginCard">
     <property name="geometry">
      <rect>
-      <x>540</x>
-      <y>510</y>
-      <width>261</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>© 2026 Hospital Management System</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnLogin">
-    <property name="geometry">
-     <rect>
-      <x>360</x>
-      <y>440</y>
-      <width>111</width>
-      <height>41</height>
+      <x>388</x>
+      <y>160</y>
+      <width>450</width>
+      <height>440</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QPushButton{
-background-color:#2E86DE;
+     <string notr="true">background: transparent;</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Shape::NoFrame</enum>
+    </property>
+    <widget class="QLabel" name="lblLogin">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>30</y>
+       <width>390</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>22</pointsize>
+       <bold>true</bold>
+       <underline>false</underline>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(6, 182, 212)</string>
+     </property>
+     <property name="lineWidth">
+      <number>1</number>
+     </property>
+     <property name="midLineWidth">
+      <number>0</number>
+     </property>
+     <property name="text">
+      <string>Login</string>
+     </property>
+     <property name="scaledContents">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblLogin_2">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>80</y>
+       <width>390</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>11</pointsize>
+       <bold>true</bold>
+       <underline>false</underline>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(148, 163, 184)</string>
+     </property>
+     <property name="lineWidth">
+      <number>1</number>
+     </property>
+     <property name="midLineWidth">
+      <number>0</number>
+     </property>
+     <property name="text">
+      <string>Please enter your organizational credentials to continue</string>
+     </property>
+     <property name="scaledContents">
+      <bool>false</bool>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblUser">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>140</y>
+       <width>390</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>13</pointsize>
+       <bold>false</bold>
+       <underline>false</underline>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(170, 170, 170);</string>
+     </property>
+     <property name="lineWidth">
+      <number>1</number>
+     </property>
+     <property name="midLineWidth">
+      <number>0</number>
+     </property>
+     <property name="text">
+      <string>Username</string>
+     </property>
+     <property name="scaledContents">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="usernameField">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>170</y>
+       <width>390</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLineEdit{
+    background-color: rgb(30, 41, 59);
+    border: 1px solid rgb(51, 65, 85);
+    border-radius: 12px;
+    padding: 5px 10px;
+}</string>
+     </property>
+     <property name="placeholderText">
+      <string>Enter your username</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblPassword">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>220</y>
+       <width>390</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>13</pointsize>
+       <bold>false</bold>
+       <underline>false</underline>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(170, 170, 170);</string>
+     </property>
+     <property name="lineWidth">
+      <number>1</number>
+     </property>
+     <property name="midLineWidth">
+      <number>0</number>
+     </property>
+     <property name="text">
+      <string>Password</string>
+     </property>
+     <property name="scaledContents">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="passwordField">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>250</y>
+       <width>390</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLineEdit{
+    background-color: rgb(30, 41, 59);
+    border: 1px solid rgb(51, 65, 85);
+    border-radius: 12px;
+    padding: 5px 10px;
+}</string>
+     </property>
+     <property name="echoMode">
+      <enum>QLineEdit::EchoMode::Password</enum>
+     </property>
+     <property name="placeholderText">
+      <string>Enter your password</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnLogin">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>330</y>
+       <width>390</width>
+       <height>44</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>-1</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #1B4F72, stop:1 rgb(0, 170, 255));
 color:white;
 border-radius:8px;
 font-size:16px;
 padding:8px;
-}
-
-QPushButton:hover{
-background-color:#1B4F72;
 }</string>
-    </property>
-    <property name="text">
-     <string>Login</string>
-    </property>
+     </property>
+     <property name="text">
+      <string>Submit</string>
+     </property>
+    </widget>
    </widget>
-   <widget class="QWidget" name="layoutWidget">
+   <widget class="QLabel" name="lblCopyright">
     <property name="geometry">
      <rect>
-      <x>210</x>
-      <y>250</y>
-      <width>431</width>
-      <height>151</height>
+      <x>997</x>
+      <y>660</y>
+      <width>200</width>
+      <height>30</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QLabel" name="lblUser">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="font">
-          <font>
-           <family>Segoe UI</family>
-           <pointsize>18</pointsize>
-           <bold>false</bold>
-           <underline>false</underline>
-          </font>
-         </property>
-         <property name="lineWidth">
-          <number>1</number>
-         </property>
-         <property name="midLineWidth">
-          <number>0</number>
-         </property>
-         <property name="text">
-          <string>Username:</string>
-         </property>
-         <property name="scaledContents">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="txtUsername">
-         <property name="placeholderText">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QLabel" name="lblPassword">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="font">
-          <font>
-           <family>Segoe UI</family>
-           <pointsize>18</pointsize>
-           <bold>false</bold>
-           <underline>false</underline>
-          </font>
-         </property>
-         <property name="lineWidth">
-          <number>1</number>
-         </property>
-         <property name="midLineWidth">
-          <number>0</number>
-         </property>
-         <property name="text">
-          <string>Password:</string>
-         </property>
-         <property name="scaledContents">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="txtPassword">
-         <property name="echoMode">
-          <enum>QLineEdit::EchoMode::Password</enum>
-         </property>
-         <property name="clearButtonEnabled">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-    </layout>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(100, 116, 139)</string>
+    </property>
+    <property name="text">
+     <string>© 2026 Hospital Management System</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -209,8 +309,8 @@ background-color:#1B4F72;
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>25</height>
+     <width>1227</width>
+     <height>21</height>
     </rect>
    </property>
    <property name="styleSheet">
