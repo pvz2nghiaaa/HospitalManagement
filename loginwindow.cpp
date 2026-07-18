@@ -10,6 +10,7 @@ LoginWindow::LoginWindow(QWidget *parent)
     , ui(new Ui::LoginWindow)
 {
     ui->setupUi(this);
+    ui->usernameField->setFocus();
 }
 
 LoginWindow::~LoginWindow()
@@ -31,6 +32,8 @@ void LoginWindow::on_btnLogin_clicked()
         adminWin->show();
 
         this->close();
+    } else if (username.isEmpty() || password.isEmpty()){
+        QMessageBox::warning(this, "Empty fields", "Please enter both username and password.");
     } else {
         QMessageBox::information(this, "Error", "Invalid username or password!");
     }

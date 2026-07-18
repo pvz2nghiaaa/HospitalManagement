@@ -192,6 +192,12 @@
     border: 1px solid rgb(51, 65, 85);
     border-radius: 12px;
     padding: 5px 10px;
+}
+QLineEdit:hover {
+    border: 1px solid rgb(6, 182, 212); 
+}
+QLineEdit:focus {
+    border: 1px solid rgb(76, 216, 216);
 }</string>
      </property>
      <property name="placeholderText">
@@ -246,6 +252,18 @@
     border: 1px solid rgb(51, 65, 85);
     border-radius: 12px;
     padding: 5px 10px;
+}
+QLineEdit{
+    background-color: rgb(30, 41, 59);
+    border: 1px solid rgb(51, 65, 85);
+    border-radius: 12px;
+    padding: 5px 10px;
+}
+QLineEdit:hover {
+    border: 1px solid rgb(6, 182, 212); 
+}
+QLineEdit:focus {
+    border: 1px solid rgb(76, 216, 216);
 }</string>
      </property>
      <property name="echoMode">
@@ -271,12 +289,20 @@
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton{
-background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #1B4F72, stop:1 rgb(0, 170, 255));
-color:white;
-border-radius:8px;
-font-size:16px;
-padding:8px;
+      <string notr="true">QPushButton#btnLogin {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 rgb(6, 182, 212), stop:1 rgb(37, 99, 235));
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 15px;
+}
+QPushButton#btnLogin:hover {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 rgb(8, 145, 178), stop:1 rgb(29, 78, 216));
+}
+QPushButton#btnLogin:pressed {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 rgb(21, 94, 117), stop:1 rgb(30, 58, 138));
 }</string>
      </property>
      <property name="text">
