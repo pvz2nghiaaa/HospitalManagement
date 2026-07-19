@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include "loginwindow.h"
 #include <QApplication>
 #include <QSqlDatabase>
 #include <QSqlError>
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    MainWindow w;
+    LoginWindow w;
     w.show();
 
     return a.exec();

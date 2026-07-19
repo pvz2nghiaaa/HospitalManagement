@@ -14,9 +14,8 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Sql)
 
 set(PROJECT_SOURCES
         main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
+        loginwindow.h
+        loginwindow.cpp
         permission.h
         permission.cpp
         user.h
@@ -29,7 +28,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(HospitalManagement
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        LoginWindow.ui
         AdminWindow.ui
         adminwindow.h
         adminwindow.cpp
@@ -37,6 +35,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         medicalrecord.cpp
         recordmanager.h
         recordmanager.cpp
+        loginwindow.h loginwindow.cpp LoginWindow.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET HospitalManagement APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
