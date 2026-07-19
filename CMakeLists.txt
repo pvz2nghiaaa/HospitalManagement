@@ -22,6 +22,10 @@ set(PROJECT_SOURCES
         user.cpp
         attendancelog.h
         attendancelog.cpp
+        invoice.h
+        invoice.cpp
+        billableitem.h
+        billableitem.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -30,9 +34,15 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         LoginWindow.ui
         AdminWindow.ui
+        DoctorWindow.ui
+        ReceptionistWindow.ui
         adminwindow.h
         adminwindow.cpp
         loginwindow.h loginwindow.cpp LoginWindow.ui
+        billingmanager.h
+        billingmanager.cpp
+
+
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET HospitalManagement APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
