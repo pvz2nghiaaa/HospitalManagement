@@ -28,10 +28,13 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(HospitalManagement
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        LoginWindow.ui
         AdminWindow.ui
         adminwindow.h
         adminwindow.cpp
+        medicalrecord.h
+        medicalrecord.cpp
+        recordmanager.h
+        recordmanager.cpp
         loginwindow.h loginwindow.cpp LoginWindow.ui
     )
 # Define target properties for Android with Qt 6 as:
