@@ -36,6 +36,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         recordmanager.h
         recordmanager.cpp
         loginwindow.h loginwindow.cpp LoginWindow.ui
+        ReceptionistWindow.ui DoctorWindow.ui
+        doctorwindow.h doctorwindow.cpp DoctorWindow.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET HospitalManagement APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

@@ -4,6 +4,7 @@
 #include "user.h"
 #include <QMessageBox>
 #include "adminwindow.h"
+#include "doctorwindow.h"
 
 LoginWindow::LoginWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -27,7 +28,7 @@ void LoginWindow::on_btnLogin_clicked()
     if (User::login(username, password)) {
         QMessageBox::information(this, "Welcome", "User: " + username + "\nWelcome to Hospital Management!");
 
-        AdminWindow *adminWin = new AdminWindow();
+        DoctorWindow *adminWin = new DoctorWindow();
         adminWin->setAttribute(Qt::WA_DeleteOnClose);
         adminWin->show();
 
