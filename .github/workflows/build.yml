@@ -37,17 +37,14 @@ jobs:
       - name: Deploy Qt DLL Dependencies (windeployqt)
         shell: pwsh
         run: |
-          windeployqt build/HospitalManagement.exe --no-compiler-runtime
+          $exe = Get-ChildItem -Path build -Filter "HospitalManagement.exe" -Recurse | Select-Object -ExpandProperty FullName -First 1
+          Write-Host "Found executable at: $exe"
+          windeployqt --no-compiler-runtime "$exe"
+          $distDir = Split-Path -Path $exe -Parent
+          echo "DIST_DIR=$distDir" >> $env:GITHUB_ENV
 
       - name: Upload Executable Artifact
         uses: actions/upload-artifact@v4
         with:
           name: HospitalManagement-Windows-x64
-          path: |
-            build/HospitalManagement.exe
-            build/*.dll
-            build/platforms/
-            build/styles/
-            build/sqldrivers/
-            build/iconengines/
-            build/imageformats/
+          path: ${{ env.DIST_DIR }}
