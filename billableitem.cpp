@@ -53,7 +53,7 @@ bool BillableItem::initTable() {
         );
 
     if (!success) {
-        qDebug() << "Lỗi tạo bảng BillableItems:" << query.lastError().text();
+        qDebug() << "Failed to create table BillableItems:" << query.lastError().text();
     }
     return success;
 }
@@ -72,12 +72,12 @@ bool DrugItem::initTable() {
         "DrugID INTEGER PRIMARY KEY AUTOINCREMENT, "
         "Name TEXT, Unit TEXT, Price REAL)"
         );
-    if (!success) qDebug() << "Lỗi tạo bảng Drugs:" << query.lastError().text();
+    if (!success) qDebug() << "Failed to create table Drugs:" << query.lastError().text();
     return success;
 }
 
 LabTest::LabTest(QString name, double price)
-    : BillableItem(name, price, 1, "Lần", "LABTEST") {}
+    : BillableItem(name, price, 1, "Time", "LABTEST") {}
 
 double LabTest::CalculateCost() const {
     return price;
@@ -86,10 +86,10 @@ double LabTest::CalculateCost() const {
 bool LabTest::initTable() {
     QSqlQuery query;
     bool success = query.exec(
-        "CREATE TABLE IF NOT EXISTS LabTests_Catalog ("
+        "CREATE TABLE IF NOT EXISTS LabTests ("
         "LabTestID INTEGER PRIMARY KEY AUTOINCREMENT, "
         "Name TEXT, Price REAL)"
         );
-    if (!success) qDebug() << "Lỗi tạo bảng LabTests_Catalog:" << query.lastError().text();
+    if (!success) qDebug() << "Failed to create table LabTests:" << query.lastError().text();
     return success;
 }

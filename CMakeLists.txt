@@ -41,6 +41,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         loginwindow.h loginwindow.cpp LoginWindow.ui
         billingmanager.h
         billingmanager.cpp
+        patient.h
+        medicalrecord.h
+        diagnosis.h
+        prescriptiondetail.h
 
 
     )

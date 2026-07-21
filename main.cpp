@@ -13,133 +13,77 @@
 #include "billableitem.h"
 #include "billingmanager.h"
 
-bool setupDatabase() {
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("database.db");
+#include "patient.h"
+#include "diagnosis.h"
+#include "medicalrecord.h"
+#include "prescriptiondetail.h"
 
-    if (!db.open()) {
-        qDebug() << "Database is not connected";
-        qDebug() << "Error : " << db.lastError().text();
-        return false;
-    }
-
-    qDebug() << "Database Is Connected";
-    qDebug() << "VI TRI FILE DB THUC TE:" << QFileInfo(db.databaseName()).absoluteFilePath();
-
-    User::initTable();
-    Permission::initTable();
-    AttendanceLog::initTable();
-    Invoice::initTable();
-    BillableItem::initTable();
-    DrugItem::initTable();
-    LabTest::initTable();
-    return true;
-}
-bool initDatabase() {
-    QSqlQuery query;
-
-    // Bật ràng buộc khóa ngoại cho SQLite
-    query.exec("PRAGMA foreign_keys = ON;");
-
-    // --- CỤM 1: NHÂN SỰ ---
-    query.exec("CREATE TABLE IF NOT EXISTS Users ("
-               "ID INTEGER PRIMARY KEY AUTOINCREMENT, "
-               "Username TEXT, Password TEXT, Role TEXT, "
-               "Name TEXT, PhoneNumber TEXT, isActive BOOLEAN)");
-
-    query.exec("CREATE TABLE IF NOT EXISTS Permissions ("
-               "PermissionID INTEGER PRIMARY KEY AUTOINCREMENT, "
-               "PermissionType INTEGER, UserID INTEGER, "
-               "FOREIGN KEY(UserID) REFERENCES Users(ID), "
-               "CONSTRAINT uq_permissions_user_permission UNIQUE(UserID, PermissionType))");
-
-    query.exec("CREATE TABLE IF NOT EXISTS AttendanceLogs ("
-               "LogID INTEGER PRIMARY KEY AUTOINCREMENT, "
-               "Date TEXT, Time TEXT, IsPresent INTEGER, EmployeeID INTEGER, "
-               "FOREIGN KEY(EmployeeID) REFERENCES Users(ID))");
-
-    // --- CỤM 2: BỆNH ÁN ---
-    query.exec("CREATE TABLE IF NOT EXISTS Patients ("
-               "ID INTEGER PRIMARY KEY AUTOINCREMENT, "
-               "FullName TEXT, BirthDate TEXT, Sex TEXT, Address TEXT)");
-
-    query.exec("CREATE TABLE IF NOT EXISTS MedicalRecords ("
-               "RecordID INTEGER PRIMARY KEY AUTOINCREMENT, "
-               "Date TEXT, IsComplete BOOLEAN, PatientID INTEGER, "
-               "FOREIGN KEY(PatientID) REFERENCES Patients(ID))");
-
-    query.exec("CREATE TABLE IF NOT EXISTS Diagnoses ("
-               "DiagnosisID INTEGER PRIMARY KEY AUTOINCREMENT, "
-               "ConditionName TEXT, ICDCode TEXT, Severity TEXT, DateDiagnosed TEXT, "
-               "DoctorID INTEGER, RecordID INTEGER, "
-               "FOREIGN KEY(DoctorID) REFERENCES Users(ID), "
-               "FOREIGN KEY(RecordID) REFERENCES MedicalRecords(RecordID))");
-
-    // --- CỤM 3: MASTER DATA (THUỐC & XÉT NGHIỆM) ---
-    query.exec("CREATE TABLE IF NOT EXISTS Drugs ("
-               "DrugID INTEGER PRIMARY KEY AUTOINCREMENT, "
-               "Name TEXT, Unit TEXT, Price REAL)");
-
-    query.exec("CREATE TABLE IF NOT EXISTS LabTests_Catalog ("
-               "LabTestID INTEGER PRIMARY KEY AUTOINCREMENT, "
-               "Name TEXT, Price REAL)");
-
-    query.exec("CREATE TABLE IF NOT EXISTS PrescriptionDetails ("
-               "DetailID INTEGER PRIMARY KEY AUTOINCREMENT, "
-               "Quantity INTEGER, Note TEXT, DrugID INTEGER, DiagnosisID INTEGER, "
-               "FOREIGN KEY(DrugID) REFERENCES Drugs(DrugID), "
-               "FOREIGN KEY(DiagnosisID) REFERENCES Diagnoses(DiagnosisID), "
-               "CONSTRAINT uq_prescription UNIQUE(DiagnosisID, DrugID))");
-
-    query.exec("CREATE TABLE IF NOT EXISTS LabTestOrders ("
-               "OrderID INTEGER PRIMARY KEY AUTOINCREMENT, "
-               "DiagnosisID INTEGER, LabTestID INTEGER, Result TEXT, Note TEXT, "
-               "FOREIGN KEY(DiagnosisID) REFERENCES Diagnoses(DiagnosisID), "
-               "FOREIGN KEY(LabTestID) REFERENCES LabTests_Catalog(LabTestID), "
-               "CONSTRAINT uq_labtest_diagnosis UNIQUE(DiagnosisID, LabTestID))");
-
-    // --- CỤM 4: TÍNH TIỀN ---
-    query.exec("CREATE TABLE IF NOT EXISTS Invoices ("
-               "InvoiceID INTEGER PRIMARY KEY AUTOINCREMENT, "
-               "RecordID INTEGER, DateIssued TEXT, TotalAmount REAL, IsPaid BOOLEAN, PatientID INTEGER, "
-               "FOREIGN KEY(RecordID) REFERENCES MedicalRecords(RecordID), "
-               "FOREIGN KEY(PatientID) REFERENCES Patients(ID))");
-
-    query.exec("CREATE TABLE IF NOT EXISTS BillableItems ("
-               "ItemID INTEGER PRIMARY KEY AUTOINCREMENT, "
-               "ItemType TEXT, Name TEXT, Price REAL, Quantity INTEGER, Unit TEXT, InvoiceID INTEGER, "
-               "FOREIGN KEY(InvoiceID) REFERENCES Invoices(InvoiceID))");
-
-    return true;
-}
-
-// ==============================================================
-// 2. HÀM BƠM DỮ LIỆU GIẢ (Mock Data)
-// ==============================================================
 void insertMockData() {
     QSqlQuery q;
 
-    // Master Data
-    q.exec("INSERT INTO Drugs (DrugID, Name, Unit, Price) VALUES (1, 'Paracetamol', 'Viên', 5000)");
-    q.exec("INSERT INTO Drugs (DrugID, Name, Unit, Price) VALUES (2, 'Amoxicillin', 'Viên', 8000)");
-    q.exec("INSERT INTO LabTests_Catalog (LabTestID, Name, Price) VALUES (1, 'Xét nghiệm Máu', 150000)");
+    // Hàm lambda hỗ trợ chạy và báo lỗi chi tiết nếu có
+    auto runQuery = [&](const QString& sql) {
+        if (!q.exec(sql)) {
+            qDebug() << "LỖI INSERT:" << q.lastError().text() << "\nQuery:" << sql;
+        }
+    };
 
-    // Con người & Bệnh án
-    q.exec("INSERT INTO Users (ID, Name, Role) VALUES (1, 'Bác sĩ Hưng', 'Doctor')");
-    q.exec("INSERT INTO Patients (ID, FullName) VALUES (1, 'Trần Nguyễn Anh Khoa')");
-    q.exec("INSERT INTO MedicalRecords (RecordID, Date, IsComplete, PatientID) VALUES (1, '2026-04-20', 1, 1)");
+    qDebug() << "--- Đang bơm dữ liệu giả (Mock Data) ---";
 
-    // Khám & Kê đơn
-    q.exec("INSERT INTO Diagnoses (DiagnosisID, ConditionName, DoctorID, RecordID) VALUES (1, 'Sốt siêu vi', 1, 1)");
-    q.exec("INSERT INTO PrescriptionDetails (Quantity, DrugID, DiagnosisID) VALUES (2, 1, 1)"); // 2 Paracetamol
-    q.exec("INSERT INTO PrescriptionDetails (Quantity, DrugID, DiagnosisID) VALUES (10, 2, 1)"); // 10 Amoxicillin
-    q.exec("INSERT INTO LabTestOrders (LabTestID, DiagnosisID) VALUES (1, 1)"); // 1 Xét nghiệm máu
+    // ==========================================
+    // 1. DỮ LIỆU NHÂN SỰ (Bảng Users)
+    // ==========================================
+    // Lưu ý: Cột UserID, Username, EncryptedPassword, FullName, PhoneNumber, IsActive
+    runQuery("INSERT INTO User (UserID, Username, EncryptedPassword, FullName, PhoneNumber, IsActive) "
+             "VALUES (1, 'admin', 'admin123', 'Quản trị viên', '0123456789', 1)");
+
+    runQuery("INSERT INTO User (UserID, Username, EncryptedPassword, FullName, PhoneNumber, IsActive) "
+             "VALUES (2, 'bshung', '123456', 'Bác sĩ Hưng', '0987654321', 1)");
+
+    // ==========================================
+    // 2. MASTER DATA (Thuốc & Xét nghiệm)
+    // ==========================================
+    runQuery("INSERT INTO Drugs (DrugID, Name, Unit, Price) "
+             "VALUES (1, 'Paracetamol', 'Viên', 5000)");
+
+    runQuery("INSERT INTO Drugs (DrugID, Name, Unit, Price) "
+             "VALUES (2, 'Amoxicillin', 'Viên', 8000)");
+
+    runQuery("INSERT INTO LabTests (LabTestID, Name, Price) "
+             "VALUES (1, 'Xét nghiệm Máu', 150000)");
+
+    // ==========================================
+    // 3. BỆNH NHÂN & BỆNH ÁN
+    // ==========================================
+    runQuery("INSERT INTO Patients (ID, FullName, BirthDate, Sex, Address) "
+             "VALUES (1, 'Trần Nguyễn Anh Khoa', '2005-01-01', 'Nam', 'Ký túc xá ĐHQG')");
+
+    // Khởi tạo bệnh án (RecordID = 1) cho bệnh nhân ID = 1
+    runQuery("INSERT INTO MedicalRecords (RecordID, Date, IsComplete, PatientID) "
+             "VALUES (1, '2026-04-20', 1, 1)");
+
+    // ==========================================
+    // 4. KHÁM BỆNH, XÉT NGHIỆM & KÊ ĐƠN
+    // ==========================================
+    // Chẩn đoán gắn với Bác sĩ (DoctorID = 2), Bệnh án (RecordID = 1)
+    // VÀ gắn kèm Xét nghiệm luôn (LabTestID = 1) do ta đã gộp bảng
+    runQuery("INSERT INTO Diagnoses (DiagnosisID, ConditionName, DoctorID, RecordID, LabTestID, LabTestResult) "
+             "VALUES (1, 'Sốt siêu vi', 2, 1, 1, 'Bạch cầu tăng nhẹ')");
+
+    // Kê đơn thuốc gắn trực tiếp với Bệnh án (RecordID = 1)
+    runQuery("INSERT INTO PrescriptionDetails (Quantity, Note, DrugID, RecordID) "
+             "VALUES (2, 'Uống sáng chiều', 1, 1)"); // 2 viên Paracetamol
+
+    runQuery("INSERT INTO PrescriptionDetails (Quantity, Note, DrugID, RecordID) "
+             "VALUES (10, 'Uống sau ăn', 2, 1)");    // 10 viên Amoxicillin
+
+    qDebug() << "--- Bơm dữ liệu giả hoàn tất ---";
 }
-
 // ==============================================================
 // 3. HÀM IN KẾT QUẢ TỪ DATABASE
 // ==============================================================
 void printInvoiceDatabase() {
+
     qDebug() << "\n--- TRUY VẤN DATABASE ---";
     QSqlQuery q;
 
@@ -198,6 +142,46 @@ void testBillingProcess() {
     printInvoiceDatabase();
 
     qDebug() << "================ KẾT THÚC ===================\n";
+}
+
+bool setupDatabase() {
+    // test
+    QString dbName = "database.db";
+    if (QFile::exists(dbName)) {
+        if (QFile::remove(dbName)) {
+            qDebug() << "=> Đã xoá file DB cũ để làm mới hoàn toàn!";
+        } else {
+            qDebug() << "=> Lỗi: Không thể xoá DB cũ (có thể đang bị phần mềm khác mở).";
+        }
+    }
+
+
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName("database.db");
+
+    if (!db.open()) {
+        qDebug() << "Database is not connected";
+        qDebug() << "Error : " << db.lastError().text();
+        return false;
+    }
+
+    qDebug() << "Database Is Connected";
+    qDebug() << "VI TRI FILE DB THUC TE:" << QFileInfo(db.databaseName()).absoluteFilePath();
+
+    User::initTable();
+    Permission::initTable();
+    AttendanceLog::initTable();
+    DrugItem::initTable();
+    LabTest::initTable();
+
+    Patient::initTable();
+    MedicalRecord::initTable();
+    Diagnosis::initTable();
+    PrescriptionDetail::initTable();
+
+    Invoice::initTable();
+    BillableItem::initTable();
+    return true;
 }
 
 int main(int argc, char *argv[])

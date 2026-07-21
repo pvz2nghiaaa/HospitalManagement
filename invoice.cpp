@@ -35,21 +35,23 @@ bool Invoice::initTable() {
         );
 
     if (!success) {
-        qDebug() << "Lỗi tạo bảng Invoices:" << query.lastError().text();
+        qDebug() << "Failed to create table Invoices:" << query.lastError().text();
     }
     return success;
 }
-
 void Invoice::autoGenerateItems() {
     QSqlQuery query;
 
-    // 1. Quét luồng Thuốc
-    query.prepare("SELECT d.Name, d.Price, pd.Quantity, d.Unit "
-                  "FROM Diagnoses dg "
-                  "JOIN PrescriptionDetails pd ON dg.DiagnosisID = pd.DiagnosisID "
-                  "JOIN Drugs d ON pd.DrugID = d.DrugID "
-                  "WHERE dg.RecordID = :recordID");
+    qDeleteAll(items);
+    items.clear();
+    totalAmount = 0;
+
+    query.prepare("SELECT d.Name, d.Price, p.Quantity, d.Unit "
+                  "FROM PrescriptionDetails p "
+                  "JOIN Drugs d ON p.DrugID = d.DrugID "
+                  "WHERE p.RecordID = :recordID");
     query.bindValue(":recordID", recordID);
+
     if (query.exec()) {
         while (query.next()) {
             addBillableItem(new DrugItem(
@@ -59,15 +61,16 @@ void Invoice::autoGenerateItems() {
                 query.value(3).toString()
                 ));
         }
+    } else {
+        qDebug() << "Failed to Query Drug:" << query.lastError().text();
     }
 
-    // 2. Quét luồng Xét nghiệm
     query.prepare("SELECT l.Name, l.Price "
                   "FROM Diagnoses dg "
-                  "JOIN LabTestOrders lo ON dg.DiagnosisID = lo.DiagnosisID "
-                  "JOIN LabTests_Catalog l ON lo.LabTestID = l.LabTestID "
-                  "WHERE dg.RecordID = :recordID");
+                  "JOIN LabTests l ON dg.LabTestID = l.LabTestID "
+                  "WHERE dg.RecordID = :recordID AND dg.LabTestID IS NOT NULL");
     query.bindValue(":recordID", recordID);
+
     if (query.exec()) {
         while (query.next()) {
             addBillableItem(new LabTest(
@@ -75,15 +78,14 @@ void Invoice::autoGenerateItems() {
                 query.value(1).toDouble()
                 ));
         }
+    } else {
+        qDebug() << "Failed to Query:" << query.lastError().text();
     }
 
-    // Tính lại tổng tiền
-    totalAmount = 0;
     for (BillableItem* item : items) {
         totalAmount += item->CalculateCost();
     }
 }
-
 bool Invoice::save() {
     QSqlQuery query;
     if (invoiceID == -1) {
@@ -101,7 +103,7 @@ bool Invoice::save() {
     query.bindValue(":paid", isPaid ? 1 : 0);
 
     if (!query.exec()) {
-        qDebug() << "Lỗi lưu Invoice:" << query.lastError().text();
+        qDebug() << "Failed to save Invoice:" << query.lastError().text();
         return false;
     }
 
@@ -109,7 +111,6 @@ bool Invoice::save() {
         invoiceID = query.lastInsertId().toInt();
     }
 
-    // Lưu danh sách chi tiết
     for (BillableItem* item : items) {
         item->setInvoiceID(invoiceID);
         item->save();

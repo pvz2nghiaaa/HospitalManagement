@@ -1,5 +1,5 @@
-#include "BillingManager.h"
-#include "Invoice.h"
+#include "billingmanager.h"
+#include "invoice.h"
 #include <QSqlQuery>
 #include <QVariant>
 #include <QDebug>
