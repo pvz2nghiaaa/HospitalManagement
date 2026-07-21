@@ -7,7 +7,7 @@ DoctorWindow::DoctorWindow(QWidget *parent)
     , ui(new Ui::DoctorWindow)
 {
     ui->setupUi(this);
-    ui->lblAdmin->setText("Dr. " + User::GetActiveUser().GetFullName());
+    ui->lblAdmin->setText("Dr. " + User::GetActiveUser().GetFullName() + " (Online)");
     navigateToPage(0, ui->btnDashboard);
 }
 

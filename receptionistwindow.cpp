@@ -7,7 +7,7 @@ ReceptionistWindow::ReceptionistWindow(QWidget *parent)
     , ui(new Ui::ReceptionistWindow)
 {
     ui->setupUi(this);
-    ui->lblAdmin->setText("Rect. " + User::GetActiveUser().GetFullName());
+    ui->lblAdmin->setText("Rect. " + User::GetActiveUser().GetFullName()+ " (Online)");
     navigateToPage(0, ui->btnDashboard);
 }
 
