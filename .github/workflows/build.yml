@@ -19,7 +19,7 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Install Qt 6 & CMake
-        uses: jurplel/install-qt@v4
+        uses: jurplel/install-qt-action@v4
         with:
           version: '6.6.3'
           host: 'windows'
