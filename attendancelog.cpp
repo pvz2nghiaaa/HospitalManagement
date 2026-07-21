@@ -42,7 +42,7 @@ bool AttendanceLog::initTable() {
                               "LogID INTEGER PRIMARY KEY AUTOINCREMENT, "
                               "Date TEXT NOT NULL, "
                               "IsPresent INTEGER NOT NULL, "
-                              "EmployeeID TEXT NOT NULL)");
+                              "EmployeeID INTEGER NOT NULL)");
     if (!success) {
         qDebug() << "Fail to create AttendanceLogs table:" << query.lastError().text();
     }
