@@ -9,6 +9,9 @@
 #include "permission.h"
 #include "attendancelog.h"
 #include "medicalrecord.h"
+#include "drug.h"
+#include "prescription.h"
+#include "diagnosis.h"
 
 bool setupDatabase() {
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
@@ -27,6 +30,9 @@ bool setupDatabase() {
     Permission::initTable();
     AttendanceLog::initTable();
     MedicalRecord::initTable();
+    Drug::initTable();
+    Prescription::initTable();
+    Diagnosis::initTable();
 
     return true;
 }
