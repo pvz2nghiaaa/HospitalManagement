@@ -33,6 +33,8 @@ private slots:
 
 private:
     Ui::AdminWindow *ui;
+
+    void updateDashboardInfo();
 };
 
 #endif // ADMINWINDOW_H

@@ -416,7 +416,7 @@ QPushButton:hover {
           <string>STAFF</string>
          </property>
         </widget>
-        <widget class="QLabel" name="label_2">
+        <widget class="QLabel" name="totalStaff">
          <property name="geometry">
           <rect>
            <x>15</x>
@@ -492,7 +492,7 @@ QPushButton:hover {
           <string>PATIENTS</string>
          </property>
         </widget>
-        <widget class="QLabel" name="label_4">
+        <widget class="QLabel" name="totalPatients">
          <property name="geometry">
           <rect>
            <x>15</x>
@@ -568,7 +568,7 @@ QPushButton:hover {
           <string>REVENUE</string>
          </property>
         </widget>
-        <widget class="QLabel" name="label_10">
+        <widget class="QLabel" name="totalRevenue">
          <property name="geometry">
           <rect>
            <x>15</x>
@@ -657,7 +657,7 @@ QPushButton:hover {
           <string>RECORDS</string>
          </property>
         </widget>
-        <widget class="QLabel" name="label_14">
+        <widget class="QLabel" name="totalRecords">
          <property name="geometry">
           <rect>
            <x>15</x>
@@ -733,7 +733,7 @@ QPushButton:hover {
           <string>INVOICES</string>
          </property>
         </widget>
-        <widget class="QLabel" name="label_17">
+        <widget class="QLabel" name="totalInvoices">
          <property name="geometry">
           <rect>
            <x>15</x>
@@ -809,7 +809,7 @@ QPushButton:hover {
           <string>MEDICINE</string>
          </property>
         </widget>
-        <widget class="QLabel" name="label_12">
+        <widget class="QLabel" name="totalMedicine">
          <property name="geometry">
           <rect>
            <x>15</x>

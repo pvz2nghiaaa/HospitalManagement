@@ -3,6 +3,7 @@
 #include <QMessageBox>
 #include "LoginWindow.h"
 #include "user.h"
+#include <QTimer>
 
 AdminWindow::AdminWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -10,6 +11,11 @@ AdminWindow::AdminWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     navigateToPage(0, ui->btnDashboard);
+    updateDashboardInfo();
+
+    QTimer* timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &AdminWindow::updateDashboardInfo);
+    timer->start(7000); // cứ cách 7 giây thì dashboard update 1 lần
 }
 
 AdminWindow::~AdminWindow()
@@ -76,5 +82,9 @@ void AdminWindow::on_btnLogout_clicked()
     loginWin->show();
     
     this->close();
+}
+
+void AdminWindow::updateDashboardInfo() {
+    ui->totalStaff->setText(QString::number(User::GetTotalStaff()));
 }
 

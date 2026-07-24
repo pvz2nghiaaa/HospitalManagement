@@ -32,6 +32,7 @@ public:
     static void logout();
     static User* getCurrentUser();
     static QString GetEncryptPassword(QString nPassword);
+    static int GetTotalStaff();
     void appendPermission(Permission);
     void erasePermission(Permission);
     // fast set attribute

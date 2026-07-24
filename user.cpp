@@ -36,7 +36,6 @@ bool User::hasPermission(Permission per){
 }
 
 bool User::login(QString nUsername, QString nPassword) {
-
     QSqlQuery query;
     query.prepare("SELECT * FROM User WHERE Username = :username and EncryptedPassword = :encrypted");
     query.bindValue(":username", nUsername);
@@ -64,6 +63,16 @@ void User::logout(){
         .SetFullName("")
         .SetPhoneNumber("")
         .SetIsActive(false);
+}
+
+int User::GetTotalStaff(){
+    QSqlQuery query;
+    query.prepare("SELECT COUNT(*) AS valid_staffs FROM User "
+                  "WHERE Role NOT IN ('Admin') AND IsActive = 1");
+    if (query.exec() && query.next()){
+        return query.value("valid_staffs").toInt();
+    }
+    return 0;
 }
 
 bool User::UpdatePermissionFromDatabase(){
