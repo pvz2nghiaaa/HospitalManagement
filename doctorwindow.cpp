@@ -1,6 +1,8 @@
 #include "doctorwindow.h"
 #include "ui_DoctorWindow.h"
 #include "user.h"
+#include <QMessageBox>
+#include "loginwindow.h"
 
 DoctorWindow::DoctorWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -51,5 +53,18 @@ void DoctorWindow::navigateToPage(int pageIndex, QPushButton* activeBtn){
     activeBtn->style()->unpolish(activeBtn);
     activeBtn->style()->polish(activeBtn);
 
+}
+
+
+void DoctorWindow::on_btnLogout_clicked()
+{
+    User::logout();
+    QMessageBox::information(this, "Program info", "Logged out successfully!");
+
+    LoginWindow *loginWin = new LoginWindow();
+    loginWin->setAttribute(Qt::WA_DeleteOnClose);
+    loginWin->show();
+
+    this->close();
 }
 

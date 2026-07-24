@@ -29,6 +29,8 @@ private slots:
 
     void navigateToPage(int pageIndex, QPushButton* activeBtn);
 
+    void on_btnLogout_clicked();
+
 private:
     Ui::AdminWindow *ui;
 };

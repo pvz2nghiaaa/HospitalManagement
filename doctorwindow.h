@@ -23,6 +23,8 @@ private slots:
 
     void on_btnDoctors_clicked();
 
+    void on_btnLogout_clicked();
+
 private:
     Ui::DoctorWindow *ui;
     void navigateToPage(int pageIndex, QPushButton* activeBtn);

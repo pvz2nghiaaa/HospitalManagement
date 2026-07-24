@@ -1,7 +1,8 @@
 #include "receptionistwindow.h"
 #include "ui_ReceptionistWindow.h"
 #include "user.h"
-
+#include <QMessageBox>
+#include "loginwindow.h"
 ReceptionistWindow::ReceptionistWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::ReceptionistWindow)
@@ -64,5 +65,18 @@ void ReceptionistWindow::navigateToPage(int pageIndex, QPushButton* activeBtn){
     activeBtn->style()->unpolish(activeBtn);
     activeBtn->style()->polish(activeBtn);
 
+}
+
+
+void ReceptionistWindow::on_btnLogout_clicked()
+{
+    User::logout();
+    QMessageBox::information(this, "Program info", "Logged out successfully!");
+
+    LoginWindow *loginWin = new LoginWindow();
+    loginWin->setAttribute(Qt::WA_DeleteOnClose);
+    loginWin->show();
+
+    this->close();
 }
 

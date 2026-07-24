@@ -1,5 +1,8 @@
 #include "adminwindow.h"
 #include "./ui_AdminWindow.h"
+#include <QMessageBox>
+#include "LoginWindow.h"
+#include "user.h"
 
 AdminWindow::AdminWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -42,9 +45,6 @@ void AdminWindow::on_btnReport_clicked()
     navigateToPage(4, ui->btnReport);
 }
 
-
-
-
 void AdminWindow::navigateToPage(int pageIndex, QPushButton* activeBtn){
     ui->stackedWidget->setCurrentIndex(pageIndex);
     QList<QPushButton*> sidebarButtons = {
@@ -64,5 +64,17 @@ void AdminWindow::navigateToPage(int pageIndex, QPushButton* activeBtn){
     activeBtn->style()->unpolish(activeBtn);
     activeBtn->style()->polish(activeBtn);
 
+}
+
+void AdminWindow::on_btnLogout_clicked()
+{
+    User::logout();
+    QMessageBox::information(this, "Program info", "Logged out successfully!");
+    
+    LoginWindow *loginWin = new LoginWindow();
+    loginWin->setAttribute(Qt::WA_DeleteOnClose);
+    loginWin->show();
+    
+    this->close();
 }
 
