@@ -22,6 +22,10 @@ set(PROJECT_SOURCES
         user.cpp
         attendancelog.h
         attendancelog.cpp
+        invoice.h
+        invoice.cpp
+        billableitem.h
+        billableitem.cpp
         drug.h
         drug.cpp
         prescription.h
@@ -35,6 +39,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         AdminWindow.ui
+        DoctorWindow.ui
+        ReceptionistWindow.ui
         adminwindow.h
         adminwindow.cpp
         medicalrecord.h
@@ -48,6 +54,14 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         recordmanager.h
         recordmanager.cpp
         loginwindow.h loginwindow.cpp LoginWindow.ui
+        billingmanager.h
+        billingmanager.cpp
+        patient.h
+        medicalrecord.h
+        diagnosis.h
+        prescriptiondetail.h
+
+
         ReceptionistWindow.ui DoctorWindow.ui
         doctorwindow.h doctorwindow.cpp DoctorWindow.ui
         receptionistwindow.h receptionistwindow.cpp ReceptionistWindow.ui
