@@ -18,6 +18,10 @@
 #include "medicalrecord.h"
 #include "prescriptiondetail.h"
 
+#include "medicalrecord.h"
+#include "drug.h"
+#include "prescription.h"
+#include "diagnosis.h"
 
 bool setupDatabase() {
     // test
@@ -48,14 +52,15 @@ bool setupDatabase() {
     AttendanceLog::initTable();
     DrugItem::initTable();
     LabTest::initTable();
-
-    Patient::initTable();
     MedicalRecord::initTable();
+    Drug::initTable();
+    Prescription::initTable();
     Diagnosis::initTable();
+    Patient::initTable();
     PrescriptionDetail::initTable();
-
     Invoice::initTable();
     BillableItem::initTable();
+  
     return true;
 }
 

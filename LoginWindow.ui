@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Login - Hospital Management System</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QWidget#centralwidget {
@@ -29,7 +29,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>40</y>
+      <y>50</y>
       <width>1227</width>
       <height>60</height>
      </rect>
@@ -37,7 +37,7 @@
     <property name="font">
      <font>
       <family>Segoe UI</family>
-      <pointsize>25</pointsize>
+      <pointsize>24</pointsize>
       <bold>true</bold>
      </font>
     </property>
@@ -51,7 +51,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>Hospital Management System</string>
+     <string>MEDIFLOW  |  Hospital Management System</string>
     </property>
     <property name="scaledContents">
      <bool>false</bool>
@@ -64,16 +64,20 @@
     <property name="geometry">
      <rect>
       <x>388</x>
-      <y>160</y>
+      <y>190</y>
       <width>450</width>
-      <height>440</height>
+      <height>410</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background: transparent;</string>
+     <string notr="true">QFrame#loginCard {
+    background-color: rgb(30, 41, 59);
+    border: 1px solid rgb(51, 65, 85);
+    border-radius: 16px;
+}</string>
     </property>
     <property name="frameShape">
-     <enum>QFrame::Shape::NoFrame</enum>
+     <enum>QFrame::Shape::StyledPanel</enum>
     </property>
     <widget class="QLabel" name="lblLogin">
      <property name="geometry">
@@ -112,16 +116,16 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>80</y>
+       <y>75</y>
        <width>390</width>
-       <height>40</height>
+       <height>35</height>
       </rect>
      </property>
      <property name="font">
       <font>
        <family>Segoe UI</family>
-       <pointsize>11</pointsize>
-       <bold>true</bold>
+       <pointsize>10</pointsize>
+       <bold>false</bold>
        <underline>false</underline>
       </font>
      </property>
@@ -148,7 +152,7 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>140</y>
+       <y>125</y>
        <width>390</width>
        <height>25</height>
       </rect>
@@ -156,13 +160,13 @@
      <property name="font">
       <font>
        <family>Segoe UI</family>
-       <pointsize>13</pointsize>
-       <bold>false</bold>
+       <pointsize>11</pointsize>
+       <bold>true</bold>
        <underline>false</underline>
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">color: rgb(170, 170, 170);</string>
+      <string notr="true">color: rgb(226, 232, 240);</string>
      </property>
      <property name="lineWidth">
       <number>1</number>
@@ -171,7 +175,7 @@
       <number>0</number>
      </property>
      <property name="text">
-      <string>Username</string>
+      <string>👤 Username</string>
      </property>
      <property name="scaledContents">
       <bool>false</bool>
@@ -181,23 +185,25 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>170</y>
+       <y>155</y>
        <width>390</width>
-       <height>36</height>
+       <height>38</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">QLineEdit{
-    background-color: rgb(30, 41, 59);
+      <string notr="true">QLineEdit {
+    background-color: rgb(15, 23, 42);
     border: 1px solid rgb(51, 65, 85);
-    border-radius: 12px;
-    padding: 5px 10px;
+    border-radius: 8px;
+    color: rgb(241, 245, 249);
+    padding: 5px 12px;
+    font-size: 13px;
 }
 QLineEdit:hover {
     border: 1px solid rgb(6, 182, 212); 
 }
 QLineEdit:focus {
-    border: 1px solid rgb(76, 216, 216);
+    border: 1px solid rgb(6, 182, 212);
 }</string>
      </property>
      <property name="placeholderText">
@@ -208,7 +214,7 @@ QLineEdit:focus {
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>220</y>
+       <y>210</y>
        <width>390</width>
        <height>25</height>
       </rect>
@@ -216,13 +222,13 @@ QLineEdit:focus {
      <property name="font">
       <font>
        <family>Segoe UI</family>
-       <pointsize>13</pointsize>
-       <bold>false</bold>
+       <pointsize>11</pointsize>
+       <bold>true</bold>
        <underline>false</underline>
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">color: rgb(170, 170, 170);</string>
+      <string notr="true">color: rgb(226, 232, 240);</string>
      </property>
      <property name="lineWidth">
       <number>1</number>
@@ -231,7 +237,7 @@ QLineEdit:focus {
       <number>0</number>
      </property>
      <property name="text">
-      <string>Password</string>
+      <string>🔒 Password</string>
      </property>
      <property name="scaledContents">
       <bool>false</bool>
@@ -241,29 +247,25 @@ QLineEdit:focus {
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>250</y>
+       <y>240</y>
        <width>390</width>
-       <height>36</height>
+       <height>38</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">QLineEdit{
-    background-color: rgb(30, 41, 59);
+      <string notr="true">QLineEdit {
+    background-color: rgb(15, 23, 42);
     border: 1px solid rgb(51, 65, 85);
-    border-radius: 12px;
-    padding: 5px 10px;
-}
-QLineEdit{
-    background-color: rgb(30, 41, 59);
-    border: 1px solid rgb(51, 65, 85);
-    border-radius: 12px;
-    padding: 5px 10px;
+    border-radius: 8px;
+    color: rgb(241, 245, 249);
+    padding: 5px 12px;
+    font-size: 13px;
 }
 QLineEdit:hover {
     border: 1px solid rgb(6, 182, 212); 
 }
 QLineEdit:focus {
-    border: 1px solid rgb(76, 216, 216);
+    border: 1px solid rgb(6, 182, 212);
 }</string>
      </property>
      <property name="echoMode">
@@ -277,7 +279,7 @@ QLineEdit:focus {
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>330</y>
+       <y>315</y>
        <width>390</width>
        <height>44</height>
       </rect>
@@ -294,7 +296,7 @@ QLineEdit:focus {
     color: white;
     font-weight: bold;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     padding: 10px;
     font-size: 15px;
 }
@@ -306,7 +308,7 @@ QPushButton#btnLogin:pressed {
 }</string>
      </property>
      <property name="text">
-      <string>Submit</string>
+      <string>Sign In ➔</string>
      </property>
     </widget>
    </widget>
@@ -327,6 +329,22 @@ QPushButton#btnLogin:pressed {
     </property>
     <property name="alignment">
      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>-30</y>
+      <width>261</width>
+      <height>271</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">image: url(:/Logo.png);</string>
+    </property>
+    <property name="text">
+     <string/>
     </property>
    </widget>
   </widget>

@@ -26,18 +26,33 @@ set(PROJECT_SOURCES
         invoice.cpp
         billableitem.h
         billableitem.cpp
+        drug.h
+        drug.cpp
+        prescription.h
+        prescription.cpp
+        diagnosis.h
+        diagnosis.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(HospitalManagement
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        LoginWindow.ui
         AdminWindow.ui
         DoctorWindow.ui
         ReceptionistWindow.ui
         adminwindow.h
         adminwindow.cpp
+        medicalrecord.h
+        medicalrecord.cpp
+        drug.h
+        drug.cpp
+        prescription.h
+        prescription.cpp
+        diagnosis.h
+        diagnosis.cpp
+        recordmanager.h
+        recordmanager.cpp
         loginwindow.h loginwindow.cpp LoginWindow.ui
         billingmanager.h
         billingmanager.cpp
@@ -47,6 +62,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         prescriptiondetail.h
 
 
+        ReceptionistWindow.ui DoctorWindow.ui
+        doctorwindow.h doctorwindow.cpp DoctorWindow.ui
+        receptionistwindow.h receptionistwindow.cpp ReceptionistWindow.ui
+        asset/img.qrc
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET HospitalManagement APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

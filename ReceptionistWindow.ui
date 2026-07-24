@@ -1,108 +1,253 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>AdminWindow</class>
- <widget class="QMainWindow" name="AdminWindow">
+ <class>ReceptionistWindow</class>
+ <widget class="QMainWindow" name="ReceptionistWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
-    <height>700</height>
+    <width>1227</width>
+    <height>736</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Admin Dashboard</string>
+   <string>Receptionist Dashboard</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow {
+    background-color: rgb(15, 23, 42);
+}</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="lblTitle">
+   <property name="styleSheet">
+    <string notr="true">QWidget#centralwidget {
+    background-color: rgb(15, 23, 42);
+}
+QPushButton {
+    background-color: rgb(30, 41, 59);
+    border: none;
+    border-radius: 6px;
+    color: rgb(148, 163, 184);
+    font-size: 13px;
+    font-weight: bold;
+    text-align: left;
+    padding: 10px 15px;
+}
+QPushButton:hover {
+    background-color: rgb(71, 85, 105);
+    color: rgb(248, 250, 252);
+}
+QPushButton[active=&quot;true&quot;] {
+    background-color: rgb(6, 182, 212); 
+    color: white;
+    border-left: 4px solid white;
+    font-weight: bold;
+}</string>
+   </property>
+   <widget class="QLabel" name="lblBrand">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>20</y>
-      <width>471</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>18</pointsize>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Hospital Management System</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="lblAdmin">
-    <property name="geometry">
-     <rect>
-      <x>920</x>
-      <y>50</y>
+      <y>25</y>
       <width>211</width>
-      <height>30</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>16</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Rec.  **********</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnLogout">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>620</y>
-      <width>201</width>
       <height>40</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>10</pointsize>
+      <pointsize>16</pointsize>
+      <bold>true</bold>
      </font>
     </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(6, 182, 212);</string>
+    </property>
     <property name="text">
-     <string>Logout</string>
+     <string>🏥 MEDIFLOW</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblTitle">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>25</y>
+      <width>471</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>20</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(6, 182, 212);</string>
+    </property>
+    <property name="text">
+     <string>Hospital Management System</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnLogout">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>630</y>
+      <width>211</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+    background-color: rgb(239, 68, 68); 
+    border: none;
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+}
+QPushButton:hover {
+    background-color: rgb(220, 38, 38);
+}</string>
+    </property>
+    <property name="text">
+     <string>Log Out</string>
     </property>
    </widget>
    <widget class="QLabel" name="lblWelcome">
     <property name="geometry">
      <rect>
-      <x>320</x>
-      <y>110</y>
-      <width>441</width>
-      <height>81</height>
+      <x>20</x>
+      <y>75</y>
+      <width>211</width>
+      <height>40</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>18</pointsize>
-      <italic>false</italic>
-      <bold>false</bold>
+      <pointsize>13</pointsize>
+      <bold>true</bold>
      </font>
     </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(148, 163, 184);</string>
+    </property>
     <property name="text">
-     <string>WELCOME REC. **********</string>
+     <string>RECEPTIONIST</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblAdmin">
+    <property name="geometry">
+     <rect>
+      <x>750</x>
+      <y>30</y>
+      <width>441</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(241, 245, 249);</string>
+    </property>
+    <property name="text">
+     <string>👩‍💼 Rec. ********** (Receptionist)</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>200</y>
+      <width>211</width>
+      <height>320</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="spacing">
+      <number>10</number>
+     </property>
+     <item>
+      <widget class="QPushButton" name="btnDashboard">
+       <property name="text">
+        <string>👥 Patient Management</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnPatients">
+       <property name="text">
+        <string>📋 Create Medical Records</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnPatients_2">
+       <property name="text">
+        <string>🧾 Invoice Management</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnPatients_3">
+       <property name="text">
+        <string>💊 Drug Management</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnDoctors">
+       <property name="text">
+        <string>👤 My Profile</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="Line" name="line">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>0</y>
+      <width>2</width>
+      <height>740</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(51, 65, 85);</string>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Vertical</enum>
     </property>
    </widget>
    <widget class="QStackedWidget" name="stackedWidget">
     <property name="geometry">
      <rect>
       <x>280</x>
-      <y>210</y>
-      <width>851</width>
-      <height>441</height>
+      <y>120</y>
+      <width>911</width>
+      <height>550</height>
      </rect>
     </property>
     <property name="frameShape">
      <enum>QFrame::Shape::NoFrame</enum>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="pagePatient">
      <widget class="QFrame" name="frameDashboard_2">
@@ -110,18 +255,60 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>851</width>
-        <height>441</height>
+        <width>911</width>
+        <height>550</height>
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">QFrame{
-    background:white;
-    border-radius:10px;
+       <string notr="true">QFrame#frameDashboard_2 {
+    background-color: rgb(30, 41, 59);
+    border-radius: 10px;
+}
+QLabel {
+    color: rgb(241, 245, 249);
+}
+QLineEdit, QComboBox {
+    background-color: rgb(15, 23, 42);
+    border: 1px solid rgb(71, 85, 105);
+    border-radius: 6px;
+    color: rgb(241, 245, 249);
+    padding: 4px 8px;
+}
+QLineEdit:focus, QComboBox:focus {
+    border: 1px solid rgb(6, 182, 212);
+}
+QTableWidget {
+    background-color: rgb(15, 23, 42);
+    color: rgb(226, 232, 240);
+    gridline-color: rgb(51, 65, 85);
+    border: 1px solid rgb(51, 65, 85);
+    border-radius: 8px;
+}
+QHeaderView::section {
+    background-color: rgb(30, 41, 59);
+    color: rgb(6, 182, 212);
+    padding: 6px;
+    font-weight: bold;
+    border: none;
+    border-bottom: 2px solid rgb(51, 65, 85);
+}
+QPushButton {
+    background-color: rgb(71, 85, 105);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-weight: bold;
+}
+QPushButton:hover {
+    background-color: rgb(51, 65, 85);
+}
+QPushButton#btnSearch_4, QPushButton#btnSearch_6 {
+    background-color: rgb(6, 182, 212);
+}
+QPushButton#btnSearch_4:hover, QPushButton#btnSearch_6:hover {
+    background-color: rgb(8, 145, 178);
 }</string>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::Shape::NoFrame</enum>
       </property>
       <widget class="QLabel" name="lblTitle_2">
        <property name="geometry">
@@ -134,47 +321,15 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>18</pointsize>
          <bold>true</bold>
         </font>
        </property>
        <property name="styleSheet">
-        <string notr="true">color:black;</string>
+        <string notr="true">color: rgb(6, 182, 212);</string>
        </property>
        <property name="text">
-        <string> Patient Management </string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="txtSearch_4">
-       <property name="geometry">
-        <rect>
-         <x>110</x>
-         <y>70</y>
-         <width>181</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QTableWidget {
-    background-color: white;
-    color: black;
-    gridline-color: #D0D0D0;
-}
-
-QHeaderView::section {
-    background-color: #1976D2;
-    color: white;
-    font-weight: bold;
-}</string>
-       </property>
-       <property name="inputMask">
-        <string/>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="placeholderText">
-        <string>Enter name/ID</string>
+        <string>Patient Management</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_17">
@@ -182,53 +337,88 @@ QHeaderView::section {
         <rect>
          <x>30</x>
          <y>70</y>
-         <width>81</width>
-         <height>20</height>
+         <width>50</width>
+         <height>28</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>14</pointsize>
+         <pointsize>11</pointsize>
         </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color:black;</string>
        </property>
        <property name="text">
         <string>Search</string>
        </property>
       </widget>
+      <widget class="QLineEdit" name="txtSearch_4">
+       <property name="geometry">
+        <rect>
+         <x>85</x>
+         <y>70</y>
+         <width>150</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="placeholderText">
+        <string>Enter name/ID</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_33">
+       <property name="geometry">
+        <rect>
+         <x>250</x>
+         <y>70</y>
+         <width>50</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Phone</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="txtSearch_6">
+       <property name="geometry">
+        <rect>
+         <x>305</x>
+         <y>70</y>
+         <width>150</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="placeholderText">
+        <string>Enter number</string>
+       </property>
+      </widget>
       <widget class="QPushButton" name="btnSearch_4">
        <property name="geometry">
         <rect>
-         <x>590</x>
+         <x>470</x>
          <y>70</y>
          <width>91</width>
          <height>28</height>
         </rect>
        </property>
        <property name="text">
-        <string>Search</string>
+        <string>🔍 Search</string>
        </property>
       </widget>
       <widget class="QTableWidget" name="tblPatient">
        <property name="geometry">
         <rect>
          <x>30</x>
-         <y>130</y>
-         <width>791</width>
-         <height>241</height>
+         <y>120</y>
+         <width>850</width>
+         <height>330</height>
         </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color:black;</string>
        </property>
        <attribute name="horizontalHeaderDefaultSectionSize">
         <number>110</number>
        </attribute>
-       <row/>
-       <row/>
-       <row/>
        <column>
         <property name="text">
          <string>ID</string>
@@ -264,81 +454,13 @@ QHeaderView::section {
          <string>Medical Record</string>
         </property>
        </column>
-       <item row="0" column="6">
-        <property name="text">
-         <string>Exists</string>
-        </property>
-       </item>
-       <item row="1" column="6">
-        <property name="text">
-         <string>Exists</string>
-        </property>
-       </item>
-       <item row="2" column="6">
-        <property name="text">
-         <string>No Record</string>
-        </property>
-       </item>
-      </widget>
-      <widget class="QLabel" name="label_33">
-       <property name="geometry">
-        <rect>
-         <x>320</x>
-         <y>70</y>
-         <width>81</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>14</pointsize>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color:black;</string>
-       </property>
-       <property name="text">
-        <string>Phone</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="txtSearch_6">
-       <property name="geometry">
-        <rect>
-         <x>390</x>
-         <y>70</y>
-         <width>181</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QTableWidget {
-    background-color: white;
-    color: black;
-    gridline-color: #D0D0D0;
-}
-
-QHeaderView::section {
-    background-color: #1976D2;
-    color: white;
-    font-weight: bold;
-}</string>
-       </property>
-       <property name="inputMask">
-        <string/>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="placeholderText">
-        <string>Enter number</string>
-       </property>
       </widget>
       <widget class="QSplitter" name="splitter_2">
        <property name="geometry">
         <rect>
          <x>30</x>
-         <y>380</y>
-         <width>441</width>
+         <y>470</y>
+         <width>540</width>
          <height>29</height>
         </rect>
        </property>
@@ -347,635 +469,411 @@ QHeaderView::section {
        </property>
        <widget class="QPushButton" name="btnSearch_6">
         <property name="text">
-         <string>New Patient</string>
+         <string>➕ New Patient</string>
         </property>
        </widget>
        <widget class="QPushButton" name="btnSearch_7">
         <property name="text">
-         <string>Edit</string>
+         <string>✏️ Edit</string>
         </property>
        </widget>
        <widget class="QPushButton" name="btnSearch_8">
         <property name="text">
-         <string>Delete</string>
+         <string>🗑️ Delete</string>
         </property>
        </widget>
        <widget class="QPushButton" name="btnSearch_9">
         <property name="text">
-         <string>Refresh</string>
+         <string>🔄 Refresh</string>
         </property>
        </widget>
       </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="pageMedicalRecord">
-     <widget class="QFrame" name="frameDashboard">
+     <widget class="QFrame" name="frameMedicalRecord">
       <property name="geometry">
        <rect>
-        <x>-1</x>
-        <y>-1</y>
-        <width>851</width>
-        <height>441</height>
+        <x>0</x>
+        <y>0</y>
+        <width>911</width>
+        <height>550</height>
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">QFrame{
-    background:white;
-    border-radius:10px;
+       <string notr="true">QFrame#frameMedicalRecord {
+    background-color: rgb(30, 41, 59);
+    border-radius: 10px;
+}
+QLabel {
+    color: rgb(241, 245, 249);
+}
+QLineEdit, QComboBox, QDateEdit {
+    background-color: rgb(15, 23, 42);
+    border: 1px solid rgb(71, 85, 105);
+    border-radius: 6px;
+    color: rgb(241, 245, 249);
+    padding: 4px 8px;
+}
+QLineEdit:focus, QComboBox:focus, QDateEdit:focus {
+    border: 1px solid rgb(6, 182, 212);
+}
+QGroupBox {
+    border: 1px solid rgb(51, 65, 85);
+    border-radius: 8px;
+    margin-top: 12px;
+    font-weight: bold;
+    color: rgb(6, 182, 212);
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 8px;
+    left: 10px;
+}
+QPushButton {
+    background-color: rgb(71, 85, 105);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-weight: bold;
+}
+QPushButton:hover {
+    background-color: rgb(51, 65, 85);
+}
+QPushButton#pushButton_5, QPushButton#btnSearch_5 {
+    background-color: rgb(6, 182, 212);
+}
+QPushButton#pushButton_5:hover, QPushButton#btnSearch_5:hover {
+    background-color: rgb(8, 145, 178);
 }</string>
       </property>
-      <property name="frameShape">
-       <enum>QFrame::Shape::NoFrame</enum>
-      </property>
-      <widget class="QLabel" name="lblTitle_3">
+      <widget class="QLabel" name="lblTitle_5">
        <property name="geometry">
         <rect>
          <x>30</x>
          <y>20</y>
-         <width>251</width>
+         <width>311</width>
          <height>41</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>18</pointsize>
          <bold>true</bold>
         </font>
        </property>
        <property name="styleSheet">
-        <string notr="true">color:black;</string>
+        <string notr="true">color: rgb(6, 182, 212);</string>
        </property>
        <property name="text">
-        <string>Staff Management</string>
+        <string>Create Medical Records</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_5">
+      <widget class="QLabel" name="label_18">
        <property name="geometry">
         <rect>
-         <x>30</x>
-         <y>80</y>
-         <width>81</width>
-         <height>20</height>
+         <x>400</x>
+         <y>30</y>
+         <width>50</width>
+         <height>28</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>14</pointsize>
+         <pointsize>11</pointsize>
         </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color:black;</string>
        </property>
        <property name="text">
         <string>Search</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="txtSearch">
+      <widget class="QLineEdit" name="txtSearch_5">
        <property name="geometry">
         <rect>
-         <x>120</x>
-         <y>80</y>
-         <width>181</width>
+         <x>455</x>
+         <y>30</y>
+         <width>150</width>
          <height>28</height>
         </rect>
        </property>
-       <property name="styleSheet">
-        <string notr="true">QTableWidget {
-    background-color: white;
-    color: black;
-    gridline-color: #D0D0D0;
-}
-
-QHeaderView::section {
-    background-color: #1976D2;
-    color: white;
-    font-weight: bold;
-}</string>
-       </property>
-       <property name="inputMask">
-        <string/>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
        <property name="placeholderText">
-        <string>Enter name</string>
+        <string>Enter name/ID</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="btnSearch">
+      <widget class="QPushButton" name="btnSearch_5">
        <property name="geometry">
         <rect>
-         <x>520</x>
-         <y>80</y>
+         <x>615</x>
+         <y>30</y>
          <width>91</width>
          <height>28</height>
         </rect>
        </property>
        <property name="text">
-        <string>Search</string>
+        <string>🔍 Search</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_6">
+      <widget class="QLabel" name="label_35">
        <property name="geometry">
         <rect>
-         <x>330</x>
-         <y>80</y>
-         <width>81</width>
-         <height>20</height>
+         <x>720</x>
+         <y>30</y>
+         <width>50</width>
+         <height>28</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>14</pointsize>
+         <pointsize>11</pointsize>
         </font>
        </property>
-       <property name="styleSheet">
-        <string notr="true">color:black;</string>
-       </property>
        <property name="text">
-        <string>Role</string>
+        <string>Status</string>
        </property>
       </widget>
-      <widget class="QComboBox" name="cbRole">
+      <widget class="QLineEdit" name="txtRecordID_6">
        <property name="geometry">
         <rect>
-         <x>410</x>
-         <y>80</y>
-         <width>82</width>
+         <x>770</x>
+         <y>30</y>
+         <width>80</width>
          <height>28</height>
         </rect>
        </property>
-       <property name="currentText">
-        <string>All</string>
+       <property name="text">
+        <string>Waiting</string>
        </property>
-       <item>
-        <property name="text">
-         <string>All</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Doctor</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Receptionist</string>
-        </property>
-       </item>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
       </widget>
-      <widget class="QTableWidget" name="tblStaff">
+      <widget class="QGroupBox" name="groupBox">
        <property name="geometry">
         <rect>
-         <x>45</x>
-         <y>141</y>
-         <width>661</width>
-         <height>291</height>
+         <x>30</x>
+         <y>70</y>
+         <width>680</width>
+         <height>440</height>
         </rect>
        </property>
-       <property name="styleSheet">
-        <string notr="true">color:black;</string>
+       <property name="title">
+        <string>Medical Record Detail</string>
        </property>
-       <property name="alternatingRowColors">
-        <bool>false</bool>
-       </property>
-       <attribute name="horizontalHeaderDefaultSectionSize">
-        <number>110</number>
-       </attribute>
-       <column>
-        <property name="text">
-         <string>ID</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Full Name</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Phone Number</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Role</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Status</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Action</string>
-        </property>
-       </column>
-      </widget>
-      <widget class="QFrame" name="frameDashboard_3">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>851</width>
-         <height>441</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QFrame{
-    background:white;
-    border-radius:10px;
-}</string>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Shape::NoFrame</enum>
-       </property>
-       <widget class="QLabel" name="lblTitle_5">
+       <widget class="QLabel" name="label_14">
         <property name="geometry">
          <rect>
-          <x>30</x>
-          <y>20</y>
-          <width>311</width>
-          <height>41</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>16</pointsize>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">color:black;</string>
-        </property>
-        <property name="text">
-         <string> Create Medical Records     </string>
-        </property>
-       </widget>
-       <widget class="QGroupBox" name="groupBox">
-        <property name="geometry">
-         <rect>
-          <x>40</x>
-          <y>70</y>
-          <width>691</width>
-          <height>331</height>
-         </rect>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">color:black;</string>
-        </property>
-        <property name="title">
-         <string>Medical Record Detail</string>
-        </property>
-        <widget class="QLineEdit" name="txtRecordID">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>40</y>
-           <width>113</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">color:white;</string>
-         </property>
-         <property name="text">
-          <string>Patient ID</string>
-         </property>
-        </widget>
-        <widget class="QLineEdit" name="txtRecordID_2">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>80</y>
-           <width>113</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">color:white;</string>
-         </property>
-         <property name="text">
-          <string>Patient name</string>
-         </property>
-        </widget>
-        <widget class="QDateEdit" name="dateEdit">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>210</y>
-           <width>110</width>
-           <height>29</height>
-          </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">color:white;</string>
-         </property>
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-        <widget class="QLineEdit" name="txtRecordID_3">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>160</y>
-           <width>113</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">color:white;</string>
-         </property>
-         <property name="text">
-          <string>Doctor name</string>
-         </property>
-        </widget>
-        <widget class="QLineEdit" name="txtRecordID_4">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>120</y>
-           <width>113</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">color:white;</string>
-         </property>
-         <property name="text">
-          <string>Doctor ID</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_14">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>40</y>
-           <width>81</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Patient ID</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_15">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>80</y>
-           <width>91</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Patient name</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_16">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>160</y>
-           <width>111</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Assigned Doctor</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_20">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>120</y>
-           <width>91</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Doctor ID</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_22">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>210</y>
-           <width>91</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Date</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_23">
-         <property name="geometry">
-          <rect>
-           <x>300</x>
-           <y>80</y>
-           <width>61</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Gender</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_34">
-         <property name="geometry">
-          <rect>
-           <x>300</x>
-           <y>40</y>
-           <width>61</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Phone</string>
-         </property>
-        </widget>
-        <widget class="QLineEdit" name="txtRecordID_5">
-         <property name="geometry">
-          <rect>
-           <x>370</x>
-           <y>40</y>
-           <width>113</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">color:white;</string>
-         </property>
-         <property name="text">
-          <string>Number</string>
-         </property>
-        </widget>
-        <widget class="QComboBox" name="comboBox">
-         <property name="geometry">
-          <rect>
-           <x>370</x>
-           <y>80</y>
-           <width>82</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">color:white;</string>
-         </property>
-         <item>
-          <property name="text">
-           <string>Male</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Female</string>
-          </property>
-         </item>
-        </widget>
-       </widget>
-       <widget class="QPushButton" name="pushButton_5">
-        <property name="geometry">
-         <rect>
-          <x>740</x>
-          <y>230</y>
-          <width>101</width>
-          <height>51</height>
+          <x>20</x>
+          <y>40</y>
+          <width>90</width>
+          <height>25</height>
          </rect>
         </property>
         <property name="text">
-         <string>Create Record</string>
+         <string>Patient ID</string>
         </property>
        </widget>
-       <widget class="QPushButton" name="pushButton_6">
+       <widget class="QLineEdit" name="txtRecordID">
         <property name="geometry">
          <rect>
-          <x>740</x>
-          <y>350</y>
-          <width>101</width>
-          <height>51</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Clear</string>
-        </property>
-       </widget>
-       <widget class="QLineEdit" name="txtSearch_5">
-        <property name="geometry">
-         <rect>
-          <x>440</x>
-          <y>50</y>
-          <width>181</width>
+          <x>120</x>
+          <y>40</y>
+          <width>140</width>
           <height>28</height>
          </rect>
         </property>
-        <property name="styleSheet">
-         <string notr="true">QTableWidget {
-    background-color: white;
-    color: black;
-    gridline-color: #D0D0D0;
-}
-
-QHeaderView::section {
-    background-color: #1976D2;
-    color: white;
-    font-weight: bold;
-}</string>
-        </property>
-        <property name="inputMask">
-         <string/>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="placeholderText">
-         <string>Enter name/ID</string>
-        </property>
        </widget>
-       <widget class="QPushButton" name="btnSearch_5">
+       <widget class="QLabel" name="label_15">
         <property name="geometry">
          <rect>
-          <x>640</x>
-          <y>50</y>
-          <width>91</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Search</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_18">
-        <property name="geometry">
-         <rect>
-          <x>360</x>
-          <y>50</y>
-          <width>81</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>14</pointsize>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">color:black;</string>
-        </property>
-        <property name="text">
-         <string>Search</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_35">
-        <property name="geometry">
-         <rect>
-          <x>740</x>
+          <x>20</x>
           <y>90</y>
-          <width>51</width>
-          <height>20</height>
+          <width>90</width>
+          <height>25</height>
          </rect>
         </property>
-        <property name="styleSheet">
-         <string notr="true">color:black;</string>
-        </property>
         <property name="text">
-         <string>Status</string>
+         <string>Patient name</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="txtRecordID_6">
+       <widget class="QLineEdit" name="txtRecordID_2">
         <property name="geometry">
          <rect>
-          <x>740</x>
-          <y>110</y>
-          <width>71</width>
+          <x>120</x>
+          <y>90</y>
+          <width>140</width>
           <height>28</height>
          </rect>
         </property>
-        <property name="styleSheet">
-         <string notr="true">color:white;</string>
-        </property>
-        <property name="text">
-         <string>Waiting</string>
-        </property>
        </widget>
-       <widget class="QPushButton" name="pushButton_8">
+       <widget class="QLabel" name="label_20">
         <property name="geometry">
          <rect>
-          <x>740</x>
-          <y>290</y>
-          <width>101</width>
-          <height>51</height>
+          <x>20</x>
+          <y>140</y>
+          <width>90</width>
+          <height>25</height>
          </rect>
         </property>
         <property name="text">
-         <string>Auto Create</string>
+         <string>Doctor ID</string>
         </property>
        </widget>
+       <widget class="QLineEdit" name="txtRecordID_4">
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>140</y>
+          <width>140</width>
+          <height>28</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_16">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>190</y>
+          <width>90</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Assigned Doctor</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="txtRecordID_3">
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>190</y>
+          <width>140</width>
+          <height>28</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_22">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>240</y>
+          <width>90</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Date</string>
+        </property>
+       </widget>
+       <widget class="QDateEdit" name="dateEdit">
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>240</y>
+          <width>140</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_34">
+        <property name="geometry">
+         <rect>
+          <x>320</x>
+          <y>40</y>
+          <width>60</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Phone</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="txtRecordID_5">
+        <property name="geometry">
+         <rect>
+          <x>390</x>
+          <y>40</y>
+          <width>140</width>
+          <height>28</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_23">
+        <property name="geometry">
+         <rect>
+          <x>320</x>
+          <y>90</y>
+          <width>60</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Gender</string>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="comboBox">
+        <property name="geometry">
+         <rect>
+          <x>390</x>
+          <y>90</y>
+          <width>140</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <item>
+         <property name="text">
+          <string>Male</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Female</string>
+         </property>
+        </item>
+       </widget>
+      </widget>
+      <widget class="QPushButton" name="pushButton_5">
+       <property name="geometry">
+        <rect>
+         <x>730</x>
+         <y>120</y>
+         <width>141</width>
+         <height>45</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>📋 Create Record</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_8">
+       <property name="geometry">
+        <rect>
+         <x>730</x>
+         <y>180</y>
+         <width>141</width>
+         <height>45</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>⚡ Auto Create</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_6">
+       <property name="geometry">
+        <rect>
+         <x>730</x>
+         <y>240</y>
+         <width>141</width>
+         <height>45</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>🧹 Clear</string>
+       </property>
       </widget>
      </widget>
     </widget>
@@ -985,18 +883,77 @@ QHeaderView::section {
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>851</width>
-        <height>441</height>
+        <width>911</width>
+        <height>550</height>
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">QFrame{
-    background:white;
-    border-radius:10px;
+       <string notr="true">QFrame#frameDashboard_4 {
+    background-color: rgb(30, 41, 59);
+    border-radius: 10px;
+}
+QLabel {
+    color: rgb(241, 245, 249);
+}
+QLineEdit, QComboBox, QDateEdit {
+    background-color: rgb(15, 23, 42);
+    border: 1px solid rgb(71, 85, 105);
+    border-radius: 6px;
+    color: rgb(241, 245, 249);
+    padding: 4px 8px;
+}
+QLineEdit:focus, QComboBox:focus, QDateEdit:focus {
+    border: 1px solid rgb(6, 182, 212);
+}
+QTableWidget {
+    background-color: rgb(15, 23, 42);
+    color: rgb(226, 232, 240);
+    gridline-color: rgb(51, 65, 85);
+    border: 1px solid rgb(51, 65, 85);
+    border-radius: 8px;
+}
+QHeaderView::section {
+    background-color: rgb(30, 41, 59);
+    color: rgb(6, 182, 212);
+    padding: 6px;
+    font-weight: bold;
+    border: none;
+    border-bottom: 2px solid rgb(51, 65, 85);
+}
+QGroupBox {
+    border: 1px solid rgb(51, 65, 85);
+    border-radius: 8px;
+    margin-top: 12px;
+    font-weight: bold;
+    color: rgb(6, 182, 212);
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 8px;
+    left: 10px;
+}
+QRadioButton {
+    color: rgb(241, 245, 249);
+    font-weight: bold;
+}
+QPushButton {
+    background-color: rgb(71, 85, 105);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-weight: bold;
+}
+QPushButton:hover {
+    background-color: rgb(51, 65, 85);
+}
+QPushButton#btnSearch_10, QPushButton#btnSearch_11, QPushButton#btnSearch_12 {
+    background-color: rgb(6, 182, 212);
+}
+QPushButton#btnSearch_10:hover, QPushButton#btnSearch_11:hover, QPushButton#btnSearch_12:hover {
+    background-color: rgb(8, 145, 178);
 }</string>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::Shape::NoFrame</enum>
       </property>
       <widget class="QLabel" name="lblTitle_4">
        <property name="geometry">
@@ -1009,47 +966,15 @@ QHeaderView::section {
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>18</pointsize>
          <bold>true</bold>
         </font>
        </property>
        <property name="styleSheet">
-        <string notr="true">color:black;</string>
+        <string notr="true">color: rgb(6, 182, 212);</string>
        </property>
        <property name="text">
-        <string>Invoice Management </string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="txtSearch_7">
-       <property name="geometry">
-        <rect>
-         <x>110</x>
-         <y>70</y>
-         <width>181</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QTableWidget {
-    background-color: white;
-    color: black;
-    gridline-color: #D0D0D0;
-}
-
-QHeaderView::section {
-    background-color: #1976D2;
-    color: white;
-    font-weight: bold;
-}</string>
-       </property>
-       <property name="inputMask">
-        <string/>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="placeholderText">
-        <string>Enter name/ID</string>
+        <string>Invoice Management</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_19">
@@ -1057,51 +982,45 @@ QHeaderView::section {
         <rect>
          <x>30</x>
          <y>70</y>
-         <width>81</width>
-         <height>20</height>
+         <width>50</width>
+         <height>28</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>14</pointsize>
+         <pointsize>11</pointsize>
         </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color:black;</string>
        </property>
        <property name="text">
         <string>Search</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="btnSearch_10">
+      <widget class="QLineEdit" name="txtSearch_7">
        <property name="geometry">
         <rect>
-         <x>30</x>
-         <y>140</y>
-         <width>91</width>
+         <x>85</x>
+         <y>70</y>
+         <width>140</width>
          <height>28</height>
         </rect>
        </property>
-       <property name="text">
-        <string>Search</string>
+       <property name="placeholderText">
+        <string>Enter name/ID</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_21">
        <property name="geometry">
         <rect>
-         <x>30</x>
-         <y>110</y>
-         <width>81</width>
-         <height>20</height>
+         <x>240</x>
+         <y>70</y>
+         <width>50</width>
+         <height>28</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>14</pointsize>
+         <pointsize>11</pointsize>
         </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color:black;</string>
        </property>
        <property name="text">
         <string>Status</string>
@@ -1110,9 +1029,9 @@ QHeaderView::section {
       <widget class="QComboBox" name="comboBox_2">
        <property name="geometry">
         <rect>
-         <x>110</x>
-         <y>110</y>
-         <width>82</width>
+         <x>295</x>
+         <y>70</y>
+         <width>90</width>
          <height>28</height>
         </rect>
        </property>
@@ -1132,17 +1051,53 @@ QHeaderView::section {
         </property>
        </item>
       </widget>
+      <widget class="QPushButton" name="btnSearch_10">
+       <property name="geometry">
+        <rect>
+         <x>400</x>
+         <y>70</y>
+         <width>91</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>🔍 Search</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btnSearch_11">
+       <property name="geometry">
+        <rect>
+         <x>510</x>
+         <y>70</y>
+         <width>91</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>➕ Create</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btnSearch_13">
+       <property name="geometry">
+        <rect>
+         <x>620</x>
+         <y>70</y>
+         <width>91</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>🖨️ Print</string>
+       </property>
+      </widget>
       <widget class="QTableWidget" name="tableWidget">
        <property name="geometry">
         <rect>
          <x>30</x>
-         <y>180</y>
-         <width>161</width>
-         <height>211</height>
+         <y>120</y>
+         <width>200</width>
+         <height>390</height>
         </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color:black;</string>
        </property>
        <attribute name="horizontalHeaderDefaultSectionSize">
         <number>80</number>
@@ -1161,64 +1116,36 @@ QHeaderView::section {
       <widget class="QGroupBox" name="groupBox_2">
        <property name="geometry">
         <rect>
-         <x>210</x>
-         <y>100</y>
-         <width>521</width>
-         <height>311</height>
+         <x>250</x>
+         <y>120</y>
+         <width>460</width>
+         <height>390</height>
         </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color:black;</string>
        </property>
        <property name="title">
         <string>Invoice Detail</string>
        </property>
-       <widget class="QLineEdit" name="txtRecordID_7">
-        <property name="geometry">
-         <rect>
-          <x>110</x>
-          <y>30</y>
-          <width>113</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">color:white;</string>
-        </property>
-        <property name="text">
-         <string>id</string>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-       </widget>
        <widget class="QLabel" name="label_36">
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>40</y>
-          <width>81</width>
-          <height>20</height>
+          <y>35</y>
+          <width>80</width>
+          <height>25</height>
          </rect>
         </property>
         <property name="text">
          <string>Invoice ID</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="txtRecordID_8">
+       <widget class="QLineEdit" name="txtRecordID_7">
         <property name="geometry">
          <rect>
-          <x>110</x>
-          <y>70</y>
-          <width>113</width>
+          <x>100</x>
+          <y>35</y>
+          <width>110</width>
           <height>28</height>
          </rect>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">color:white;</string>
-        </property>
-        <property name="text">
-         <string>name</string>
         </property>
         <property name="readOnly">
          <bool>true</bool>
@@ -1228,71 +1155,75 @@ QHeaderView::section {
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>70</y>
-          <width>81</width>
-          <height>20</height>
+          <y>75</y>
+          <width>80</width>
+          <height>25</height>
          </rect>
         </property>
         <property name="text">
-         <string>Patient         </string>
+         <string>Patient</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label_38">
+       <widget class="QLineEdit" name="txtRecordID_8">
         <property name="geometry">
          <rect>
-          <x>290</x>
-          <y>40</y>
-          <width>81</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Date Issued </string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_39">
-        <property name="geometry">
-         <rect>
-          <x>290</x>
-          <y>70</y>
-          <width>81</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Doctor          </string>
-        </property>
-       </widget>
-       <widget class="QLineEdit" name="txtRecordID_10">
-        <property name="geometry">
-         <rect>
-          <x>390</x>
-          <y>70</y>
-          <width>113</width>
+          <x>100</x>
+          <y>75</y>
+          <width>110</width>
           <height>28</height>
          </rect>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">color:white;</string>
-        </property>
-        <property name="text">
-         <string>name</string>
         </property>
         <property name="readOnly">
          <bool>true</bool>
         </property>
        </widget>
+       <widget class="QLabel" name="label_38">
+        <property name="geometry">
+         <rect>
+          <x>230</x>
+          <y>35</y>
+          <width>80</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Date Issued</string>
+        </property>
+       </widget>
        <widget class="QDateEdit" name="dateEdit_4">
         <property name="geometry">
          <rect>
-          <x>390</x>
-          <y>30</y>
+          <x>320</x>
+          <y>35</y>
           <width>110</width>
-          <height>29</height>
+          <height>28</height>
          </rect>
         </property>
-        <property name="styleSheet">
-         <string notr="true">color:white;</string>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_39">
+        <property name="geometry">
+         <rect>
+          <x>230</x>
+          <y>75</y>
+          <width>80</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Doctor</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="txtRecordID_10">
+        <property name="geometry">
+         <rect>
+          <x>320</x>
+          <y>75</y>
+          <width>110</width>
+          <height>28</height>
+         </rect>
         </property>
         <property name="readOnly">
          <bool>true</bool>
@@ -1302,9 +1233,9 @@ QHeaderView::section {
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>110</y>
-          <width>481</width>
-          <height>181</height>
+          <y>120</y>
+          <width>420</width>
+          <height>240</height>
          </rect>
         </property>
         <column>
@@ -1314,17 +1245,17 @@ QHeaderView::section {
         </column>
         <column>
          <property name="text">
-          <string>Quantity  </string>
+          <string>Quantity</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>Price     </string>
+          <string>Price</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>Amount      </string>
+          <string>Amount</string>
          </property>
         </column>
        </widget>
@@ -1332,24 +1263,69 @@ QHeaderView::section {
       <widget class="QGroupBox" name="groupBox_3">
        <property name="geometry">
         <rect>
-         <x>740</x>
-         <y>100</y>
-         <width>101</width>
-         <height>311</height>
+         <x>730</x>
+         <y>120</y>
+         <width>150</width>
+         <height>390</height>
         </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color:black;</string>
        </property>
        <property name="title">
         <string>Payment</string>
        </property>
+       <widget class="QLabel" name="label_40">
+        <property name="geometry">
+         <rect>
+          <x>15</x>
+          <y>30</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Total</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="txtRecordID_9">
+        <property name="geometry">
+         <rect>
+          <x>15</x>
+          <y>55</y>
+          <width>120</width>
+          <height>50</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>VND</string>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_41">
+        <property name="geometry">
+         <rect>
+          <x>15</x>
+          <y>125</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Status</string>
+        </property>
+       </widget>
        <widget class="QRadioButton" name="radioButton">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>180</y>
-          <width>111</width>
+          <x>15</x>
+          <y>155</y>
+          <width>100</width>
           <height>25</height>
          </rect>
         </property>
@@ -1360,9 +1336,9 @@ QHeaderView::section {
        <widget class="QRadioButton" name="radioButton_2">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>210</y>
-          <width>111</width>
+          <x>15</x>
+          <y>185</y>
+          <width>100</width>
           <height>25</height>
          </rect>
         </property>
@@ -1370,93 +1346,19 @@ QHeaderView::section {
          <string>Unpaid</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label_40">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>40</y>
-          <width>41</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Total</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_41">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>150</y>
-          <width>51</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Status</string>
-        </property>
-       </widget>
-       <widget class="QLineEdit" name="txtRecordID_9">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>70</y>
-          <width>81</width>
-          <height>61</height>
-         </rect>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">color:white;</string>
-        </property>
-        <property name="text">
-         <string>VND</string>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-       </widget>
        <widget class="QPushButton" name="btnSearch_12">
         <property name="geometry">
          <rect>
-          <x>0</x>
-          <y>250</y>
-          <width>101</width>
-          <height>28</height>
+          <x>10</x>
+          <y>230</y>
+          <width>131</width>
+          <height>40</height>
          </rect>
         </property>
-        <property name="styleSheet">
-         <string notr="true">color:white;</string>
-        </property>
         <property name="text">
-         <string>Mark as Paid</string>
+         <string>💳 Mark as Paid</string>
         </property>
        </widget>
-      </widget>
-      <widget class="QPushButton" name="btnSearch_11">
-       <property name="geometry">
-        <rect>
-         <x>540</x>
-         <y>70</y>
-         <width>91</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Create</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="btnSearch_13">
-       <property name="geometry">
-        <rect>
-         <x>640</x>
-         <y>70</y>
-         <width>91</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Print</string>
-       </property>
       </widget>
      </widget>
     </widget>
@@ -1466,18 +1368,60 @@ QHeaderView::section {
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>851</width>
-        <height>441</height>
+        <width>911</width>
+        <height>550</height>
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">QFrame{
-    background:white;
-    border-radius:10px;
+       <string notr="true">QFrame#frameDashboard_5 {
+    background-color: rgb(30, 41, 59);
+    border-radius: 10px;
+}
+QLabel {
+    color: rgb(241, 245, 249);
+}
+QLineEdit, QComboBox {
+    background-color: rgb(15, 23, 42);
+    border: 1px solid rgb(71, 85, 105);
+    border-radius: 6px;
+    color: rgb(241, 245, 249);
+    padding: 4px 8px;
+}
+QLineEdit:focus, QComboBox:focus {
+    border: 1px solid rgb(6, 182, 212);
+}
+QTableWidget {
+    background-color: rgb(15, 23, 42);
+    color: rgb(226, 232, 240);
+    gridline-color: rgb(51, 65, 85);
+    border: 1px solid rgb(51, 65, 85);
+    border-radius: 8px;
+}
+QHeaderView::section {
+    background-color: rgb(30, 41, 59);
+    color: rgb(6, 182, 212);
+    padding: 6px;
+    font-weight: bold;
+    border: none;
+    border-bottom: 2px solid rgb(51, 65, 85);
+}
+QPushButton {
+    background-color: rgb(71, 85, 105);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-weight: bold;
+}
+QPushButton:hover {
+    background-color: rgb(51, 65, 85);
+}
+QPushButton#btnSearch_14, QPushButton#btnSearch_15 {
+    background-color: rgb(6, 182, 212);
+}
+QPushButton#btnSearch_14:hover, QPushButton#btnSearch_15:hover {
+    background-color: rgb(8, 145, 178);
 }</string>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::Shape::NoFrame</enum>
       </property>
       <widget class="QLabel" name="lblTitle_7">
        <property name="geometry">
@@ -1490,47 +1434,15 @@ QHeaderView::section {
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>18</pointsize>
          <bold>true</bold>
         </font>
        </property>
        <property name="styleSheet">
-        <string notr="true">color:black;</string>
+        <string notr="true">color: rgb(6, 182, 212);</string>
        </property>
        <property name="text">
-        <string>Drug Management </string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="txtSearch_8">
-       <property name="geometry">
-        <rect>
-         <x>110</x>
-         <y>70</y>
-         <width>181</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QTableWidget {
-    background-color: white;
-    color: black;
-    gridline-color: #D0D0D0;
-}
-
-QHeaderView::section {
-    background-color: #1976D2;
-    color: white;
-    font-weight: bold;
-}</string>
-       </property>
-       <property name="inputMask">
-        <string/>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="placeholderText">
-        <string>Enter drug name/ID</string>
+        <string>Drug Management</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_42">
@@ -1538,100 +1450,45 @@ QHeaderView::section {
         <rect>
          <x>30</x>
          <y>70</y>
-         <width>81</width>
-         <height>20</height>
+         <width>50</width>
+         <height>28</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>14</pointsize>
+         <pointsize>11</pointsize>
         </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color:black;</string>
        </property>
        <property name="text">
         <string>Search</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="btnSearch_14">
+      <widget class="QLineEdit" name="txtSearch_8">
        <property name="geometry">
         <rect>
-         <x>590</x>
+         <x>85</x>
          <y>70</y>
-         <width>91</width>
+         <width>180</width>
          <height>28</height>
         </rect>
        </property>
-       <property name="text">
-        <string>Search</string>
+       <property name="placeholderText">
+        <string>Enter drug name/ID</string>
        </property>
-      </widget>
-      <widget class="QTableWidget" name="tblPatient_2">
-       <property name="geometry">
-        <rect>
-         <x>30</x>
-         <y>130</y>
-         <width>791</width>
-         <height>241</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color:black;</string>
-       </property>
-       <attribute name="horizontalHeaderDefaultSectionSize">
-        <number>129</number>
-       </attribute>
-       <row/>
-       <row/>
-       <row/>
-       <column>
-        <property name="text">
-         <string>Drug ID</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Drug Name </string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Unit </string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Price</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Stock </string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Status</string>
-        </property>
-       </column>
       </widget>
       <widget class="QLabel" name="label_43">
        <property name="geometry">
         <rect>
-         <x>330</x>
+         <x>280</x>
          <y>70</y>
-         <width>131</width>
-         <height>20</height>
+         <width>90</width>
+         <height>28</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>14</pointsize>
+         <pointsize>11</pointsize>
         </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color:black;</string>
        </property>
        <property name="text">
         <string>Stock status</string>
@@ -1640,9 +1497,9 @@ QHeaderView::section {
       <widget class="QComboBox" name="comboBox_3">
        <property name="geometry">
         <rect>
-         <x>470</x>
+         <x>375</x>
          <y>70</y>
-         <width>82</width>
+         <width>110</width>
          <height>28</height>
         </rect>
        </property>
@@ -1667,25 +1524,81 @@ QHeaderView::section {
         </property>
        </item>
       </widget>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="btnSearch_14">
        <property name="geometry">
         <rect>
-         <x>689</x>
-         <y>380</y>
-         <width>111</width>
-         <height>29</height>
+         <x>500</x>
+         <y>70</y>
+         <width>91</width>
+         <height>28</height>
         </rect>
        </property>
        <property name="text">
-        <string>Stock History</string>
+        <string>🔍 Search</string>
        </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton">
+       <property name="geometry">
+        <rect>
+         <x>719</x>
+         <y>70</y>
+         <width>141</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>📜 Stock History</string>
+       </property>
+      </widget>
+      <widget class="QTableWidget" name="tblPatient_2">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>120</y>
+         <width>830</width>
+         <height>340</height>
+        </rect>
+       </property>
+       <attribute name="horizontalHeaderDefaultSectionSize">
+        <number>129</number>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>Drug ID</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Drug Name</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Unit</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Price</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Stock</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Status</string>
+        </property>
+       </column>
       </widget>
       <widget class="QSplitter" name="splitter_3">
        <property name="geometry">
         <rect>
          <x>30</x>
-         <y>380</y>
-         <width>411</width>
+         <y>480</y>
+         <width>500</width>
          <height>29</height>
         </rect>
        </property>
@@ -1694,45 +1607,101 @@ QHeaderView::section {
        </property>
        <widget class="QPushButton" name="btnSearch_15">
         <property name="text">
-         <string>Update </string>
+         <string>✏️ Update</string>
         </property>
        </widget>
        <widget class="QPushButton" name="btnSearch_16">
         <property name="text">
-         <string>Edit</string>
+         <string>✏️ Edit</string>
         </property>
        </widget>
        <widget class="QPushButton" name="btnSearch_17">
         <property name="text">
-         <string>Delete</string>
+         <string>🗑️ Delete</string>
         </property>
        </widget>
        <widget class="QPushButton" name="btnSearch_18">
         <property name="text">
-         <string>Refresh</string>
+         <string>🔄 Refresh</string>
         </property>
        </widget>
       </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="pageProfile">
-     <widget class="QFrame" name="Profile">
+     <widget class="QFrame" name="frameProfile">
       <property name="geometry">
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>851</width>
-        <height>441</height>
+        <width>911</width>
+        <height>550</height>
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">QFrame{
-    background:white;
-    border-radius:10px;
+       <string notr="true">QFrame#frameProfile {
+    background-color: rgb(30, 41, 59);
+    border-radius: 10px;
+}
+QLabel {
+    color: rgb(241, 245, 249);
+}
+QLineEdit, QDateEdit {
+    background-color: rgb(15, 23, 42);
+    border: 1px solid rgb(71, 85, 105);
+    border-radius: 6px;
+    color: rgb(241, 245, 249);
+    padding: 4px 8px;
+}
+QLineEdit:focus, QDateEdit:focus {
+    border: 1px solid rgb(6, 182, 212);
+}
+QTableWidget {
+    background-color: rgb(15, 23, 42);
+    color: rgb(226, 232, 240);
+    gridline-color: rgb(51, 65, 85);
+    border: 1px solid rgb(51, 65, 85);
+    border-radius: 8px;
+}
+QHeaderView::section {
+    background-color: rgb(30, 41, 59);
+    color: rgb(6, 182, 212);
+    padding: 6px;
+    font-weight: bold;
+    border: none;
+    border-bottom: 2px solid rgb(51, 65, 85);
+}
+QTabWidget::pane {
+    border: 1px solid rgb(51, 65, 85);
+    background: rgb(30, 41, 59);
+    border-radius: 6px;
+}
+QTabBar::tab {
+    background: rgb(15, 23, 42);
+    color: rgb(148, 163, 184);
+    padding: 6px 12px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    margin-right: 2px;
+}
+QTabBar::tab:selected, QTabBar::tab:hover {
+    background: rgb(30, 41, 59);
+    color: white;
+}
+QTabBar::tab:selected {
+    border-bottom: 2px solid rgb(6, 182, 212);
+}
+QPushButton {
+    background-color: rgb(6, 182, 212);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-weight: bold;
+}
+QPushButton:hover {
+    background-color: rgb(8, 145, 178);
 }</string>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::Shape::NoFrame</enum>
       </property>
       <widget class="QLabel" name="lblTitle_6">
        <property name="geometry">
@@ -1745,12 +1714,12 @@ QHeaderView::section {
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>18</pointsize>
          <bold>true</bold>
         </font>
        </property>
        <property name="styleSheet">
-        <string notr="true">color:black;</string>
+        <string notr="true">color: rgb(6, 182, 212);</string>
        </property>
        <property name="text">
         <string>My Profile</string>
@@ -1760,9 +1729,9 @@ QHeaderView::section {
        <property name="geometry">
         <rect>
          <x>30</x>
-         <y>70</y>
-         <width>801</width>
-         <height>351</height>
+         <y>80</y>
+         <width>850</width>
+         <height>430</height>
         </rect>
        </property>
        <property name="currentIndex">
@@ -1770,159 +1739,144 @@ QHeaderView::section {
        </property>
        <widget class="QWidget" name="tab_6">
         <attribute name="title">
-         <string>My Infomation</string>
+         <string>My Information</string>
         </attribute>
         <widget class="QLabel" name="label_24">
          <property name="geometry">
           <rect>
-           <x>530</x>
-           <y>60</y>
-           <width>221</width>
-           <height>181</height>
+           <x>450</x>
+           <y>30</y>
+           <width>220</width>
+           <height>220</height>
           </rect>
          </property>
-         <property name="layoutDirection">
-          <enum>Qt::LayoutDirection::LeftToRight</enum>
-         </property>
          <property name="styleSheet">
-          <string notr="true">color:black;</string>
+          <string notr="true">border: 2px dashed rgb(71, 85, 105);
+border-radius: 10px;
+background-color: rgb(15, 23, 42);
+color: rgb(148, 163, 184);</string>
          </property>
          <property name="text">
           <string>AVATAR</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_25">
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>30</y>
+           <width>100</width>
+           <height>28</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>ID</string>
          </property>
         </widget>
         <widget class="QLineEdit" name="lineEdit_2">
          <property name="geometry">
           <rect>
-           <x>140</x>
-           <y>50</y>
-           <width>191</width>
+           <x>150</x>
+           <y>30</y>
+           <width>200</width>
+           <height>28</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_26">
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>80</y>
+           <width>100</width>
            <height>28</height>
           </rect>
          </property>
          <property name="text">
-          <string>12</string>
+          <string>Full Name</string>
          </property>
         </widget>
         <widget class="QLineEdit" name="lineEdit_3">
          <property name="geometry">
           <rect>
-           <x>140</x>
-           <y>100</y>
-           <width>191</width>
+           <x>150</x>
+           <y>80</y>
+           <width>200</width>
+           <height>28</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_27">
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>130</y>
+           <width>100</width>
            <height>28</height>
           </rect>
          </property>
          <property name="text">
-          <string>12</string>
+          <string>Gender</string>
          </property>
         </widget>
         <widget class="QLineEdit" name="lineEdit_4">
          <property name="geometry">
           <rect>
-           <x>140</x>
-           <y>150</y>
-           <width>191</width>
+           <x>150</x>
+           <y>130</y>
+           <width>200</width>
+           <height>28</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_28">
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>180</y>
+           <width>100</width>
            <height>28</height>
           </rect>
          </property>
          <property name="text">
-          <string>12</string>
+          <string>Date of Birth</string>
          </property>
         </widget>
         <widget class="QLineEdit" name="lineEdit_5">
          <property name="geometry">
           <rect>
-           <x>140</x>
-           <y>210</y>
-           <width>191</width>
+           <x>150</x>
+           <y>180</y>
+           <width>200</width>
+           <height>28</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_29">
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>230</y>
+           <width>100</width>
            <height>28</height>
           </rect>
          </property>
          <property name="text">
-          <string>12</string>
+          <string>Phone Number:</string>
          </property>
         </widget>
         <widget class="QLineEdit" name="lineEdit_6">
          <property name="geometry">
           <rect>
-           <x>140</x>
-           <y>260</y>
-           <width>191</width>
+           <x>150</x>
+           <y>230</y>
+           <width>200</width>
            <height>28</height>
           </rect>
          </property>
-         <property name="text">
-          <string>12</string>
-         </property>
-        </widget>
-        <widget class="QSplitter" name="splitter">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>40</y>
-           <width>102</width>
-           <height>251</height>
-          </rect>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Orientation::Vertical</enum>
-         </property>
-         <widget class="QLabel" name="label_25">
-          <property name="layoutDirection">
-           <enum>Qt::LayoutDirection::LeftToRight</enum>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">color:black;</string>
-          </property>
-          <property name="text">
-           <string> ID</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_26">
-          <property name="layoutDirection">
-           <enum>Qt::LayoutDirection::LeftToRight</enum>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">color:black;</string>
-          </property>
-          <property name="text">
-           <string>Full Name </string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_27">
-          <property name="layoutDirection">
-           <enum>Qt::LayoutDirection::LeftToRight</enum>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">color:black;</string>
-          </property>
-          <property name="text">
-           <string>Gender           </string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_28">
-          <property name="layoutDirection">
-           <enum>Qt::LayoutDirection::LeftToRight</enum>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">color:black;</string>
-          </property>
-          <property name="text">
-           <string>Date of Birth </string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_29">
-          <property name="layoutDirection">
-           <enum>Qt::LayoutDirection::LeftToRight</enum>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">color:black;</string>
-          </property>
-          <property name="text">
-           <string>Phone Number:</string>
-          </property>
-         </widget>
         </widget>
        </widget>
        <widget class="QWidget" name="tab_7">
@@ -1932,14 +1886,11 @@ QHeaderView::section {
         <widget class="QLabel" name="label_30">
          <property name="geometry">
           <rect>
-           <x>300</x>
-           <y>10</y>
-           <width>63</width>
-           <height>20</height>
+           <x>30</x>
+           <y>20</y>
+           <width>60</width>
+           <height>28</height>
           </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">color:black;</string>
          </property>
          <property name="text">
           <string>ROLE</string>
@@ -1948,34 +1899,34 @@ QHeaderView::section {
         <widget class="QLineEdit" name="lineEdit_7">
          <property name="geometry">
           <rect>
-           <x>400</x>
-           <y>10</y>
-           <width>113</width>
+           <x>100</x>
+           <y>20</y>
+           <width>120</width>
            <height>28</height>
           </rect>
          </property>
          <property name="text">
           <string>Receptionist</string>
          </property>
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
         </widget>
-        <widget class="QTableWidget" name="tableWidget_3">
+        <widget class="QTableWidget" name="tblMyPermissions">
          <property name="geometry">
           <rect>
-           <x>190</x>
-           <y>50</y>
+           <x>30</x>
+           <y>70</y>
            <width>401</width>
-           <height>231</height>
+           <height>280</height>
           </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">color:black;</string>
          </property>
          <attribute name="horizontalHeaderDefaultSectionSize">
           <number>200</number>
          </attribute>
          <column>
           <property name="text">
-           <string>Permissiom</string>
+           <string>Permission</string>
           </property>
          </column>
          <column>
@@ -1992,79 +1943,70 @@ QHeaderView::section {
         <widget class="QLabel" name="label_31">
          <property name="geometry">
           <rect>
-           <x>40</x>
-           <y>30</y>
-           <width>63</width>
-           <height>20</height>
+           <x>30</x>
+           <y>20</y>
+           <width>60</width>
+           <height>28</height>
           </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">color:black;</string>
          </property>
          <property name="text">
           <string>From:</string>
          </property>
         </widget>
+        <widget class="QDateEdit" name="dateEdit_2">
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>50</y>
+           <width>120</width>
+           <height>28</height>
+          </rect>
+         </property>
+        </widget>
         <widget class="QLabel" name="label_32">
          <property name="geometry">
           <rect>
-           <x>40</x>
+           <x>30</x>
            <y>100</y>
-           <width>63</width>
-           <height>20</height>
+           <width>60</width>
+           <height>28</height>
           </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">color:black;</string>
          </property>
          <property name="text">
           <string>To:</string>
          </property>
         </widget>
-        <widget class="QDateEdit" name="dateEdit_2">
-         <property name="geometry">
-          <rect>
-           <x>40</x>
-           <y>60</y>
-           <width>110</width>
-           <height>29</height>
-          </rect>
-         </property>
-        </widget>
         <widget class="QDateEdit" name="dateEdit_3">
          <property name="geometry">
           <rect>
-           <x>40</x>
+           <x>30</x>
            <y>130</y>
-           <width>110</width>
-           <height>29</height>
+           <width>120</width>
+           <height>28</height>
           </rect>
          </property>
         </widget>
-        <widget class="QPushButton" name="pushButton_7">
+        <widget class="QPushButton" name="btnSearchActivity">
          <property name="geometry">
           <rect>
-           <x>40</x>
-           <y>190</y>
-           <width>90</width>
-           <height>29</height>
+           <x>30</x>
+           <y>180</y>
+           <width>120</width>
+           <height>32</height>
           </rect>
          </property>
          <property name="text">
-          <string>Search</string>
+          <string>🔍 Search</string>
          </property>
         </widget>
-        <widget class="QTableWidget" name="tableWidget_4">
+        <widget class="QTableWidget" name="tblMyActivity">
          <property name="geometry">
           <rect>
-           <x>240</x>
+           <x>200</x>
            <y>20</y>
-           <width>521</width>
-           <height>271</height>
+           <width>511</width>
+           <height>330</height>
           </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">color:black;</string>
          </property>
          <attribute name="horizontalHeaderDefaultSectionSize">
           <number>129</number>
@@ -2081,7 +2023,7 @@ QHeaderView::section {
          </column>
          <column>
           <property name="text">
-           <string>Action   </string>
+           <string>Action</string>
           </property>
          </column>
          <column>
@@ -2094,82 +2036,6 @@ QHeaderView::section {
       </widget>
      </widget>
     </widget>
-   </widget>
-   <widget class="QPushButton" name="btnPatients">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>270</y>
-      <width>201</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>  Create Medical Records     </string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnDoctors">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>450</y>
-      <width>201</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>My Profile</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnDashboard">
-    <property name="geometry">
-     <rect>
-      <x>41</x>
-      <y>215</y>
-      <width>201</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string> Patient Management </string>
-    </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnPatients_2">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>330</y>
-      <width>201</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Invoice Management </string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnPatients_3">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>390</y>
-      <width>201</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Drug Management </string>
-    </property>
    </widget>
   </widget>
  </widget>
