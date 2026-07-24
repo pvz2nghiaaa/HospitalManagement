@@ -1,7 +1,5 @@
 #pragma once
 #include <QString>
-#include "user.h"
-#include "permission.h"
 
 enum class RoleTemplate
 {
@@ -14,5 +12,6 @@ class Admin
 {
 public:
     Admin();
-    static bool createNewAccount(QString username, QString password, QString fullName, QString phone, RoleTemplate roleTemp);
+    static bool createNewAccount(QString username, QString password, QString fullName,
+                                 QString phone, RoleTemplate roleTemp);
 };

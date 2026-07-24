@@ -2,7 +2,7 @@
 #include <QDebug>
 
 Doctor::Doctor(int nID, QString username, QString password, QString fullName, QString phone, bool isActive)
-    : User(nID, username, password, fullName, phone, isActive)
+    : User(nID, username, password, fullName, phone, isActive, "Doctor")
 {
 
     this->appendPermission(Permission(Permission::createRecord));

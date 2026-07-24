@@ -1,6 +1,8 @@
 #include "admin.h"
 #include <QDebug>
 #include <QVariant>
+#include "permission.h"
+#include "user.h"
 
 Admin::Admin() {}
 

@@ -31,10 +31,18 @@ private slots:
 
     void on_btnLogout_clicked();
 
+    void updateDashboardInfo();
+
+    // Overlay form helpers and slots
+    void on_btnAddStaff_clicked();
+    void on_btnAddStaffQuick_clicked();
+    void on_btnCancelNewStaff_clicked();
+    void on_btnSaveNewStaff_clicked();
+    void showOverlayForm();
+    void hideOverlayForm();
+
 private:
     Ui::AdminWindow *ui;
-
-    void updateDashboardInfo();
 };
 
 #endif // ADMINWINDOW_H

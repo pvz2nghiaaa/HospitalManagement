@@ -60,6 +60,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         medicalrecord.h
         diagnosis.h
         prescriptiondetail.h
+        admin.h admin.cpp
+        doctor.h doctor.cpp
+        receptionist.h receptionist.cpp
 
 
         ReceptionistWindow.ui DoctorWindow.ui

@@ -1822,6 +1822,277 @@ QPushButton:hover {
      </widget>
     </widget>
    </widget>
+   <widget class="QFrame" name="overlayFrame">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>1227</width>
+      <height>736</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QFrame#overlayFrame {
+    background-color: rgba(15, 23, 42, 0.65);
+}</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Shape::NoFrame</enum>
+    </property>
+    <widget class="QFrame" name="cardCreateStaff">
+     <property name="geometry">
+      <rect>
+       <x>388</x>
+       <y>158</y>
+       <width>450</width>
+       <height>420</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QFrame#cardCreateStaff {
+    background-color: rgb(30, 41, 59);
+    border: 1px solid rgb(51, 65, 85);
+    border-radius: 16px;
+}
+QLabel {
+    color: rgb(226, 232, 240);
+    font-size: 13px;
+    font-weight: bold;
+}
+QLineEdit, QComboBox {
+    background-color: rgb(15, 23, 42);
+    border: 1px solid rgb(71, 85, 105);
+    border-radius: 6px;
+    color: rgb(241, 245, 249);
+    padding: 6px 10px;
+    font-size: 13px;
+}
+QLineEdit:focus, QComboBox:focus {
+    border: 1px solid rgb(6, 182, 212);
+}</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Shape::StyledPanel</enum>
+     </property>
+     <widget class="QLabel" name="lblCreateTitle">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>25</y>
+        <width>390</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(6, 182, 212);</string>
+      </property>
+      <property name="text">
+       <string>Register New Staff</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblNewUser">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>70</y>
+        <width>390</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Username</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtNewUsername">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>95</y>
+        <width>390</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="placeholderText">
+       <string>Enter username</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblNewPass">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>140</y>
+        <width>390</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Password</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtNewPassword">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>165</y>
+        <width>390</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="echoMode">
+       <enum>QLineEdit::EchoMode::Password</enum>
+      </property>
+      <property name="placeholderText">
+       <string>Enter password</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblNewName">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>210</y>
+        <width>390</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Full Name</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtNewFullName">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>235</y>
+        <width>390</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="placeholderText">
+       <string>Enter full name</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblNewPhone">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>280</y>
+        <width>190</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Phone Number</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtNewPhone">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>305</y>
+        <width>190</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="placeholderText">
+       <string>Enter phone number</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblNewRole">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>280</y>
+        <width>180</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Role</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="cbNewRole">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>305</y>
+        <width>180</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>Doctor</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Receptionist</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Admin</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QPushButton" name="btnCancelNewStaff">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>360</y>
+        <width>180</width>
+        <height>38</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: transparent;
+    border: 1px solid rgb(239, 68, 68);
+    color: rgb(239, 68, 68);
+    font-weight: bold;
+    border-radius: 6px;
+}
+QPushButton:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+}</string>
+      </property>
+      <property name="text">
+       <string>Cancel</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnSaveNewStaff">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>360</y>
+        <width>180</width>
+        <height>38</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: rgb(6, 182, 212);
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+}
+QPushButton:hover {
+    background-color: rgb(8, 145, 178);
+}</string>
+      </property>
+      <property name="text">
+       <string>Create Account</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
   </widget>
  </widget>
  <resources/>

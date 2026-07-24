@@ -7,12 +7,17 @@
 #include "patient.h"
 #include "medicalrecord.h"
 #include "invoice.h"
+#include <QGraphicsBlurEffect>
+#include <QGraphicsOpacityEffect>
+#include <QPropertyAnimation>
+#include "admin.h"
 
 AdminWindow::AdminWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::AdminWindow)
 {
     ui->setupUi(this);
+    ui->overlayFrame->hide(); // Hide overlay by default
     navigateToPage(0, ui->btnDashboard);
     updateDashboardInfo();
 
@@ -92,5 +97,116 @@ void AdminWindow::updateDashboardInfo() {
     ui->totalPatients->setText(QString::number(Patient::GetTotalPatients()));
     ui->totalRecords->setText(QString::number(MedicalRecord::GetTotalRecord()));
     ui->totalInvoices->setText(QString::number(Invoice::GetTotalInvoices()));
+}
+
+void AdminWindow::on_btnAddStaff_clicked() {
+    showOverlayForm();
+}
+
+void AdminWindow::on_btnAddStaffQuick_clicked() {
+    showOverlayForm();
+}
+
+void AdminWindow::on_btnCancelNewStaff_clicked() {
+    hideOverlayForm();
+}
+
+void AdminWindow::on_btnSaveNewStaff_clicked() {
+    QString username = ui->txtNewUsername->text().trimmed();
+    QString password = ui->txtNewPassword->text();
+    QString fullName = ui->txtNewFullName->text().trimmed();
+    QString phone = ui->txtNewPhone->text().trimmed();
+    
+    if (username.isEmpty() || password.isEmpty() || fullName.isEmpty()) {
+        QMessageBox::warning(this, "Validation Error", "Username, Password, and Full Name are required.");
+        return;
+    }
+
+    RoleTemplate role = RoleTemplate::DoctorTemplate;
+    if (ui->cbNewRole->currentText() == "Receptionist") {
+        role = RoleTemplate::ReceptionistTemplate;
+    } else if (ui->cbNewRole->currentText() == "Admin") {
+        role = RoleTemplate::AdminTemplate;
+    }
+
+    // Call backend
+    bool success = Admin::createNewAccount(username, password, fullName, phone, role);
+    if (success) {
+        QMessageBox::information(this, "Success", "Staff account created successfully!");
+        updateDashboardInfo();
+        
+        // Reset fields
+        ui->txtNewUsername->clear();
+        ui->txtNewPassword->clear();
+        ui->txtNewFullName->clear();
+        ui->txtNewPhone->clear();
+        ui->cbNewRole->setCurrentIndex(0);
+        
+        hideOverlayForm();
+    } else {
+        QMessageBox::critical(this, "Error", "Failed to create staff account. The username might already be in use.");
+    }
+}
+
+void AdminWindow::showOverlayForm() {
+    // 1. Create separate blur objects for each background element (no stealing)
+    QGraphicsBlurEffect *blurSidebar = new QGraphicsBlurEffect(this);
+    blurSidebar->setBlurRadius(8);
+    ui->layoutWidget->setGraphicsEffect(blurSidebar);
+
+    QGraphicsBlurEffect *blurBrand = new QGraphicsBlurEffect(this);
+    blurBrand->setBlurRadius(8);
+    ui->lblBrand->setGraphicsEffect(blurBrand);
+
+    QGraphicsBlurEffect *blurWelcome = new QGraphicsBlurEffect(this);
+    blurWelcome->setBlurRadius(8);
+    ui->lblWelcome->setGraphicsEffect(blurWelcome);
+
+    QGraphicsBlurEffect *blurLogout = new QGraphicsBlurEffect(this);
+    blurLogout->setBlurRadius(8);
+    ui->btnLogout->setGraphicsEffect(blurLogout);
+
+    QGraphicsBlurEffect *blurContent = new QGraphicsBlurEffect(this);
+    blurContent->setBlurRadius(8);
+    ui->stackedWidget->setGraphicsEffect(blurContent);
+
+    QGraphicsBlurEffect *blurTitle = new QGraphicsBlurEffect(this);
+    blurTitle->setBlurRadius(8);
+    ui->lblTitle->setGraphicsEffect(blurTitle);
+
+    QGraphicsBlurEffect *blurAdmin = new QGraphicsBlurEffect(this);
+    blurAdmin->setBlurRadius(8);
+    ui->lblAdmin->setGraphicsEffect(blurAdmin);
+
+    // 2. Clear any active graphics effect on the overlay so it stays sharp
+    ui->overlayFrame->setGraphicsEffect(nullptr);
+
+    // 3. Show overlay frame (raised to top)
+    ui->overlayFrame->show();
+    ui->overlayFrame->raise();
+
+    // 4. Setup opacity animation for smooth fade-in
+    QGraphicsOpacityEffect *opacityEffect = new QGraphicsOpacityEffect(ui->overlayFrame);
+    ui->overlayFrame->setGraphicsEffect(opacityEffect);
+
+    QPropertyAnimation *fadeAnimation = new QPropertyAnimation(opacityEffect, "opacity");
+    fadeAnimation->setDuration(300);
+    fadeAnimation->setStartValue(0.0);
+    fadeAnimation->setEndValue(1.0);
+    fadeAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void AdminWindow::hideOverlayForm() {
+    // 1. Remove all background blurs
+    ui->layoutWidget->setGraphicsEffect(nullptr);
+    ui->lblBrand->setGraphicsEffect(nullptr);
+    ui->lblWelcome->setGraphicsEffect(nullptr);
+    ui->btnLogout->setGraphicsEffect(nullptr);
+    ui->stackedWidget->setGraphicsEffect(nullptr);
+    ui->lblTitle->setGraphicsEffect(nullptr);
+    ui->lblAdmin->setGraphicsEffect(nullptr);
+
+    // 2. Hide overlay
+    ui->overlayFrame->hide();
 }
 

@@ -17,6 +17,7 @@ private:
     QString PhoneNumber;
     bool IsActive;
     QString Role;
+protected:
     User(int nID,
          QString Username,
          QString EncryptedPassword,
