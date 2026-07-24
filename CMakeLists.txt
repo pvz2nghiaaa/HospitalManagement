@@ -22,6 +22,12 @@ set(PROJECT_SOURCES
         user.cpp
         attendancelog.h
         attendancelog.cpp
+        drug.h
+        drug.cpp
+        prescription.h
+        prescription.cpp
+        diagnosis.h
+        diagnosis.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -33,6 +39,12 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         adminwindow.cpp
         medicalrecord.h
         medicalrecord.cpp
+        drug.h
+        drug.cpp
+        prescription.h
+        prescription.cpp
+        diagnosis.h
+        diagnosis.cpp
         recordmanager.h
         recordmanager.cpp
         loginwindow.h loginwindow.cpp LoginWindow.ui
