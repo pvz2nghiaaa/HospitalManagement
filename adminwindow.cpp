@@ -4,6 +4,7 @@
 #include "LoginWindow.h"
 #include "user.h"
 #include <QTimer>
+#include "patient.h"
 
 AdminWindow::AdminWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -86,5 +87,6 @@ void AdminWindow::on_btnLogout_clicked()
 
 void AdminWindow::updateDashboardInfo() {
     ui->totalStaff->setText(QString::number(User::GetTotalStaff()));
+    ui->totalPatients->setText(QString::number(Patient::GetTotalPatients()));
 }
 

@@ -6,4 +6,12 @@ public:
                       "ID INTEGER PRIMARY KEY AUTOINCREMENT, "
                       "FullName TEXT, BirthDate TEXT, Sex TEXT, Address TEXT)");
     }
+    static int GetTotalPatients(){
+        QSqlQuery query;
+        query.prepare("SELECT COUNT(*) AS totalPatients FROM Patients");
+        if (query.exec() && query.next()){
+            return query.value("totalPatients").toInt();
+        }
+        return 0;
+    }
 };
