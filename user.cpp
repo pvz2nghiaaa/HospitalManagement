@@ -4,9 +4,9 @@ User::User() {}
 
 
 User::User(int nID, QString nUsername, QString nEncryptedPassword,
-           QString nFullName, QString nPhoneNumber, bool nIsActive):
+           QString nFullName, QString nPhoneNumber, bool nIsActive, QString role):
     ID(nID), Username(nUsername), EncryptedPassword(nEncryptedPassword),
-    FullName(nFullName), PhoneNumber(nPhoneNumber), IsActive(nIsActive){}
+    FullName(nFullName), PhoneNumber(nPhoneNumber), IsActive(nIsActive), Role(role){}
 
 bool User::initTable(){
     static bool UserLoaded = false;
@@ -18,6 +18,7 @@ bool User::initTable(){
                                       "EncryptedPassword TEXT NOT NULL, "
                                       "FullName TEXT NOT NULL, "
                                       "PhoneNumber TEXT, "
+                                      "Role TEXT, "
                                       "IsActive BOOLEAN DEFAULT TRUE NOT NULL)");
         if (!UserLoaded) {
             qDebug() << "Failed to create User table:" << query.lastError().text();
@@ -46,7 +47,8 @@ bool User::login(QString nUsername, QString nPassword) {
             .SetEncryptedPassword(query.value("EncryptedPassword").toString())
             .SetFullName(query.value("FullName").toString())
             .SetPhoneNumber(query.value("PhoneNumber").toString())
-            .SetIsActive(query.value("IsActive").toBool());
+            .SetIsActive(query.value("IsActive").toBool())
+            .SetRole(query.value("Role").toString());
         if (GetActiveUser().GetIsActive() && GetActiveUser().UpdatePermissionFromDatabase())
             return true;
         logout();
@@ -116,6 +118,10 @@ User& User::SetIsActive(bool nIsActive){
     IsActive = nIsActive;
     return *this;
 }
+User& User::SetRole(QString role){
+    Role = role;
+    return *this;
+}
 int User::GetID(){
     return ID;
 }
@@ -133,4 +139,7 @@ QString User::GetPhoneNumber() {
 }
 bool User::GetIsActive() {
     return IsActive;
+}
+QString User::GetRole() {
+    return Role;
 }

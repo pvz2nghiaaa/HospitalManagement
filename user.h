@@ -16,12 +16,14 @@ private:
     QString FullName;
     QString PhoneNumber;
     bool IsActive;
+    QString Role;
     User(int nID,
          QString Username,
          QString EncryptedPassword,
          QString FullName,
          QString PhoneNumber,
-         bool IsActive);
+         bool IsActive,
+         QString Role);
     User();
 public:
     static bool initTable();
@@ -39,6 +41,7 @@ public:
     User& SetFullName(QString nFullName);
     User& SetPhoneNumber(QString nPhoneNumber);
     User& SetIsActive(bool nIsActive);
+    User& SetRole(QString role);
     bool UpdatePermissionFromDatabase();
     // get methods
     int GetID();
@@ -47,6 +50,7 @@ public:
     QString GetFullName();
     QString GetPhoneNumber();
     bool GetIsActive();
+    QString GetRole();
     // prevent copy and assignment constructors
     User(const User&) = delete;
     User& operator=(const User&) = delete;
