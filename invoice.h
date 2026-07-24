@@ -28,6 +28,7 @@ public:
     static bool initTable();
     int getInvoiceID() const;
     void markAsPaid();
+    static int GetTotalInvoices();
 };
 
 #endif // INVOICE_H

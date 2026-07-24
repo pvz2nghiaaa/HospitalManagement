@@ -6,6 +6,7 @@
 #include <QTimer>
 #include "patient.h"
 #include "medicalrecord.h"
+#include "invoice.h"
 
 AdminWindow::AdminWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -90,5 +91,6 @@ void AdminWindow::updateDashboardInfo() {
     ui->totalStaff->setText(QString::number(User::GetTotalStaff()));
     ui->totalPatients->setText(QString::number(Patient::GetTotalPatients()));
     ui->totalRecords->setText(QString::number(MedicalRecord::GetTotalRecord()));
+    ui->totalInvoices->setText(QString::number(Invoice::GetTotalInvoices()));
 }
 

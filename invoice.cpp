@@ -39,6 +39,14 @@ bool Invoice::initTable() {
     }
     return success;
 }
+int Invoice::GetTotalInvoices(){
+    QSqlQuery query;
+    query.prepare("SELECT COUNT(*) AS cnt FROM Invoices");
+    if (query.exec() && query.next())
+        return query.value("cnt").toInt();
+    qDebug() << "Failed to count number of invoices from Invoices";
+    return 0;
+}
 void Invoice::autoGenerateItems() {
     QSqlQuery query;
 
