@@ -43,6 +43,16 @@ bool MedicalRecord::MarkComplete() {
     return true;
 }
 
+int MedicalRecord::GetTotalRecord(){
+    QSqlQuery query;
+    query.prepare("SELECT COUNT(*) AS records FROM MedicalRecords");
+    if (query.exec() && query.next()){
+        return query.value("records").toInt();
+    }
+    qDebug() << "Failed to get total records from MedicalRecords";
+    return 0;
+}
+
 // Setters
 MedicalRecord& MedicalRecord::SetRecordID(int nRecordID) { RecordID = nRecordID; return *this; }
 MedicalRecord& MedicalRecord::SetDate(QString nDate) { Date = nDate; return *this; }

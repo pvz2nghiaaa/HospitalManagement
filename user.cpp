@@ -1,4 +1,5 @@
 #include "user.h"
+#include <QDebug>
 
 User::User() {}
 
@@ -72,6 +73,7 @@ int User::GetTotalStaff(){
     if (query.exec() && query.next()){
         return query.value("valid_staffs").toInt();
     }
+    qDebug() << "Failed to get total staff from User";
     return 0;
 }
 

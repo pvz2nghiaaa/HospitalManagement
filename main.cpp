@@ -66,6 +66,76 @@ bool setupDatabase() {
 
 
 
+void insertSampleData() {
+    QSqlQuery query;
+    // Insert Admin
+    query.prepare("INSERT INTO User (Username, EncryptedPassword, FullName, PhoneNumber, Role, IsActive) "
+                  "VALUES (:user, :pass, :name, :phone, :role, 1)");
+    query.bindValue(":user", "admin");
+    query.bindValue(":pass", "admin");
+    query.bindValue(":name", "Default Admin");
+    query.bindValue(":phone", "123456789");
+    query.bindValue(":role", "Admin");
+    if (query.exec()) {
+        int adminId = query.lastInsertId().toInt();
+        QList<Permission::Type> adminPerms = {
+            Permission::viewLog, Permission::addLog, Permission::changePermission, Permission::manageUsers, Permission::viewRecord
+        };
+        for (Permission::Type p : adminPerms) {
+            QSqlQuery permQuery;
+            permQuery.prepare("INSERT INTO Permission (UserID, PermissionType) VALUES (:uid, :ptype)");
+            permQuery.bindValue(":uid", adminId);
+            permQuery.bindValue(":ptype", static_cast<int>(p));
+            permQuery.exec();
+        }
+    }
+
+    // Insert Doctor
+    query.prepare("INSERT INTO User (Username, EncryptedPassword, FullName, PhoneNumber, Role, IsActive) "
+                  "VALUES (:user, :pass, :name, :phone, :role, 1)");
+    query.bindValue(":user", "doctor");
+    query.bindValue(":pass", "doctor");
+    query.bindValue(":name", "Dr. John Doe");
+    query.bindValue(":phone", "987654321");
+    query.bindValue(":role", "Doctor");
+    if (query.exec()) {
+        int doctorId = query.lastInsertId().toInt();
+        QList<Permission::Type> docPerms = {
+            Permission::createRecord, Permission::viewRecord, Permission::editRecord, Permission::manageDrugs
+        };
+        for (Permission::Type p : docPerms) {
+            QSqlQuery permQuery;
+            permQuery.prepare("INSERT INTO Permission (UserID, PermissionType) VALUES (:uid, :ptype)");
+            permQuery.bindValue(":uid", doctorId);
+            permQuery.bindValue(":ptype", static_cast<int>(p));
+            permQuery.exec();
+        }
+    }
+
+    // Insert Receptionist
+    query.prepare("INSERT INTO User (Username, EncryptedPassword, FullName, PhoneNumber, Role, IsActive) "
+                  "VALUES (:user, :pass, :name, :phone, :role, 1)");
+    query.bindValue(":user", "receptionist");
+    query.bindValue(":pass", "receptionist");
+    query.bindValue(":name", "Sarah Smith");
+    query.bindValue(":phone", "555123456");
+    query.bindValue(":role", "Receptionist");
+    if (query.exec()) {
+        int recId = query.lastInsertId().toInt();
+        QList<Permission::Type> recPerms = {
+            Permission::createPatient, Permission::editPatient, Permission::viewRecord, Permission::createInvoice, Permission::viewInvoice
+        };
+        for (Permission::Type p : recPerms) {
+            QSqlQuery permQuery;
+            permQuery.prepare("INSERT INTO Permission (UserID, PermissionType) VALUES (:uid, :ptype)");
+            permQuery.bindValue(":uid", recId);
+            permQuery.bindValue(":ptype", static_cast<int>(p));
+            permQuery.exec();
+        }
+    }
+    qDebug() << "=> Sample users and permissions inserted successfully!";
+}
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -73,8 +143,7 @@ int main(int argc, char *argv[])
     if (!setupDatabase()) {
         return -1;
     }
-    // testAttendanceLog();
-    // testBillingProcess();
+    insertSampleData();
     qDebug() << "-------\n";
     LoginWindow w;
     w.show();

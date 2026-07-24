@@ -18,6 +18,7 @@ public:
 
     static bool initTable();
     bool MarkComplete();
+    static int GetTotalRecord();
 
     // Fast set attributes (Meyers' Singleton/Fluent style from User convention)
     MedicalRecord& SetRecordID(int nRecordID);

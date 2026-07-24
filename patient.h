@@ -1,3 +1,6 @@
+#include <QSqlQuery>
+#include <QDebug>
+
 class Patient {
 public:
     static bool initTable() {
@@ -12,6 +15,7 @@ public:
         if (query.exec() && query.next()){
             return query.value("totalPatients").toInt();
         }
+        qDebug() << "Failed to get total patients from Patients";
         return 0;
     }
 };
