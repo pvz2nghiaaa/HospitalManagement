@@ -4,6 +4,8 @@
 #include "user.h"
 #include <QMessageBox>
 #include "receptionistwindow.h"
+#include "adminwindow.h"
+#include "doctorwindow.h"
 
 LoginWindow::LoginWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -26,11 +28,22 @@ void LoginWindow::on_btnLogin_clicked()
 
     if (User::login(username, password)) {
         QMessageBox::information(this, "Welcome", "User: " + username + "\nWelcome to Hospital Management!");
-
-        ReceptionistWindow *adminWin = new ReceptionistWindow();
-        adminWin->setAttribute(Qt::WA_DeleteOnClose);
-        adminWin->show();
-
+        QString roleUser = User::GetActiveUser().GetRole();
+        if (roleUser == "Admin"){
+            AdminWindow *adminWin = new AdminWindow();
+            adminWin->setAttribute(Qt::WA_DeleteOnClose);
+            adminWin->show();
+        }
+        else if (roleUser == "Receptionist"){
+            ReceptionistWindow *receptionistWin = new ReceptionistWindow();
+            receptionistWin->setAttribute(Qt::WA_DeleteOnClose);
+            receptionistWin->show();
+        }
+        else if (roleUser == "Doctor"){
+            DoctorWindow *doctorWin = new DoctorWindow();
+            doctorWin->setAttribute(Qt::WA_DeleteOnClose);
+            doctorWin->show();
+        }
         this->close();
     } else if (username.isEmpty() || password.isEmpty()){
         QMessageBox::warning(this, "Empty fields", "Please enter both username and password.");
