@@ -3,12 +3,11 @@
 #include <QVariant>
 
 
-Profile Doctor::GetMyProfileInfo() {
-    Profile p;
+User Doctor::GetMyProfileInfo() {
 
 
 
-    return p;
+    // return p;
 }
 
 QList<Permission> Doctor::GetMyPermissions() {
@@ -19,8 +18,8 @@ QList<Permission> Doctor::GetMyPermissions() {
     return perms;
 }
 
-QList<ActivityLog> Doctor::SearchMyActivityLogs(const QString& dateFrom, const QString& dateTo) {
-    QList<ActivityLog> logs;
+QList<AttendanceLog> Doctor::SearchMyActivityLogs(const QString& dateFrom, const QString& dateTo) {
+    QList<AttendanceLog> logs;
 
 
 

@@ -20,8 +20,8 @@ MedicalRecord Doctor::GetRecordDetails(int recordId) {
     return record;
 }
 
-QList<PrescriptionItem> Doctor::GetRecordPrescriptions(int recordId) {
-    QList<PrescriptionItem> items;
+QList<Prescription> Doctor::GetRecordPrescriptions(int recordId) {
+    QList<Prescription> items;
 
 
 

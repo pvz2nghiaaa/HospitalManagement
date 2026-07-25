@@ -1,6 +1,10 @@
 #pragma once
 #include "user.h"
 #include "permission.h"
+#include "patient.h"
+#include "prescription.h"
+#include "medicalrecord.h"
+#include "attendancelog.h"
 
 class Doctor : public User{
 public:
@@ -18,15 +22,15 @@ public:
 
     static QList<QString> GetDrugsList();
     static bool AddPrescriptionItem(int recordId, int drugId, int quantity, const QString& instruction);
-    static bool RemovePrescriptionItem(int prescriptionItemId);
-    static bool SavePrescription(int recordId, const QString& dateIssued, const QList<PrescriptionItem>& items);
+    static bool RemovePrescriptionItem(int Prescription);
+    static bool SavePrescription(int recordId, const QString& dateIssued, const QList<Prescription>& items);
 
     static QList<MedicalRecord> SearchRecordsBy(const QString& keyword, const QString& status, const QString& date);
     static MedicalRecord GetRecordDetails(int recordId);
-    static QList<PrescriptionItem> GetRecordPrescriptions(int recordId);
+    static QList<Prescription> GetRecordPrescriptions(int recordId);
     static void PrintRecord(int recordId);
 
-    static Profile GetMyProfileInfo();
+    static User GetMyProfileInfo();
     static QList<Permission> GetMyPermissions();
-    static QList<ActivityLog> SearchMyActivityLogs(const QString& dateFrom, const QString& dateTo);
+    static QList<AttendanceLog> SearchMyActivityLogs(const QString& dateFrom, const QString& dateTo);
 };

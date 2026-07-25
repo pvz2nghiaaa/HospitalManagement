@@ -54,7 +54,7 @@ bool Doctor::RemovePrescriptionItem(int prescriptionItemId) {
     return false;
 }
 
-bool Doctor::SavePrescription(int recordId, const QString& dateIssued, const QList<PrescriptionItem>& items) {
+bool Doctor::SavePrescription(int recordId, const QString& dateIssued, const QList<Prescription>& items) {
 
 
     return false;
