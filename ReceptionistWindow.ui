@@ -347,6 +347,9 @@ QPushButton#btnSearch_4:hover, QPushButton#btnSearch_6:hover {
        <attribute name="horizontalHeaderDefaultSectionSize">
         <number>110</number>
        </attribute>
+       <attribute name="horizontalHeaderStretchLastSection">
+        <bool>true</bool>
+       </attribute>
        <attribute name="verticalHeaderStretchLastSection">
         <bool>false</bool>
        </attribute>
@@ -419,7 +422,7 @@ QPushButton#btnSearch_4:hover, QPushButton#btnSearch_6:hover {
         </property>
        </widget>
       </widget>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <property name="geometry">
         <rect>
          <x>30</x>
