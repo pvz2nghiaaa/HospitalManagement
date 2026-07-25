@@ -52,7 +52,6 @@ private:
 
     QString getDrugStatus(int stockQuantity) const;
 
-    void loadSelectedDrugToEdit(int row);
 
 };
 
