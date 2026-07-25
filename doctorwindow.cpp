@@ -11,7 +11,14 @@ DoctorWindow::DoctorWindow(QWidget *parent)
     ui->setupUi(this);
     ui->lblAdmin->setText("Dr. " + User::GetActiveUser().GetFullName() + " (Online)");
 
+    ui->lineEdit_2->setReadOnly(true); // Doctor ID
+    ui->lineEdit_3->setReadOnly(true); // Full Name
+    ui->lineEdit_4->setReadOnly(true); // Gender
+    ui->lineEdit_5->setReadOnly(true); // Date of Birth
+    ui->lineEdit_6->setReadOnly(true); // Phone Number
     ui->tblMyActivity->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tblMyPermissions->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
     ui->dateEdit_2->setDisplayFormat("dd-MM-yyyy");
     ui->dateEdit_3->setDisplayFormat("dd-MM-yyyy");
     ui->dateEdit_2->setDate(QDate::currentDate().addDays(-30));
