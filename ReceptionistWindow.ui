@@ -335,81 +335,6 @@ QPushButton#btnSearch_4:hover, QPushButton#btnSearch_6:hover {
         <string>Patient Management</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_17">
-       <property name="geometry">
-        <rect>
-         <x>30</x>
-         <y>70</y>
-         <width>50</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Search</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="txtSearch_4">
-       <property name="geometry">
-        <rect>
-         <x>85</x>
-         <y>70</y>
-         <width>150</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="placeholderText">
-        <string>Enter name/ID</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_33">
-       <property name="geometry">
-        <rect>
-         <x>250</x>
-         <y>70</y>
-         <width>50</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Phone</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="txtSearch_6">
-       <property name="geometry">
-        <rect>
-         <x>305</x>
-         <y>70</y>
-         <width>150</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="placeholderText">
-        <string>Enter number</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="btnSearch_4">
-       <property name="geometry">
-        <rect>
-         <x>470</x>
-         <y>70</y>
-         <width>91</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>🔍 Search</string>
-       </property>
-      </widget>
       <widget class="QTableWidget" name="tblPatient">
        <property name="geometry">
         <rect>
@@ -421,6 +346,9 @@ QPushButton#btnSearch_4:hover, QPushButton#btnSearch_6:hover {
        </property>
        <attribute name="horizontalHeaderDefaultSectionSize">
         <number>110</number>
+       </attribute>
+       <attribute name="verticalHeaderStretchLastSection">
+        <bool>false</bool>
        </attribute>
        <column>
         <property name="text">
@@ -490,6 +418,85 @@ QPushButton#btnSearch_4:hover, QPushButton#btnSearch_6:hover {
          <string>🔄 Refresh</string>
         </property>
        </widget>
+      </widget>
+      <widget class="QWidget" name="">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>70</y>
+         <width>781</width>
+         <height>34</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="label_17">
+          <property name="font">
+           <font>
+            <pointsize>11</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>ID</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="txtSearch_4">
+          <property name="placeholderText">
+           <string>Enter ID</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_33">
+          <property name="font">
+           <font>
+            <pointsize>11</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Name</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="txtSearch_6">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="placeholderText">
+           <string>Enter name</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_44">
+          <property name="font">
+           <font>
+            <pointsize>11</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Phone</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="txtSearch_9">
+          <property name="placeholderText">
+           <string>Enter number</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnSearch_4">
+          <property name="text">
+           <string>🔍 Search</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </widget>
