@@ -123,12 +123,7 @@ void AdminWindow::on_btnSaveNewStaff_clicked() {
         return;
     }
 
-    RoleTemplate role = RoleTemplate::DoctorTemplate;
-    if (ui->cbNewRole->currentText() == "Receptionist") {
-        role = RoleTemplate::ReceptionistTemplate;
-    } else if (ui->cbNewRole->currentText() == "Admin") {
-        role = RoleTemplate::AdminTemplate;
-    }
+    QString role = ui->cbNewRole->currentText();
 
     // Call backend
     bool success = Admin::createNewAccount(username, password, fullName, phone, role);

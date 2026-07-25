@@ -6,7 +6,7 @@
 
 Admin::Admin() {}
 
-bool Admin::createNewAccount(QString username, QString password, QString fullName, QString phone, RoleTemplate roleTemp)
+bool Admin::createNewAccount(QString username, QString password, QString fullName, QString phone, QString role)
 {
     if (!User::GetActiveUser().hasPermission(Permission::manageUsers))
     {
@@ -14,32 +14,33 @@ bool Admin::createNewAccount(QString username, QString password, QString fullNam
         return false;
     }
     QSqlQuery query;
-    query.prepare("INSERT INTO User (Username, EncryptedPassword, FullName, PhoneNumber, IsActive) "
-                  "VALUES (:user, :pass, :name, :phone, 1)");
+    query.prepare("INSERT INTO User (Username, EncryptedPassword, FullName, PhoneNumber, IsActive, Role) "
+                  "VALUES (:user, :pass, :name, :phone, 1, :role)");
     query.bindValue(":user", username);
     query.bindValue(":pass", User::GetEncryptPassword(password));
     query.bindValue(":name", fullName);
     query.bindValue(":phone", phone);
+    query.bindValue(":role", role);
 
     if (query.exec())
     {
         int newUserId = query.lastInsertId().toInt();
         qDebug() << "Successfully created UserID: " << newUserId;
         QList<Permission::Type> defaultPerms;
-        switch (roleTemp)
+        if (role == "Doctor")
         {
-        case RoleTemplate::DoctorTemplate:
             defaultPerms << Permission::createRecord << Permission::viewRecord
                          << Permission::editRecord << Permission::manageDrugs;
-            break;
-        case RoleTemplate::ReceptionistTemplate:
+        }
+        else if (role == "Receptionist")
+        {
             defaultPerms << Permission::createPatient << Permission::editPatient
                          << Permission::viewRecord;
-            break;
-        case RoleTemplate::AdminTemplate:
+        }
+        else if (role == "Admin")
+        {
             defaultPerms << Permission::manageUsers << Permission::changePermission
                          << Permission::viewLog << Permission::addLog;
-            break;
         }
         QSqlQuery permQuery;
         permQuery.prepare("INSERT INTO Permission (UserID, PermissionType) VALUES (:uid, :ptype)");
