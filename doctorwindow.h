@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include <QPushButton>
+#include "doctor.h"
+#include "attendancelog.h"
+
 
 namespace Ui {
 class DoctorWindow;
@@ -25,9 +28,14 @@ private slots:
 
     void on_btnLogout_clicked();
 
+
+    void on_btnSearchActivity_clicked();
+
 private:
     Ui::DoctorWindow *ui;
     void navigateToPage(int pageIndex, QPushButton* activeBtn);
+
+    void loadProfileData();
 };
 
 #endif // DOCTORWINDOW_H

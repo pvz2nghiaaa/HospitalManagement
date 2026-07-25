@@ -30,7 +30,7 @@ public:
     static QList<Prescription> GetRecordPrescriptions(int recordId);
     static void PrintRecord(int recordId);
 
-    static User GetMyProfileInfo();
+    static User& GetMyProfileInfo();
     static QList<Permission> GetMyPermissions();
     static QList<AttendanceLog> SearchMyActivityLogs(const QString& dateFrom, const QString& dateTo);
 };
