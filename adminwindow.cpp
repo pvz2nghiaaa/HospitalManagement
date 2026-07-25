@@ -222,6 +222,7 @@ void AdminWindow::on_btnCancelPat_clicked() {
 
 void AdminWindow::on_btnSavePat_clicked() {
     QString fullName = ui->txtPatFullName->text().trimmed();
+    QString phoneNo = ui->txtPatPhone->text().trimmed();
     QString birthDate = ui->datePatDOB->date().toString("yyyy-MM-dd");
     QString sex = ui->cbPatGender->currentText();
     QString address = ui->txtPatAddress->text().trimmed();
@@ -231,13 +232,14 @@ void AdminWindow::on_btnSavePat_clicked() {
         return;
     }
 
-    bool success = Patient::createPatient(fullName, birthDate, sex, address);
+    bool success = Patient::createPatient(fullName, phoneNo, birthDate, sex, address);
     if (success) {
         QMessageBox::information(this, "Success", "Patient registered successfully!");
         updateDashboardInfo();
         
         // Reset fields
         ui->txtPatFullName->clear();
+        ui->txtPatPhone->clear();
         ui->datePatDOB->setDate(QDate::currentDate());
         ui->cbPatGender->setCurrentIndex(0);
         ui->txtPatAddress->clear();

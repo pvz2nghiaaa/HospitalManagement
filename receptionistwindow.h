@@ -29,6 +29,7 @@ private slots:
 
     void on_btnLogout_clicked();
 
+    void on_btnPatientSearch_clicked();
  // Drug Management
     void on_btnSearch_14_clicked();
     void on_btnSearch_15_clicked();

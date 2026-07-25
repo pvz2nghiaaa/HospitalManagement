@@ -96,6 +96,81 @@ void ReceptionistWindow::on_btnLogout_clicked()
     this->close();
 }
 
+
+void ReceptionistWindow::on_btnPatientSearch_clicked()
+{
+    QString searchID = ui->patientIDLineEdit->text().trimmed();
+    QString searchName = ui->patientNameLineEdit->text().trimmed();
+    QString searchPhone = ui->patientPhoneLineEdit->text().trimmed();
+
+    QString baseSql = "SELECT ID, FullName, Phone, BirthDate, Sex, Address FROM Patients";
+    QStringList conditions;
+
+    if (!searchID.isEmpty()) {
+        conditions.append("ID = :id");
+    }
+    if (!searchName.isEmpty()) {
+        conditions.append("FullName LIKE :name");
+    }
+    if (!searchPhone.isEmpty()) {
+        conditions.append("Phone = :phone");
+    }
+    if (!conditions.isEmpty()) {
+        baseSql += " WHERE " + conditions.join(" AND ");
+    }
+
+    QSqlQuery query;
+    query.prepare(baseSql);
+
+    if (!searchID.isEmpty()) {
+        query.bindValue(":id", searchID);
+    }
+
+    if (!searchName.isEmpty()) {
+        // Adds % wildcards around input for flexible searching
+        query.bindValue(":name", "%" + searchName + "%");
+    }
+
+    if (!searchPhone.isEmpty()) {
+        query.bindValue(":phone", searchPhone);
+    }
+
+    if (!query.exec()) {
+        qDebug() << "Query failed:" << query.lastError().text();
+        QMessageBox::critical(this, "Database Error", "Failed to search database.");
+        return;
+    }
+
+    ui->tblPatient->setRowCount(0);
+
+    int row = 0;
+    while (query.next()) {
+        ui->tblPatient->insertRow(row);
+        qDebug() << "Found!";
+
+        QString id    = query.value(0).toString();
+        QString name  = query.value(1).toString();
+        QString phone = query.value(2).toString();
+        QString dob   = query.value(3).toString();
+        QString sex   = query.value(4).toString();
+        QString addr  = query.value(5).toString();
+
+        ui->tblPatient->setItem(row, 0, new QTableWidgetItem(id));
+        ui->tblPatient->setItem(row, 1, new QTableWidgetItem(name));
+        ui->tblPatient->setItem(row, 2, new QTableWidgetItem(phone));
+        ui->tblPatient->setItem(row, 3, new QTableWidgetItem(dob));
+        ui->tblPatient->setItem(row, 4, new QTableWidgetItem(sex));
+        ui->tblPatient->setItem(row, 5, new QTableWidgetItem(addr));
+
+        row++;
+    }
+
+    // Optional feedback if zero rows matched
+    if (row == 0) {
+        QMessageBox::information(this, "No Results", "No matching records found.");
+    }
+}
+
  // Drug Management
 QString ReceptionistWindow::getDrugStatus(int stockQuantity) const
 {
