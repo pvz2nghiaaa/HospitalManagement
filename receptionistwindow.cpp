@@ -20,10 +20,10 @@ ReceptionistWindow::ReceptionistWindow(QWidget *parent)
 
     
         // Drug Management
-    ui->tblPatient_3->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->tblPatient_3->setSelectionMode(QAbstractItemView::SingleSelection);
-    ui->tblPatient_3->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->tblPatient_3->horizontalHeader()->setStretchLastSection(true);
+    ui->tblPatient_2->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tblPatient_2->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tblPatient_2->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tblPatient_2->horizontalHeader()->setStretchLastSection(true);
     // Load all drugs
     loadAllDrugs();
 }
