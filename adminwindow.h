@@ -41,6 +41,13 @@ private slots:
     void showOverlayForm();
     void hideOverlayForm();
 
+    // Patient Overlay
+    void on_btnRegisterPatientQuick_clicked();
+    void on_btnCancelPat_clicked();
+    void on_btnSavePat_clicked();
+    void showPatientOverlay();
+    void hidePatientOverlay();
+
 private:
     Ui::AdminWindow *ui;
 };

@@ -18,6 +18,7 @@ AdminWindow::AdminWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->overlayFrame->hide(); // Hide overlay by default
+    ui->overlayPatientFrame->hide(); // Hide patient overlay by default
     navigateToPage(0, ui->btnDashboard);
     updateDashboardInfo();
 
@@ -149,64 +150,124 @@ void AdminWindow::on_btnSaveNewStaff_clicked() {
 }
 
 void AdminWindow::showOverlayForm() {
-    // 1. Create separate blur objects for each background element (no stealing)
-    QGraphicsBlurEffect *blurSidebar = new QGraphicsBlurEffect(this);
-    blurSidebar->setBlurRadius(8);
-    ui->layoutWidget->setGraphicsEffect(blurSidebar);
+    // 1. Disable all background interactions to prevent hover paint updates and clicks
+    ui->bgWidget->setEnabled(false);
 
-    QGraphicsBlurEffect *blurBrand = new QGraphicsBlurEffect(this);
-    blurBrand->setBlurRadius(8);
-    ui->lblBrand->setGraphicsEffect(blurBrand);
+    // 2. Set geometry to cover the full window size dynamically
+    ui->overlayFrame->setGeometry(0, 0, this->width(), this->height());
+    int cardX = (this->width() - ui->cardCreateStaff->width()) / 2;
+    int cardY = (this->height() - ui->cardCreateStaff->height()) / 2;
+    ui->cardCreateStaff->move(cardX, cardY);
 
-    QGraphicsBlurEffect *blurWelcome = new QGraphicsBlurEffect(this);
-    blurWelcome->setBlurRadius(8);
-    ui->lblWelcome->setGraphicsEffect(blurWelcome);
+    // 3. Apply single blur to background container widget
+    QGraphicsBlurEffect *blur = new QGraphicsBlurEffect(this);
+    blur->setBlurRadius(8);
+    ui->bgWidget->setGraphicsEffect(blur);
+    ui->bgWidget->repaint();
 
-    QGraphicsBlurEffect *blurLogout = new QGraphicsBlurEffect(this);
-    blurLogout->setBlurRadius(8);
-    ui->btnLogout->setGraphicsEffect(blurLogout);
-
-    QGraphicsBlurEffect *blurContent = new QGraphicsBlurEffect(this);
-    blurContent->setBlurRadius(8);
-    ui->stackedWidget->setGraphicsEffect(blurContent);
-
-    QGraphicsBlurEffect *blurTitle = new QGraphicsBlurEffect(this);
-    blurTitle->setBlurRadius(8);
-    ui->lblTitle->setGraphicsEffect(blurTitle);
-
-    QGraphicsBlurEffect *blurAdmin = new QGraphicsBlurEffect(this);
-    blurAdmin->setBlurRadius(8);
-    ui->lblAdmin->setGraphicsEffect(blurAdmin);
-
-    // 2. Clear any active graphics effect on the overlay so it stays sharp
+    // 4. Clear any active graphics effect on the overlay so it stays sharp
     ui->overlayFrame->setGraphicsEffect(nullptr);
 
-    // 3. Show overlay frame (raised to top)
+    // 5. Show overlay frame (raised to top)
     ui->overlayFrame->show();
     ui->overlayFrame->raise();
 
-    // 4. Setup opacity animation for smooth fade-in
+    // 6. Setup opacity animation for smooth fade-in
     QGraphicsOpacityEffect *opacityEffect = new QGraphicsOpacityEffect(ui->overlayFrame);
     ui->overlayFrame->setGraphicsEffect(opacityEffect);
 
     QPropertyAnimation *fadeAnimation = new QPropertyAnimation(opacityEffect, "opacity");
-    fadeAnimation->setDuration(300);
+    fadeAnimation->setDuration(100);
     fadeAnimation->setStartValue(0.0);
     fadeAnimation->setEndValue(1.0);
     fadeAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void AdminWindow::hideOverlayForm() {
-    // 1. Remove all background blurs
-    ui->layoutWidget->setGraphicsEffect(nullptr);
-    ui->lblBrand->setGraphicsEffect(nullptr);
-    ui->lblWelcome->setGraphicsEffect(nullptr);
-    ui->btnLogout->setGraphicsEffect(nullptr);
-    ui->stackedWidget->setGraphicsEffect(nullptr);
-    ui->lblTitle->setGraphicsEffect(nullptr);
-    ui->lblAdmin->setGraphicsEffect(nullptr);
+    // 1. Remove background blur and re-enable background interactions
+    ui->bgWidget->setGraphicsEffect(nullptr);
+    ui->bgWidget->setEnabled(true);
 
     // 2. Hide overlay
     ui->overlayFrame->hide();
+}
+
+void AdminWindow::on_btnRegisterPatientQuick_clicked() {
+    showPatientOverlay();
+}
+
+void AdminWindow::on_btnCancelPat_clicked() {
+    hidePatientOverlay();
+}
+
+void AdminWindow::on_btnSavePat_clicked() {
+    QString fullName = ui->txtPatFullName->text().trimmed();
+    QString birthDate = ui->datePatDOB->date().toString("yyyy-MM-dd");
+    QString sex = ui->cbPatGender->currentText();
+    QString address = ui->txtPatAddress->text().trimmed();
+
+    if (fullName.isEmpty()) {
+        QMessageBox::warning(this, "Validation Error", "Patient full name is required.");
+        return;
+    }
+
+    bool success = Patient::createPatient(fullName, birthDate, sex, address);
+    if (success) {
+        QMessageBox::information(this, "Success", "Patient registered successfully!");
+        updateDashboardInfo();
+        
+        // Reset fields
+        ui->txtPatFullName->clear();
+        ui->datePatDOB->setDate(QDate::currentDate());
+        ui->cbPatGender->setCurrentIndex(0);
+        ui->txtPatAddress->clear();
+        
+        hidePatientOverlay();
+    } else {
+        QMessageBox::critical(this, "Error", "Failed to register patient in database.");
+    }
+}
+
+void AdminWindow::showPatientOverlay() {
+    // 1. Disable all background interactions to prevent hover paint updates and clicks
+    ui->bgWidget->setEnabled(false);
+
+    // 2. Set geometry to cover the full window size dynamically
+    ui->overlayPatientFrame->setGeometry(0, 0, this->width(), this->height());
+    int cardX = (this->width() - ui->cardRegisterPatient->width()) / 2;
+    int cardY = (this->height() - ui->cardRegisterPatient->height()) / 2;
+    ui->cardRegisterPatient->move(cardX, cardY);
+
+    // 3. Apply single blur to background container widget
+    QGraphicsBlurEffect *blur = new QGraphicsBlurEffect(this);
+    blur->setBlurRadius(8);
+    ui->bgWidget->setGraphicsEffect(blur);
+    ui->bgWidget->repaint();
+
+    // 4. Clear any active graphics effect on the patient overlay
+    ui->overlayPatientFrame->setGraphicsEffect(nullptr);
+
+    // 5. Show overlay frame (raised to top)
+    ui->overlayPatientFrame->show();
+    ui->overlayPatientFrame->raise();
+
+    // 6. Setup opacity animation for smooth fade-in
+    QGraphicsOpacityEffect *opacityEffect = new QGraphicsOpacityEffect(ui->overlayPatientFrame);
+    ui->overlayPatientFrame->setGraphicsEffect(opacityEffect);
+
+    QPropertyAnimation *fadeAnimation = new QPropertyAnimation(opacityEffect, "opacity");
+    fadeAnimation->setDuration(100);
+    fadeAnimation->setStartValue(0.0);
+    fadeAnimation->setEndValue(1.0);
+    fadeAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void AdminWindow::hidePatientOverlay() {
+    // 1. Remove background blur and re-enable background interactions
+    ui->bgWidget->setGraphicsEffect(nullptr);
+    ui->bgWidget->setEnabled(true);
+
+    // 2. Hide overlay
+    ui->overlayPatientFrame->hide();
 }
 

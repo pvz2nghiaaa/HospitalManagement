@@ -10,7 +10,7 @@ bool Admin::createNewAccount(QString username, QString password, QString fullNam
 {
     if (!User::GetActiveUser().hasPermission(Permission::manageUsers))
     {
-        qDebug() << "[Admin] Access Denied: Current user does not have permission to create an account.";
+        qDebug() << "Access Denied: Current user does not have permission to create an account.";
         return false;
     }
     QSqlQuery query;
@@ -24,7 +24,7 @@ bool Admin::createNewAccount(QString username, QString password, QString fullNam
     if (query.exec())
     {
         int newUserId = query.lastInsertId().toInt();
-        qDebug() << "[Admin] Successfully created UserID:" << newUserId;
+        qDebug() << "Successfully created UserID: " << newUserId;
         QList<Permission::Type> defaultPerms;
         switch (roleTemp)
         {

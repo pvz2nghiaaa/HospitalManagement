@@ -1,4 +1,6 @@
 #include "medicalrecord.h"
+#include "user.h"
+#include "permission.h"
 
 MedicalRecord::MedicalRecord() : RecordID(-1), IsComplete(false), PatientID(-1) {}
 
@@ -44,6 +46,10 @@ bool MedicalRecord::MarkComplete() {
 }
 
 int MedicalRecord::GetTotalRecord(){
+    if (!User::GetActiveUser().hasPermission(Permission::viewLog)){
+        qDebug() << "User does not have permission to view dashboard info";
+        return 0;
+    }
     QSqlQuery query;
     query.prepare("SELECT COUNT(*) AS records FROM MedicalRecords");
     if (query.exec() && query.next()){

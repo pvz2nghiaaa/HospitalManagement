@@ -1,5 +1,6 @@
 #include "user.h"
 #include <QDebug>
+#include "permission.h"
 
 User::User() {}
 
@@ -67,6 +68,10 @@ void User::logout(){
 }
 
 int User::GetTotalStaff(){
+    if (!User::GetActiveUser().hasPermission(Permission::viewLog)){
+        qDebug() << "User does not have permission to view staff info";
+        return 0;
+    }
     QSqlQuery query;
     query.prepare("SELECT COUNT(*) AS valid_staffs FROM User "
                   "WHERE Role NOT IN ('Admin') AND IsActive = 1");
