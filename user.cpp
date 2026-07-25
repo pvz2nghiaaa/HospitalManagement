@@ -82,6 +82,31 @@ int User::GetTotalStaff(){
     return 0;
 }
 
+vector<tuple<int, QString, QString, QString, bool, QString>> User::GetAllUser() {
+    vector<tuple<int, QString, QString, QString, bool, QString>> listUser;
+
+    if (!User::GetActiveUser().hasPermission(Permission::manageUsers))
+        return listUser;
+
+    QSqlQuery query;
+    query.prepare("SELECT * FROM User");
+    if (query.exec())
+        while(query.next()){
+            listUser.push_back(
+                tuple<int, QString, QString, QString, bool, QString> {
+                    query.value("UserID").toInt(),
+                    query.value("Username").toString(),
+                    query.value("FullName").toString(),
+                    query.value("PhoneNumber").toString(),
+                    query.value("IsActive").toBool(),
+                    query.value("Role").toString()
+                }
+            );
+        }
+    else qDebug() << "Error: " << query.lastError().text();
+    return listUser;
+}
+
 bool User::UpdatePermissionFromDatabase(){
     ListPermission = Permission::GetActiveUserPermission();
     if (ListPermission.empty())

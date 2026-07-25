@@ -5,6 +5,7 @@
 #include <QString>
 #include <QList>
 #include "permission.h"
+using namespace std;
 
 class User
 {
@@ -34,6 +35,7 @@ public:
     static User* getCurrentUser();
     static QString GetEncryptPassword(QString nPassword);
     static int GetTotalStaff();
+    static vector<tuple<int, QString, QString, QString, bool, QString>> GetAllUser();
     void appendPermission(Permission);
     void erasePermission(Permission);
     // fast set attribute
