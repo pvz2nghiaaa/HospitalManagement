@@ -29,6 +29,8 @@ private slots:
 
     void on_btnLogout_clicked();
 
+    void on_btnPatientSearch_clicked();
+
 private:
     Ui::ReceptionistWindow *ui;
     void navigateToPage(int pageIndex, QPushButton* activeBtn);

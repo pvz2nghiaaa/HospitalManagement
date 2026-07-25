@@ -383,11 +383,6 @@ QPushButton#btnSearch_4:hover, QPushButton#btnSearch_6:hover {
          <string>Address</string>
         </property>
        </column>
-       <column>
-        <property name="text">
-         <string>Medical Record</string>
-        </property>
-       </column>
       </widget>
       <widget class="QSplitter" name="splitter_2">
        <property name="geometry">
@@ -445,7 +440,7 @@ QPushButton#btnSearch_4:hover, QPushButton#btnSearch_6:hover {
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="txtSearch_4">
+         <widget class="QLineEdit" name="patientIDLineEdit">
           <property name="placeholderText">
            <string>Enter ID</string>
           </property>
@@ -464,7 +459,7 @@ QPushButton#btnSearch_4:hover, QPushButton#btnSearch_6:hover {
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="txtSearch_6">
+         <widget class="QLineEdit" name="patientNameLineEdit">
           <property name="text">
            <string/>
           </property>
@@ -486,14 +481,14 @@ QPushButton#btnSearch_4:hover, QPushButton#btnSearch_6:hover {
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="txtSearch_9">
+         <widget class="QLineEdit" name="patientPhoneLineEdit">
           <property name="placeholderText">
            <string>Enter number</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="btnSearch_4">
+         <widget class="QPushButton" name="btnPatientSearch">
           <property name="text">
            <string>🔍 Search</string>
           </property>

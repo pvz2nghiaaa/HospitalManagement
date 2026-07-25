@@ -9,7 +9,7 @@ public:
         QSqlQuery q;
         return q.exec("CREATE TABLE IF NOT EXISTS Patients ("
                       "ID INTEGER PRIMARY KEY AUTOINCREMENT, "
-                      "FullName TEXT, BirthDate TEXT, Sex TEXT, Address TEXT)");
+                      "FullName TEXT, Phone TEXT, BirthDate TEXT, Sex TEXT, Address TEXT)");
     }
     static int GetTotalPatients(){
         if (!User::GetActiveUser().hasPermission(Permission::viewLog)){
@@ -24,15 +24,16 @@ public:
         qDebug() << "Failed to get total patients from Patients";
         return 0;
     }
-    static bool createPatient(QString fullName, QString birthDate, QString sex, QString address) {
+    static bool createPatient(QString fullName, QString phoneNo, QString birthDate, QString sex, QString address) {
         if (!User::GetActiveUser().hasPermission(Permission::createPatient)) {
             qDebug() << "Access Denied: Current user lacks permission to create patients.";
             return false;
         }
         QSqlQuery query;
-        query.prepare("INSERT INTO Patients (FullName, BirthDate, Sex, Address) "
-                      "VALUES (:name, :dob, :sex, :addr)");
+        query.prepare("INSERT INTO Patients (FullName, Phone, BirthDate, Sex, Address) "
+                      "VALUES (:name, :phoneNo, :dob, :sex, :addr)");
         query.bindValue(":name", fullName);
+        query.bindValue(":phonNo", phoneNo);
         query.bindValue(":dob", birthDate);
         query.bindValue(":sex", sex);
         query.bindValue(":addr", address);
