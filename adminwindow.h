@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QPushButton>
+using namespace std;
 
 namespace Ui {
 class AdminWindow;
@@ -33,6 +34,8 @@ private slots:
 
     void updateDashboardInfo();
 
+    void refreshStaffDashboard(vector<tuple<int, QString, QString, QString, bool, QString>> listUser);
+
     // Overlay form helpers and slots
     void on_btnAddStaff_clicked();
     void on_btnAddStaffQuick_clicked();
@@ -47,6 +50,10 @@ private slots:
     void on_btnSavePat_clicked();
     void showPatientOverlay();
     void hidePatientOverlay();
+
+    void on_btnRefreshStaff_clicked();
+
+    void on_btnSearch_clicked();
 
 private:
     Ui::AdminWindow *ui;

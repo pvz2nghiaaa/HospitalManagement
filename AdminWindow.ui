@@ -259,7 +259,7 @@ QPushButton:hover {
       <enum>QFrame::Shape::NoFrame</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="pageDashboard">
       <widget class="QFrame" name="frameDashboard_2">
@@ -367,6 +367,9 @@ QPushButton:hover {
          <property name="columnCount">
           <number>3</number>
          </property>
+         <attribute name="horizontalHeaderStretchLastSection">
+          <bool>true</bool>
+         </attribute>
          <column>
           <property name="text">
            <string>Time</string>
@@ -987,6 +990,11 @@ QPushButton {
 QPushButton:hover {
     background-color: rgb(51, 65, 85);
 }
+QPushButton#btnSearch:pressed {
+    background-color: rgb(15, 23, 42);           /* Input box dark background */
+    border: 1px solid rgb(6, 182, 212);         /* Cyan border outline */
+    color: rgb(6, 182, 212);                    /* Cyan text color */
+}
 QPushButton#btnSearch, QPushButton#btnAddStaff {
     background-color: rgb(6, 182, 212);
 }
@@ -1118,8 +1126,20 @@ QPushButton#btnDeleteStaff:hover {
           <height>380</height>
          </rect>
         </property>
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+        </property>
         <attribute name="horizontalHeaderDefaultSectionSize">
          <number>110</number>
+        </attribute>
+        <attribute name="horizontalHeaderStretchLastSection">
+         <bool>true</bool>
+        </attribute>
+        <attribute name="verticalHeaderVisible">
+         <bool>false</bool>
         </attribute>
         <column>
          <property name="text">
@@ -1128,27 +1148,27 @@ QPushButton#btnDeleteStaff:hover {
         </column>
         <column>
          <property name="text">
-          <string>Full Name</string>
+          <string>Username</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>Phone Number</string>
+          <string>Full name</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Phone number</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Active</string>
          </property>
         </column>
         <column>
          <property name="text">
           <string>Role</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Status</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Action</string>
          </property>
         </column>
        </widget>
@@ -1391,6 +1411,9 @@ QPushButton#btnEditPermission:hover {
         </property>
         <attribute name="horizontalHeaderDefaultSectionSize">
          <number>200</number>
+        </attribute>
+        <attribute name="horizontalHeaderStretchLastSection">
+         <bool>true</bool>
         </attribute>
         <column>
          <property name="text">
@@ -1637,6 +1660,9 @@ QPushButton:hover {
         </property>
         <attribute name="horizontalHeaderDefaultSectionSize">
          <number>135</number>
+        </attribute>
+        <attribute name="horizontalHeaderStretchLastSection">
+         <bool>true</bool>
         </attribute>
         <column>
          <property name="text">
@@ -2347,10 +2373,10 @@ QPushButton:hover {
      </widget>
     </widget>
    </widget>
+   <zorder>overlayFrame</zorder>
    <zorder>overlayPatientFrame</zorder>
    <zorder>overlayFrame</zorder>
    <zorder>bgWidget</zorder>
-   <zorder>overlayFrame</zorder>
   </widget>
  </widget>
  <resources/>
