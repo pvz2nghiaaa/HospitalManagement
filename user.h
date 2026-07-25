@@ -36,6 +36,9 @@ public:
     static QString GetEncryptPassword(QString nPassword);
     static int GetTotalStaff();
     static vector<tuple<int, QString, QString, QString, bool, QString>> GetAllUser();
+    static vector<tuple<int, QString, QString, QString, bool, QString>> SearchUserBy(QString name);
+    static vector<tuple<int, QString, QString, QString, bool, QString>> SearchUserBy(QString name, QString role);
+    static vector<tuple<int, QString, QString, QString, bool, QString>> SearchUserByRole(QString role);
     void appendPermission(Permission);
     void erasePermission(Permission);
     // fast set attribute

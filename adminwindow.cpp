@@ -40,7 +40,7 @@ void AdminWindow::on_btnDashboard_clicked()
 void AdminWindow::on_btnStaffManagement_clicked()
 {
     navigateToPage(1, ui->btnStaffManagement);
-    refreshStaffDashboard();
+    refreshStaffDashboard(User::GetAllUser());
 }
 
 
@@ -61,8 +61,7 @@ void AdminWindow::on_btnReport_clicked()
     navigateToPage(4, ui->btnReport);
 }
 
-void AdminWindow::refreshStaffDashboard(){
-    vector<tuple<int, QString, QString, QString, bool, QString>> listUser = User::GetAllUser();
+void AdminWindow::refreshStaffDashboard(vector<tuple<int, QString, QString, QString, bool, QString>> listUser){
     int n = listUser.size();
     ui->tblStaff->setRowCount(0); // clear old list
     for (int i = 0; i < n; i++){
@@ -164,7 +163,7 @@ void AdminWindow::on_btnSaveNewStaff_clicked() {
         
         hideOverlayForm();
 
-        refreshStaffDashboard();
+        refreshStaffDashboard(User::GetAllUser());
     } else {
         QMessageBox::critical(this, "Error", "Failed to create staff account. The username might already be in use.");
     }
@@ -295,6 +294,26 @@ void AdminWindow::hidePatientOverlay() {
 
 void AdminWindow::on_btnRefreshStaff_clicked()
 {
-    refreshStaffDashboard();
+    refreshStaffDashboard(User::GetAllUser());
+}
+
+
+void AdminWindow::on_btnSearch_clicked()
+{
+    vector<tuple<int, QString, QString, QString, bool, QString>> listUser;
+    QString name = ui->txtSearch->text();
+    QString trimmedName = name.trimmed();
+    QString role = ui->cbRole->currentText();
+    if (role == "All"){
+        if (trimmedName.size() == 0){
+            listUser = User::GetAllUser();
+        }
+        else listUser = User::SearchUserBy(ui->txtSearch->text()); // remove trim
+    }
+    else if (trimmedName.size() == 0)
+        listUser = User::SearchUserByRole(role);
+    else listUser = User::SearchUserBy(name, role);
+
+    refreshStaffDashboard(listUser);
 }
 
