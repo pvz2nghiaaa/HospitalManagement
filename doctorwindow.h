@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include <QPushButton>
+#include <QList>
+#include "doctor.h"
+#include "patient.h"
 
 namespace Ui {
 class DoctorWindow;
@@ -18,16 +21,19 @@ public:
 
 private slots:
     void on_btnDashboard_clicked();
-
     void on_btnPatients_clicked();
-
     void on_btnDoctors_clicked();
-
     void on_btnLogout_clicked();
+
+    void on_btnSearch_4_clicked();
+    void on_tblPatient_cellClicked(int row, int column);
+    void on_btnUpdatePatient_clicked();
 
 private:
     Ui::DoctorWindow *ui;
     void navigateToPage(int pageIndex, QPushButton* activeBtn);
+
+    QList<Patient> currentPatientList;
 };
 
-#endif // DOCTORWINDOW_H
+#endif
