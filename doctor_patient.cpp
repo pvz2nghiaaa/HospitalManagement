@@ -7,14 +7,14 @@
 QList<Patient> Doctor::SearchPatientBy(const QString& keyword) {
     QList<Patient> results;
     QSqlQuery query;
-    query.prepare("SELECT * FROM Patient WHERE FullName LIKE :search OR PatientID = :id");
+    query.prepare("SELECT * FROM Patients WHERE FullName LIKE :search OR ID = :id");
     query.bindValue(":search", "%" + keyword + "%");
     query.bindValue(":id", keyword.toInt());
 
     if (query.exec()) {
         while (query.next()) {
             Patient p;
-            p.ID = query.value("PatientID").toInt();
+            p.ID = query.value("ID").toInt();
             p.FullName = query.value("FullName").toString();
             p.BirthDate = query.value("BirthDate").toString();
             p.Sex = query.value("Sex").toString();
@@ -30,11 +30,11 @@ QList<Patient> Doctor::SearchPatientBy(const QString& keyword) {
 Patient Doctor::GetPatientDetails(int patientID) {
     Patient p;
     QSqlQuery query;
-    query.prepare("SELECT * FROM Patient WHERE PatientID = :id");
+    query.prepare("SELECT * FROM Patients WHERE ID = :id");
     query.bindValue(":id", patientID);
-    
+
     if (query.exec() && query.next()) {
-        p.ID = query.value("PatientID").toInt();
+        p.ID = query.value("ID").toInt();
         p.FullName = query.value("FullName").toString();
         p.BirthDate = query.value("BirthDate").toString();
         p.Sex = query.value("Sex").toString();
@@ -44,15 +44,15 @@ Patient Doctor::GetPatientDetails(int patientID) {
 }
 
 bool Doctor::UpdatePatientInfo(int id, const QString& fullName, const QString& birthDate, const QString& sex, const QString& address) {
-    if (!this->hasPermission(Permission(Permission::editPatient))) return false;
-    
+    if (!User::GetActiveUser().hasPermission(Permission::editPatient)) return false;
+
     QSqlQuery query;
-    query.prepare("UPDATE Patient SET FullName = :name, BirthDate = :dob, Sex = :sex, Address = :addr WHERE PatientID = :id");
+    query.prepare("UPDATE Patients SET FullName = :name, BirthDate = :dob, Sex = :sex, Address = :addr WHERE ID = :id");
     query.bindValue(":name", fullName);
     query.bindValue(":dob", birthDate);
     query.bindValue(":sex", sex);
     query.bindValue(":addr", address);
     query.bindValue(":id", id);
-    
+
     return query.exec();
 }
