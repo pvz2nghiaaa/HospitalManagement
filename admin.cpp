@@ -40,7 +40,8 @@ bool Admin::createNewAccount(QString username, QString password, QString fullNam
         else if (role == "Admin")
         {
             defaultPerms << Permission::manageUsers << Permission::changePermission
-                         << Permission::viewLog << Permission::addLog;
+                         << Permission::viewLog << Permission::addLog
+                         << Permission::createPatient;
         }
         QSqlQuery permQuery;
         permQuery.prepare("INSERT INTO Permission (UserID, PermissionType) VALUES (:uid, :ptype)");
@@ -58,6 +59,64 @@ bool Admin::createNewAccount(QString username, QString password, QString fullNam
     else
     {
         qDebug() << "[Admin] Error creating account:" << query.lastError().text();
+        return false;
+    }
+}
+
+bool Admin::updateAccount(int id, QString fullName, QString phone, QString role, bool isActive, QString newPassword)
+{
+    if (!User::GetActiveUser().hasPermission(Permission::manageUsers))
+    {
+        qDebug() << "Access Denied: Current user does not have permission to edit accounts.";
+        return false;
+    }
+    
+    QSqlQuery query;
+    if (!newPassword.isEmpty()) {
+        query.prepare("UPDATE User SET FullName = :name, PhoneNumber = :phone, Role = :role, IsActive = :active, EncryptedPassword = :password WHERE UserID = :id");
+        query.bindValue(":password", User::GetEncryptPassword(newPassword));
+    } else {
+        query.prepare("UPDATE User SET FullName = :name, PhoneNumber = :phone, Role = :role, IsActive = :active WHERE UserID = :id");
+    }
+    
+    query.bindValue(":name", fullName);
+    query.bindValue(":phone", phone);
+    query.bindValue(":role", role);
+    query.bindValue(":active", isActive ? 1 : 0);
+    query.bindValue(":id", id);
+    
+    if (query.exec()) {
+        qDebug() << "Successfully updated UserID: " << id;
+        return true;
+    } else {
+        qDebug() << "Error updating UserID: " << query.lastError().text();
+        return false;
+    }
+}
+
+bool Admin::deleteAccount(int id)
+{
+    if (!User::GetActiveUser().hasPermission(Permission::manageUsers))
+    {
+        qDebug() << "Access Denied: Current user does not have permission to delete accounts.";
+        return false;
+    }
+    
+    if (id == User::GetActiveUser().GetID())
+    {
+        qDebug() << "Cannot delete current logged-in administrator.";
+        return false;
+    }
+    
+    QSqlQuery query;
+    query.prepare("DELETE FROM User WHERE UserID = :id");
+    query.bindValue(":id", id);
+    
+    if (query.exec()) {
+        qDebug() << "Successfully deleted UserID: " << id;
+        return true;
+    } else {
+        qDebug() << "Error deleting UserID: " << query.lastError().text();
         return false;
     }
 }

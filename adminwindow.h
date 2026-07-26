@@ -51,6 +51,21 @@ private slots:
     void showPatientOverlay();
     void hidePatientOverlay();
 
+    // Edit Staff Overlay
+    void on_btnEditStaff_clicked();
+    void on_btnCancelEditStaff_clicked();
+    void on_btnSaveEditStaff_clicked();
+    void on_chkChangePassword_toggled(bool checked);
+    void showEditStaffOverlay();
+    void hideEditStaffOverlay();
+
+    // Delete Staff Overlay
+    void on_btnDeleteStaff_clicked();
+    void on_btnCancelDeleteStaff_clicked();
+    void on_btnConfirmDeleteStaff_clicked();
+    void showDeleteStaffOverlay();
+    void hideDeleteStaffOverlay();
+
     void on_btnRefreshStaff_clicked();
 
     void on_btnSearch_clicked();

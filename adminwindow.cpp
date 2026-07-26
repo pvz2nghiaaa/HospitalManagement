@@ -19,6 +19,8 @@ AdminWindow::AdminWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->overlayFrame->hide(); // Hide overlay by default
     ui->overlayPatientFrame->hide(); // Hide patient overlay by default
+    ui->overlayEditStaffFrame->hide(); // Hide edit staff overlay by default
+    ui->overlayDeleteStaffFrame->hide(); // Hide delete staff overlay by default
     navigateToPage(0, ui->btnDashboard);
     updateDashboardInfo();
 
@@ -317,5 +319,222 @@ void AdminWindow::on_btnSearch_clicked()
     else listUser = User::SearchUserBy(name, role);
 
     refreshStaffDashboard(listUser);
+}
+
+void AdminWindow::on_btnEditStaff_clicked() {
+    int currentRow = ui->tblStaff->currentRow();
+    if (currentRow < 0) {
+        QMessageBox::warning(this, "No Selection", "Please select a staff member from the table to edit.");
+        return;
+    }
+
+    QString id = ui->tblStaff->item(currentRow, 0)->text();
+    QString username = ui->tblStaff->item(currentRow, 1)->text();
+    QString fullName = ui->tblStaff->item(currentRow, 2)->text();
+    QString phone = ui->tblStaff->item(currentRow, 3)->text();
+    QString status = ui->tblStaff->item(currentRow, 4)->text();
+    QString role = ui->tblStaff->item(currentRow, 5)->text();
+
+    // Populate overlay fields
+    ui->txtEditUsername->setText(username);
+    ui->txtEditFullName->setText(fullName);
+    ui->txtEditPhone->setText(phone);
+    
+    // Reset password field and checkbox
+    ui->txtEditPassword->clear();
+    ui->txtEditPassword->setEnabled(false);
+    ui->chkChangePassword->setChecked(false);
+
+    // Set Combobox role
+    int roleIdx = ui->cbEditRole->findText(role);
+    if (roleIdx >= 0) ui->cbEditRole->setCurrentIndex(roleIdx);
+
+    // Set Combobox status
+    int statusIdx = ui->cbEditActive->findText(status);
+    if (statusIdx >= 0) ui->cbEditActive->setCurrentIndex(statusIdx);
+
+    // Save selected ID for update operation
+    ui->overlayEditStaffFrame->setProperty("selectedStaffId", id.toInt());
+
+    showEditStaffOverlay();
+}
+
+void AdminWindow::on_btnCancelEditStaff_clicked() {
+    hideEditStaffOverlay();
+}
+
+void AdminWindow::on_chkChangePassword_toggled(bool checked) {
+    ui->txtEditPassword->setEnabled(checked);
+    if (!checked) {
+        ui->txtEditPassword->clear();
+    }
+}
+
+void AdminWindow::on_btnSaveEditStaff_clicked() {
+    int id = ui->overlayEditStaffFrame->property("selectedStaffId").toInt();
+    QString fullName = ui->txtEditFullName->text().trimmed();
+    QString phone = ui->txtEditPhone->text().trimmed();
+    QString role = ui->cbEditRole->currentText();
+    bool isActive = (ui->cbEditActive->currentText() == "Active");
+
+    QString newPassword = "";
+    if (ui->chkChangePassword->isChecked()) {
+        newPassword = ui->txtEditPassword->text();
+        if (newPassword.isEmpty()) {
+            QMessageBox::warning(this, "Validation Error", "Password cannot be empty when changing password.");
+            return;
+        }
+    }
+
+    if (fullName.isEmpty()) {
+        QMessageBox::warning(this, "Validation Error", "Full Name is required.");
+        return;
+    }
+
+    bool success = Admin::updateAccount(id, fullName, phone, role, isActive, newPassword);
+    if (success) {
+        QMessageBox::information(this, "Success", "Staff account updated successfully!");
+        
+        // Refresh table and stats
+        on_btnRefreshStaff_clicked();
+        updateDashboardInfo();
+        
+        hideEditStaffOverlay();
+    } else {
+        QMessageBox::critical(this, "Error", "Failed to update staff account.");
+    }
+}
+
+void AdminWindow::showEditStaffOverlay() {
+    // 1. Disable background interactions
+    ui->bgWidget->setEnabled(false);
+
+    // 2. Set geometry to cover full window size dynamically
+    ui->overlayEditStaffFrame->setGeometry(0, 0, this->width(), this->height());
+    int cardX = (this->width() - ui->cardEditStaff->width()) / 2;
+    int cardY = (this->height() - ui->cardEditStaff->height()) / 2;
+    ui->cardEditStaff->move(cardX, cardY);
+
+    // 3. Apply single blur to background container
+    QGraphicsBlurEffect *blur = new QGraphicsBlurEffect(this);
+    blur->setBlurRadius(8);
+    ui->bgWidget->setGraphicsEffect(blur);
+    ui->bgWidget->repaint();
+
+    // 4. Clear graphics effect on overlay
+    ui->overlayEditStaffFrame->setGraphicsEffect(nullptr);
+
+    // 5. Show overlay frame
+    ui->overlayEditStaffFrame->show();
+    ui->overlayEditStaffFrame->raise();
+
+    // 6. Setup opacity animation for smooth fade-in
+    QGraphicsOpacityEffect *opacityEffect = new QGraphicsOpacityEffect(ui->overlayEditStaffFrame);
+    ui->overlayEditStaffFrame->setGraphicsEffect(opacityEffect);
+
+    QPropertyAnimation *fadeAnimation = new QPropertyAnimation(opacityEffect, "opacity");
+    fadeAnimation->setDuration(100);
+    fadeAnimation->setStartValue(0.0);
+    fadeAnimation->setEndValue(1.0);
+    fadeAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void AdminWindow::hideEditStaffOverlay() {
+    // 1. Remove background blur and re-enable background interactions
+    ui->bgWidget->setGraphicsEffect(nullptr);
+    ui->bgWidget->setEnabled(true);
+
+    // 2. Hide overlay
+    ui->overlayEditStaffFrame->hide();
+}
+
+void AdminWindow::on_btnDeleteStaff_clicked() {
+    int currentRow = ui->tblStaff->currentRow();
+    if (currentRow < 0) {
+        QMessageBox::warning(this, "No Selection", "Please select a staff member from the table to delete.");
+        return;
+    }
+
+    QString id = ui->tblStaff->item(currentRow, 0)->text();
+    QString username = ui->tblStaff->item(currentRow, 1)->text();
+    QString fullName = ui->tblStaff->item(currentRow, 2)->text();
+
+    // Prevent deletion of self
+    if (id.toInt() == User::GetActiveUser().GetID()) {
+        QMessageBox::warning(this, "Action Denied", "You cannot delete your own administrator account.");
+        return;
+    }
+
+    // Set details text in overlay
+    ui->lblDeleteStaffDetails->setText(QString("Username: %1\nName:     %2").arg(username).arg(fullName));
+
+    // Save ID for confirm deletion slot
+    ui->overlayDeleteStaffFrame->setProperty("deleteStaffId", id.toInt());
+
+    showDeleteStaffOverlay();
+}
+
+void AdminWindow::on_btnCancelDeleteStaff_clicked() {
+    hideDeleteStaffOverlay();
+}
+
+void AdminWindow::on_btnConfirmDeleteStaff_clicked() {
+    int id = ui->overlayDeleteStaffFrame->property("deleteStaffId").toInt();
+
+    bool success = Admin::deleteAccount(id);
+    if (success) {
+        QMessageBox::information(this, "Success", "Staff account deleted successfully!");
+        
+        // Refresh table and stats
+        on_btnRefreshStaff_clicked();
+        updateDashboardInfo();
+        
+        hideDeleteStaffOverlay();
+    } else {
+        QMessageBox::critical(this, "Error", "Failed to delete staff account.");
+    }
+}
+
+void AdminWindow::showDeleteStaffOverlay() {
+    // 1. Disable background interactions
+    ui->bgWidget->setEnabled(false);
+
+    // 2. Set geometry to cover full window size dynamically
+    ui->overlayDeleteStaffFrame->setGeometry(0, 0, this->width(), this->height());
+    int cardX = (this->width() - ui->cardDeleteStaff->width()) / 2;
+    int cardY = (this->height() - ui->cardDeleteStaff->height()) / 2;
+    ui->cardDeleteStaff->move(cardX, cardY);
+
+    // 3. Apply single blur to background container
+    QGraphicsBlurEffect *blur = new QGraphicsBlurEffect(this);
+    blur->setBlurRadius(8);
+    ui->bgWidget->setGraphicsEffect(blur);
+    ui->bgWidget->repaint();
+
+    // 4. Clear graphics effect on overlay
+    ui->overlayDeleteStaffFrame->setGraphicsEffect(nullptr);
+
+    // 5. Show overlay frame
+    ui->overlayDeleteStaffFrame->show();
+    ui->overlayDeleteStaffFrame->raise();
+
+    // 6. Setup opacity animation for smooth fade-in
+    QGraphicsOpacityEffect *opacityEffect = new QGraphicsOpacityEffect(ui->overlayDeleteStaffFrame);
+    ui->overlayDeleteStaffFrame->setGraphicsEffect(opacityEffect);
+
+    QPropertyAnimation *fadeAnimation = new QPropertyAnimation(opacityEffect, "opacity");
+    fadeAnimation->setDuration(100);
+    fadeAnimation->setStartValue(0.0);
+    fadeAnimation->setEndValue(1.0);
+    fadeAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void AdminWindow::hideDeleteStaffOverlay() {
+    // 1. Remove background blur and re-enable background interactions
+    ui->bgWidget->setGraphicsEffect(nullptr);
+    ui->bgWidget->setEnabled(true);
+
+    // 2. Hide overlay
+    ui->overlayDeleteStaffFrame->hide();
 }
 

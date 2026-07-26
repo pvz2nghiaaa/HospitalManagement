@@ -188,18 +188,18 @@ void ReceptionistWindow::SearchDrugsBy(const QString &nameOrID,const QString &st
     QSqlQuery query;
 
     QString sql =
-        "SELECT DrugID, DrugName, Unit, Price, StockQuantity "
-        "FROM Drug "
+        "SELECT DrugID, Name AS DrugName, Unit, Price, StockQuantity "
+        "FROM Drugs "
         "WHERE 1 = 1 ";
 
     QString keyword = nameOrID.trimmed();
 
-    // Search theo DrugID hoặc DrugName
+    // Search theo DrugID hoặc Name
     if (!keyword.isEmpty())
     {
         sql +=
             "AND (CAST(DrugID AS TEXT) LIKE :keyword "
-            "OR DrugName LIKE :keyword) ";
+            "OR Name LIKE :keyword) ";
     }
 
     // Filter theo Stock Status
@@ -323,8 +323,8 @@ bool ReceptionistWindow::AddNewDrug(
     QSqlQuery query;
 
     query.prepare(
-        "INSERT INTO Drug "
-        "(DrugName, Unit, Price, StockQuantity) "
+        "INSERT INTO Drugs "
+        "(Name, Unit, Price, StockQuantity) "
         "VALUES "
         "(:name, :unit, :price, :stock)"
     );
@@ -435,7 +435,7 @@ bool ReceptionistWindow::UpdateDrugInfo(
 
     QSqlQuery query;
 
-    query.prepare("UPDATE Drug ""SET DrugName = :name, ""Unit = :unit, ""Price = :price, ""StockQuantity = :stock ""WHERE DrugID = :id");
+    query.prepare("UPDATE Drugs ""SET Name = :name, ""Unit = :unit, ""Price = :price, ""StockQuantity = :stock ""WHERE DrugID = :id");
 
     query.bindValue(":id",drugID );
 

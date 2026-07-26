@@ -79,7 +79,9 @@ void insertSampleData() {
     if (query.exec()) {
         int adminId = query.lastInsertId().toInt();
         QList<Permission::Type> adminPerms = {
-            Permission::viewLog, Permission::addLog, Permission::changePermission, Permission::manageUsers, Permission::viewRecord
+            Permission::viewLog, Permission::addLog,
+            Permission::changePermission, Permission::manageUsers,
+            Permission::viewRecord, Permission::createPatient
         };
         for (Permission::Type p : adminPerms) {
             QSqlQuery permQuery;
