@@ -40,6 +40,7 @@ void AdminWindow::on_btnDashboard_clicked()
 void AdminWindow::on_btnStaffManagement_clicked()
 {
     navigateToPage(1, ui->btnStaffManagement);
+    refreshStaffDashboard(User::GetAllUser());
 }
 
 
@@ -58,6 +59,28 @@ void AdminWindow::on_btnActivityLogs_clicked()
 void AdminWindow::on_btnReport_clicked()
 {
     navigateToPage(4, ui->btnReport);
+}
+
+void AdminWindow::refreshStaffDashboard(vector<tuple<int, QString, QString, QString, bool, QString>> listUser){
+    int n = listUser.size();
+    ui->tblStaff->setRowCount(0); // clear old list
+    for (int i = 0; i < n; i++){
+        tuple<int, QString, QString, QString, bool, QString>& user = listUser[i];
+        ui->tblStaff->insertRow(i);
+        // row - column - data
+        ui->tblStaff->setItem(i, 0, new QTableWidgetItem(QString::number(get<0>(user))));
+        ui->tblStaff->setItem(i, 1, new QTableWidgetItem(get<1>(user)));
+        ui->tblStaff->setItem(i, 2, new QTableWidgetItem(get<2>(user)));
+        ui->tblStaff->setItem(i, 3, new QTableWidgetItem(get<3>(user)));
+        ui->tblStaff->setItem(i, 5, new QTableWidgetItem(get<5>(user)));
+        QTableWidgetItem* statusItem = new QTableWidgetItem(get<4>(user) ? "Active" : "Inactive");
+        if (get<4>(user)) {
+            statusItem->setForeground(QBrush(QColor(34, 197, 94))); // Green text for Active
+        } else {
+            statusItem->setForeground(QBrush(QColor(239, 68, 68))); // Red text for Inactive
+        }
+        ui->tblStaff->setItem(i, 4, statusItem);
+    }
 }
 
 void AdminWindow::navigateToPage(int pageIndex, QPushButton* activeBtn){
@@ -139,6 +162,8 @@ void AdminWindow::on_btnSaveNewStaff_clicked() {
         ui->cbNewRole->setCurrentIndex(0);
         
         hideOverlayForm();
+
+        refreshStaffDashboard(User::GetAllUser());
     } else {
         QMessageBox::critical(this, "Error", "Failed to create staff account. The username might already be in use.");
     }
@@ -266,5 +291,31 @@ void AdminWindow::hidePatientOverlay() {
 
     // 2. Hide overlay
     ui->overlayPatientFrame->hide();
+}
+
+
+void AdminWindow::on_btnRefreshStaff_clicked()
+{
+    refreshStaffDashboard(User::GetAllUser());
+}
+
+
+void AdminWindow::on_btnSearch_clicked()
+{
+    vector<tuple<int, QString, QString, QString, bool, QString>> listUser;
+    QString name = ui->txtSearch->text();
+    QString trimmedName = name.trimmed();
+    QString role = ui->cbRole->currentText();
+    if (role == "All"){
+        if (trimmedName.size() == 0){
+            listUser = User::GetAllUser();
+        }
+        else listUser = User::SearchUserBy(ui->txtSearch->text()); // remove trim
+    }
+    else if (trimmedName.size() == 0)
+        listUser = User::SearchUserByRole(role);
+    else listUser = User::SearchUserBy(name, role);
+
+    refreshStaffDashboard(listUser);
 }
 
