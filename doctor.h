@@ -28,7 +28,7 @@ public:
     static QList<MedicalRecord> SearchRecordsBy(const QString& keyword, const QString& status, const QString& date);
     static MedicalRecord GetRecordDetails(int recordId);
     static QList<Prescription> GetRecordPrescriptions(int recordId);
-    static void PrintRecord(int recordId);
+    void Doctor::PrintRecord(int recordId, const QString& filePath) {
 
     static User GetMyProfileInfo();
     static QList<Permission> GetMyPermissions();
