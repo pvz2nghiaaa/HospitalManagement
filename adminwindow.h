@@ -35,6 +35,7 @@ private slots:
     void updateDashboardInfo();
 
     void refreshStaffDashboard(vector<tuple<int, QString, QString, QString, bool, QString>> listUser);
+    void refreshPermissionTable();
 
     // Overlay form helpers and slots
     void on_btnAddStaff_clicked();

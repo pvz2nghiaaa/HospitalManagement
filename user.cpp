@@ -192,6 +192,28 @@ bool User::UpdatePermissionFromDatabase(){
     return true;
 }
 
+vector<tuple<int, QString, QString, QList<Permission> > > User::GetAllUserPermission() {
+    vector<tuple<int, QString, QString, QList<Permission> > > list;
+    if (!User::GetActiveUser().hasPermission(Permission::manageUsers))
+        return list;
+
+    QSqlQuery query;
+    query.prepare("SELECT * FROM User");
+    if (query.exec())
+        while(query.next()){
+            list.push_back(
+                tuple<int, QString, QString, QList<Permission> > {
+                    query.value("UserID").toInt(),
+                    query.value("FullName").toString(),
+                    query.value("Role").toString(),
+                    Permission::GetActiveUserPermission(query.value("UserID").toInt())
+                }
+                );
+        }
+    else qDebug() << "Error: " << query.lastError().text();
+    return list;
+}
+
 QString User::GetEncryptPassword(QString nPassword){
     return nPassword; // Warning***: no hash, will change later
 }

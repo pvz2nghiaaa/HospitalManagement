@@ -39,6 +39,7 @@ public:
     static vector<tuple<int, QString, QString, QString, bool, QString>> SearchUserBy(QString name);
     static vector<tuple<int, QString, QString, QString, bool, QString>> SearchUserBy(QString name, QString role);
     static vector<tuple<int, QString, QString, QString, bool, QString>> SearchUserByRole(QString role);
+    static vector<tuple<int, QString, QString, QList<Permission> > > GetAllUserPermission();
     void appendPermission(Permission);
     void erasePermission(Permission);
     // fast set attribute

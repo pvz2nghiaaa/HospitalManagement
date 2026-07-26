@@ -279,6 +279,15 @@ QTableWidget {
     border: 1px solid rgb(51, 65, 85);
     border-radius: 8px;
 }
+QTableWidget::item:selected {
+    background-color: rgb(51, 65, 85);
+    color: rgb(241, 245, 249);
+    border: none;
+}
+QTableWidget::item:focus {
+    border: none;
+    outline: none;
+}
 QHeaderView::section {
     background-color: rgb(30, 41, 59);
     color: rgb(6, 182, 212);
@@ -935,6 +944,15 @@ QTableWidget {
     border: 1px solid rgb(51, 65, 85);
     border-radius: 8px;
 }
+QTableWidget::item:selected {
+    background-color: rgb(51, 65, 85);
+    color: rgb(241, 245, 249);
+    border: none;
+}
+QTableWidget::item:focus {
+    border: none;
+    outline: none;
+}
 QHeaderView::section {
     background-color: rgb(30, 41, 59);
     color: rgb(6, 182, 212);
@@ -1430,6 +1448,15 @@ QTableWidget {
     gridline-color: rgb(51, 65, 85);
     border: 1px solid rgb(51, 65, 85);
     border-radius: 8px;
+}
+QTableWidget::item:selected {
+    background-color: rgb(51, 65, 85);
+    color: rgb(241, 245, 249);
+    border: none;
+}
+QTableWidget::item:focus {
+    border: none;
+    outline: none;
 }
 QHeaderView::section {
     background-color: rgb(30, 41, 59);

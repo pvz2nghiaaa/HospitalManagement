@@ -299,6 +299,24 @@ QTableWidget {
     border: 1px solid rgb(51, 65, 85);
     border-radius: 8px;
 }
+QTableWidget::item:selected {
+    background-color: rgb(51, 65, 85);
+    color: rgb(241, 245, 249);
+    border: none;
+}
+QTableWidget::item:focus {
+    border: none;
+    outline: none;
+}
+QTableWidget::item:selected {
+    background-color: rgb(51, 65, 85);
+    color: rgb(241, 245, 249);
+    border: none;
+}
+QTableWidget::item:focus {
+    border: none;
+    outline: none;
+}
 QHeaderView::section {
     background-color: rgb(30, 41, 59);
     color: rgb(6, 182, 212);
@@ -971,6 +989,15 @@ QTableWidget {
     border: 1px solid rgb(51, 65, 85);
     border-radius: 8px;
 }
+QTableWidget::item:selected {
+    background-color: rgb(51, 65, 85);
+    color: rgb(241, 245, 249);
+    border: none;
+}
+QTableWidget::item:focus {
+    border: none;
+    outline: none;
+}
 QHeaderView::section {
     background-color: rgb(30, 41, 59);
     color: rgb(6, 182, 212);
@@ -1132,6 +1159,9 @@ QPushButton#btnDeleteStaff:hover {
         <property name="editTriggers">
          <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
         </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
+        </property>
         <attribute name="horizontalHeaderDefaultSectionSize">
          <number>110</number>
         </attribute>
@@ -1251,6 +1281,24 @@ QTableWidget {
     gridline-color: rgb(51, 65, 85);
     border: 1px solid rgb(51, 65, 85);
     border-radius: 8px;
+}
+QTableWidget::item:selected {
+    background-color: rgb(51, 65, 85);
+    color: rgb(241, 245, 249);
+    border: none;
+}
+QTableWidget::item:focus {
+    border: none;
+    outline: none;
+}
+QTableWidget::item:selected {
+    background-color: rgb(51, 65, 85);
+    color: rgb(241, 245, 249);
+    border: none;
+}
+QTableWidget::item:focus {
+    border: none;
+    outline: none;
 }
 QHeaderView::section {
     background-color: rgb(30, 41, 59);
@@ -1409,11 +1457,20 @@ QPushButton#btnEditPermission:hover {
           <height>380</height>
          </rect>
         </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
+        </property>
         <attribute name="horizontalHeaderDefaultSectionSize">
          <number>200</number>
         </attribute>
         <attribute name="horizontalHeaderStretchLastSection">
          <bool>true</bool>
+        </attribute>
+        <attribute name="verticalHeaderVisible">
+         <bool>false</bool>
         </attribute>
         <column>
          <property name="text">
@@ -1472,6 +1529,24 @@ QTableWidget {
     gridline-color: rgb(51, 65, 85);
     border: 1px solid rgb(51, 65, 85);
     border-radius: 8px;
+}
+QTableWidget::item:selected {
+    background-color: rgb(51, 65, 85);
+    color: rgb(241, 245, 249);
+    border: none;
+}
+QTableWidget::item:focus {
+    border: none;
+    outline: none;
+}
+QTableWidget::item:selected {
+    background-color: rgb(51, 65, 85);
+    color: rgb(241, 245, 249);
+    border: none;
+}
+QTableWidget::item:focus {
+    border: none;
+    outline: none;
 }
 QHeaderView::section {
     background-color: rgb(30, 41, 59);
@@ -2305,7 +2380,7 @@ QPushButton:hover {
        <string>Register Patient</string>
       </property>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>30</x>
@@ -2452,7 +2527,7 @@ QLineEdit:disabled {
       </property>
       <property name="font">
        <font>
-        <pointsize>16</pointsize>
+        <pointsize>-1</pointsize>
         <bold>true</bold>
        </font>
       </property>
@@ -2477,6 +2552,9 @@ QLineEdit:disabled {
       </property>
      </widget>
      <widget class="QLineEdit" name="txtEditUsername">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>30</x>
@@ -2484,9 +2562,6 @@ QLineEdit:disabled {
         <width>390</width>
         <height>32</height>
        </rect>
-      </property>
-      <property name="enabled">
-       <bool>false</bool>
       </property>
      </widget>
      <widget class="QLabel" name="lblEditName">
@@ -2593,6 +2668,9 @@ QLineEdit:disabled {
       </property>
      </widget>
      <widget class="QLineEdit" name="txtEditPassword">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>30</x>
@@ -2600,9 +2678,6 @@ QLineEdit:disabled {
         <width>190</width>
         <height>32</height>
        </rect>
-      </property>
-      <property name="enabled">
-       <bool>false</bool>
       </property>
       <property name="echoMode">
        <enum>QLineEdit::EchoMode::Password</enum>
@@ -2751,7 +2826,7 @@ QPushButton {
       </property>
       <property name="font">
        <font>
-        <pointsize>16</pointsize>
+        <pointsize>-1</pointsize>
         <bold>true</bold>
        </font>
       </property>
@@ -2773,6 +2848,7 @@ QPushButton {
       </property>
       <property name="font">
        <font>
+        <pointsize>-1</pointsize>
         <bold>true</bold>
        </font>
       </property>
@@ -2854,11 +2930,11 @@ QPushButton:hover {
      </widget>
     </widget>
    </widget>
-   <zorder>bgWidget</zorder>
    <zorder>overlayFrame</zorder>
    <zorder>overlayPatientFrame</zorder>
    <zorder>overlayEditStaffFrame</zorder>
    <zorder>overlayDeleteStaffFrame</zorder>
+   <zorder>bgWidget</zorder>
   </widget>
  </widget>
  <resources/>

@@ -49,6 +49,29 @@ void AdminWindow::on_btnStaffManagement_clicked()
 void AdminWindow::on_btnPermissionManagement_clicked()
 {
     navigateToPage(2, ui->btnPermissionManagement);
+    refreshPermissionTable();
+}
+
+void AdminWindow::refreshPermissionTable(){
+    // id - full name - role - list permission
+    vector<tuple<int, QString, QString, QList<Permission> > > list = User::GetAllUserPermission();
+    int n = list.size();
+
+    ui->tblPermission->setRowCount(0);
+    for (int i = 0; i < n; i++){
+        ui->tblPermission->insertRow(i);
+        // row - column - data
+        ui->tblPermission->setItem(i, 0, new QTableWidgetItem(QString::number(get<0>(list[i]))));
+        ui->tblPermission->setItem(i, 1, new QTableWidgetItem(get<1>(list[i])));
+        ui->tblPermission->setItem(i, 2, new QTableWidgetItem(get<2>(list[i])));
+
+        QStringList readablePerms;
+        for (const Permission &p : get<3>(list[i]))
+            readablePerms.push_back(Permission::permissionToReadableString(p));
+        QString joinedPerms = readablePerms.isEmpty() ? "No Permissions" : readablePerms.join(", ");
+        ui->tblPermission->setItem(i, 3, new QTableWidgetItem(joinedPerms));
+    }
+    ui->tblPermission->resizeRowsToContents(); // adjust its height according to the content
 }
 
 
