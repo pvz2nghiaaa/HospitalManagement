@@ -1,16 +1,27 @@
+#pragma once
 #include <QSqlQuery>
+#include <QSqlError>
 #include <QDebug>
+#include <QString>
 #include "permission.h"
 #include "user.h"
 
 class Patient {
 public:
+    int ID = -1;
+    QString FullName;
+    QString Phone;
+    QString BirthDate;
+    QString Sex;
+    QString Address;
+
     static bool initTable() {
         QSqlQuery q;
         return q.exec("CREATE TABLE IF NOT EXISTS Patients ("
                       "ID INTEGER PRIMARY KEY AUTOINCREMENT, "
                       "FullName TEXT, Phone TEXT, BirthDate TEXT, Sex TEXT, Address TEXT)");
     }
+
     static int GetTotalPatients(){
         if (!User::GetActiveUser().hasPermission(Permission::viewLog)){
             qDebug() << "User does not have permission to view patient info";
@@ -24,6 +35,7 @@ public:
         qDebug() << "Failed to get total patients from Patients";
         return 0;
     }
+
     static bool createPatient(QString fullName, QString phoneNo, QString birthDate, QString sex, QString address) {
         if (!User::GetActiveUser().hasPermission(Permission::createPatient)) {
             qDebug() << "Access Denied: Current user lacks permission to create patients.";
@@ -33,7 +45,7 @@ public:
         query.prepare("INSERT INTO Patients (FullName, Phone, BirthDate, Sex, Address) "
                       "VALUES (:name, :phoneNo, :dob, :sex, :addr)");
         query.bindValue(":name", fullName);
-        query.bindValue(":phonNo", phoneNo);
+        query.bindValue(":phoneNo", phoneNo);
         query.bindValue(":dob", birthDate);
         query.bindValue(":sex", sex);
         query.bindValue(":addr", address);
@@ -42,7 +54,7 @@ public:
             qDebug() << "Patient registered successfully:" << fullName;
             return true;
         } else {
-            qDebug() << "Failed to register patient:" << query.lastError().text();
+            qDebug() << query.lastError().text();
             return false;
         }
     }
