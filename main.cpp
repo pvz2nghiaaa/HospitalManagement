@@ -67,6 +67,7 @@ bool setupDatabase() {
 
 
 void insertSampleData() {
+    QSqlDatabase::database().transaction();
     QSqlQuery query;
     // Insert Admin
     query.prepare("INSERT INTO User (Username, EncryptedPassword, FullName, PhoneNumber, Role, IsActive) "
@@ -262,6 +263,7 @@ void insertSampleData() {
 
 
     qDebug() << "=> Sample drugs inserted successfully!";
+    QSqlDatabase::database().commit();
 }
 
 int main(int argc, char *argv[])

@@ -35,6 +35,7 @@ public:
     static User* getCurrentUser();
     static QString GetEncryptPassword(QString nPassword);
     static int GetTotalStaff();
+    static QString GetUsernameById(int userID);
     static vector<tuple<int, QString, QString, QString, bool, QString>> GetAllUser();
     static vector<tuple<int, QString, QString, QString, bool, QString>> SearchUserBy(QString name);
     static vector<tuple<int, QString, QString, QString, bool, QString>> SearchUserBy(QString name, QString role);

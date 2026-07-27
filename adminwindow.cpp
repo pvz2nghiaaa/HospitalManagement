@@ -15,6 +15,7 @@
 #include <QLabel>
 #include <QFrame>
 #include <QGridLayout>
+#include <QSqlDatabase>
 
 AdminWindow::AdminWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -25,6 +26,7 @@ AdminWindow::AdminWindow(QWidget *parent) :
     ui->overlayPatientFrame->hide(); // Hide patient overlay by default
     ui->overlayEditStaffFrame->hide(); // Hide edit staff overlay by default
     ui->overlayDeleteStaffFrame->hide(); // Hide delete staff overlay by default
+    ui->overlayEditPermissionFrame->hide(); // Hide edit permission overlay by default
     navigateToPage(0, ui->btnDashboard);
     updateDashboardInfo();
 
@@ -771,5 +773,138 @@ QWidget* AdminWindow::createPermissionChipsWidget(const QList<Permission>& perms
 
     container->setLayout(layout);
     return container;
+}
+
+void AdminWindow::on_btnEditPermission_clicked() {
+    int currentRow = ui->tblPermission->currentRow();
+    if (currentRow < 0) {
+        QMessageBox::warning(this, "No Selection", "Please select a user from the table to edit permissions.");
+        return;
+    }
+
+    QString id = ui->tblPermission->item(currentRow, 0)->text();
+    QString fullName = ui->tblPermission->item(currentRow, 1)->text();
+    QString role = ui->tblPermission->item(currentRow, 2)->data(Qt::UserRole).toString();
+
+    // Fetch username from DB via User class
+    QString username = User::GetUsernameById(id.toInt());
+
+    // Set details text in overlay
+    ui->lblEditPermissionDetails->setText(QString("ID:       %1\nUsername: %2\nName:     %3\nRole:     %4")
+        .arg(id).arg(username).arg(fullName).arg(role));
+
+    // Get active user permissions
+    QList<Permission> perms = Permission::GetUserPermission(id.toInt());
+
+    // Update checkboxes
+    ui->chkPermViewLog->setChecked(perms.contains(Permission::viewLog));
+    ui->chkPermAddLog->setChecked(perms.contains(Permission::addLog));
+    ui->chkPermChangePermission->setChecked(perms.contains(Permission::changePermission));
+    ui->chkPermManageUsers->setChecked(perms.contains(Permission::manageUsers));
+    ui->chkPermCreateRecord->setChecked(perms.contains(Permission::createRecord));
+    ui->chkPermViewRecord->setChecked(perms.contains(Permission::viewRecord));
+    ui->chkPermEditRecord->setChecked(perms.contains(Permission::editRecord));
+    ui->chkPermCreatePatient->setChecked(perms.contains(Permission::createPatient));
+    ui->chkPermEditPatient->setChecked(perms.contains(Permission::editPatient));
+    ui->chkPermCreateInvoice->setChecked(perms.contains(Permission::createInvoice));
+    ui->chkPermViewInvoice->setChecked(perms.contains(Permission::viewInvoice));
+    ui->chkPermManageDrugs->setChecked(perms.contains(Permission::manageDrugs));
+
+    // Save ID for saving/confirming slot
+    ui->overlayEditPermissionFrame->setProperty("selectedUserId", id.toInt());
+
+    showEditPermissionOverlay();
+}
+
+void AdminWindow::on_btnCancelEditPermission_clicked() {
+    hideEditPermissionOverlay();
+}
+
+void AdminWindow::on_btnSaveEditPermission_clicked() {
+    int userID = ui->overlayEditPermissionFrame->property("selectedUserId").toInt();
+    QList<Permission> updatedPerms;
+    QList<Permission> previousPerms = Permission::GetUserPermission(userID);
+    // why am i doing this
+    if (ui->chkPermViewLog->isChecked())           updatedPerms.append(Permission::viewLog);
+    if (ui->chkPermAddLog->isChecked())            updatedPerms.append(Permission::addLog);
+    if (ui->chkPermChangePermission->isChecked())  updatedPerms.append(Permission::changePermission);
+    if (ui->chkPermManageUsers->isChecked())       updatedPerms.append(Permission::manageUsers);
+    if (ui->chkPermCreateRecord->isChecked())      updatedPerms.append(Permission::createRecord);
+    if (ui->chkPermViewRecord->isChecked())        updatedPerms.append(Permission::viewRecord);
+    if (ui->chkPermEditRecord->isChecked())        updatedPerms.append(Permission::editRecord);
+    if (ui->chkPermCreatePatient->isChecked())      updatedPerms.append(Permission::createPatient);
+    if (ui->chkPermEditPatient->isChecked())        updatedPerms.append(Permission::editPatient);
+    if (ui->chkPermCreateInvoice->isChecked())      updatedPerms.append(Permission::createInvoice);
+    if (ui->chkPermViewInvoice->isChecked())        updatedPerms.append(Permission::viewInvoice);
+    if (ui->chkPermManageDrugs->isChecked())       updatedPerms.append(Permission::manageDrugs);
+
+    QSqlDatabase db = QSqlDatabase::database();
+    db.transaction();
+
+    bool success = true;
+
+    for (Permission perms: previousPerms)
+        if (!updatedPerms.contains(perms))
+            success &= Permission::changeUserPermission(userID, perms, false);
+
+    for (Permission perms: updatedPerms)
+        if (!previousPerms.contains(perms))
+            success &= Permission::changeUserPermission(userID, perms, true);
+
+    if (success) {
+        db.commit();
+        if (userID == User::GetActiveUser().GetID()) {
+            User::GetActiveUser().UpdatePermissionFromDatabase();
+        }
+        QMessageBox::information(this, "Success", "Permissions updated successfully!");
+    } else {
+        db.rollback();
+        QMessageBox::critical(this, "Failure", "Permission cannot be updated due to database error.");
+    }
+    hideEditPermissionOverlay();
+    refreshPermissionTable(User::GetAllUserPermission());
+}
+
+void AdminWindow::showEditPermissionOverlay() {
+    // 1. Disable background interactions
+    ui->bgWidget->setEnabled(false);
+
+    // 2. Set geometry to cover full window size dynamically
+    ui->overlayEditPermissionFrame->setGeometry(0, 0, this->width(), this->height());
+    int cardX = (this->width() - ui->cardEditPermission->width()) / 2;
+    int cardY = (this->height() - ui->cardEditPermission->height()) / 2;
+    ui->cardEditPermission->move(cardX, cardY);
+
+    // 3. Apply single blur to background container
+    QGraphicsBlurEffect *blur = new QGraphicsBlurEffect(this);
+    blur->setBlurRadius(8);
+    ui->bgWidget->setGraphicsEffect(blur);
+    ui->bgWidget->repaint();
+
+    // 4. Clear graphics effect on overlay
+    ui->overlayEditPermissionFrame->setGraphicsEffect(nullptr);
+
+    // 5. Show overlay frame
+    ui->overlayEditPermissionFrame->show();
+    ui->overlayEditPermissionFrame->raise();
+
+    // 6. Setup opacity animation for smooth fade-in
+    QGraphicsOpacityEffect *opacityEffect = new QGraphicsOpacityEffect(ui->overlayEditPermissionFrame);
+    ui->overlayEditPermissionFrame->setGraphicsEffect(opacityEffect);
+
+    QPropertyAnimation *fadeAnimation = new QPropertyAnimation(opacityEffect, "opacity");
+    fadeAnimation->setDuration(100);
+    fadeAnimation->setStartValue(0.0);
+    fadeAnimation->setEndValue(1.0);
+    fadeAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void AdminWindow::hideEditPermissionOverlay() {
+    // 1. Remove background blur and re-enable background interactions
+    ui->bgWidget->setGraphicsEffect(nullptr);
+    ui->bgWidget->setEnabled(true);
+
+    // 2. Hide overlay
+    ui->overlayEditPermissionFrame->hide();
 }
 

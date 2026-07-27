@@ -65,6 +65,13 @@ private slots:
     void showDeleteStaffOverlay();
     void hideDeleteStaffOverlay();
 
+    // Edit Permission Overlay
+    void on_btnEditPermission_clicked();
+    void on_btnCancelEditPermission_clicked();
+    void on_btnSaveEditPermission_clicked();
+    void showEditPermissionOverlay();
+    void hideEditPermissionOverlay();
+
     void on_btnRefreshStaff_clicked();
 
     void on_btnSearch_clicked();
