@@ -67,3 +67,37 @@ QList<Permission> Permission::GetActiveUserPermission(){
     else qDebug() << query.lastError().text();
     return list;
 }
+
+QList<Permission> Permission::GetUserPermission(int userID){
+    QList<Permission> list;
+    if (!User::GetActiveUser().hasPermission(Permission::manageUsers))
+        return list;
+
+    QSqlQuery query;
+    query.prepare("SELECT PermissionType FROM Permission WHERE UserID = :id");
+    query.bindValue(":id", userID);
+    if (query.exec()){
+        while(query.next())
+            list.append(static_cast<Permission::Type>(query.value("PermissionType").toInt()));
+    }
+    else qDebug() << query.lastError().text();
+    return list;
+}
+
+QString Permission::permissionToReadableString(Permission::Type type) {
+    switch (type) {
+    case Permission::viewLog:         return "View Logs";
+    case Permission::addLog:          return "Add Logs";
+    case Permission::changePermission:return "Change Permissions";
+    case Permission::manageUsers:     return "Manage Users";
+    case Permission::createRecord:    return "Create Records";
+    case Permission::viewRecord:      return "View Records";
+    case Permission::editRecord:      return "Edit Records";
+    case Permission::createPatient:   return "Register Patients";
+    case Permission::editPatient:     return "Edit Patients";
+    case Permission::createInvoice:   return "Create Invoices";
+    case Permission::viewInvoice:     return "View Invoices";
+    case Permission::manageDrugs:     return "Manage Drugs";
+    default:                          return "Unknown";
+    }
+}

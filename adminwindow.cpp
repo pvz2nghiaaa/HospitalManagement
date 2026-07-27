@@ -11,6 +11,10 @@
 #include <QGraphicsOpacityEffect>
 #include <QPropertyAnimation>
 #include "admin.h"
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QFrame>
+#include <QGridLayout>
 
 AdminWindow::AdminWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -19,6 +23,8 @@ AdminWindow::AdminWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->overlayFrame->hide(); // Hide overlay by default
     ui->overlayPatientFrame->hide(); // Hide patient overlay by default
+    ui->overlayEditStaffFrame->hide(); // Hide edit staff overlay by default
+    ui->overlayDeleteStaffFrame->hide(); // Hide delete staff overlay by default
     navigateToPage(0, ui->btnDashboard);
     updateDashboardInfo();
 
@@ -47,40 +53,129 @@ void AdminWindow::on_btnStaffManagement_clicked()
 void AdminWindow::on_btnPermissionManagement_clicked()
 {
     navigateToPage(2, ui->btnPermissionManagement);
+    refreshPermissionTable(User::GetAllUserPermission());
 }
 
+void AdminWindow::refreshPermissionTable(vector<tuple<int, QString, QString, QList<Permission> > > list){
+    // id - full name - role - list permission
+    int n = list.size();
+
+    ui->tblPermission->setRowCount(0);
+    ui->tblPermission->setAlternatingRowColors(true); // Enable zebra striping
+    
+    for (int i = 0; i < n; i++){
+        ui->tblPermission->insertRow(i);
+        
+        // Col 0: ID (Primary Style)
+        QTableWidgetItem* idItem = new QTableWidgetItem(QString::number(get<0>(list[i])));
+        idItem->setForeground(QColor(241, 245, 249)); // Off-white
+        ui->tblPermission->setItem(i, 0, idItem);
+        
+        // Col 1: Full Name (Primary Style)
+        QTableWidgetItem* nameItem = new QTableWidgetItem(get<1>(list[i]));
+        nameItem->setForeground(QColor(241, 245, 249)); // Off-white
+        ui->tblPermission->setItem(i, 1, nameItem);
+        
+        // Col 2: Role (Modern translucent Pill Badge)
+        QString role = get<2>(list[i]);
+        QTableWidgetItem* roleSortItem = new QTableWidgetItem(""); // Set text to empty to prevent selection text overlay
+        roleSortItem->setData(Qt::UserRole, role); // Store actual value in UserRole for form reading
+        ui->tblPermission->setItem(i, 2, roleSortItem);
+        
+        QWidget* roleWidget = nullptr;
+        if (role == "Admin") {
+            roleWidget = createBadgeWidget("Admin", QColor(34, 211, 238), QColor(6, 182, 212));
+        } else if (role == "Doctor") {
+            roleWidget = createBadgeWidget("Doctor", QColor(45, 212, 191), QColor(45, 212, 191));
+        } else {
+            roleWidget = createBadgeWidget("Receptionist", QColor(165, 180, 252), QColor(129, 140, 248));
+        }
+        ui->tblPermission->setCellWidget(i, 2, roleWidget);
+
+        // Col 3: Permissions (Modern visual group-colored chips)
+        QList<Permission> perms = get<3>(list[i]);
+        QStringList readablePerms;
+        for (const Permission &p : perms) {
+            readablePerms.push_back(Permission::permissionToReadableString(p));
+        }
+        QString joinedPerms = readablePerms.isEmpty() ? "No Permissions" : readablePerms.join(", ");
+        
+        QTableWidgetItem* permsSortItem = new QTableWidgetItem(""); // Set text to empty to prevent selection text overlay
+        permsSortItem->setData(Qt::UserRole, joinedPerms); // Store actual value in UserRole
+        ui->tblPermission->setItem(i, 3, permsSortItem);
+        
+        QWidget* chipsWidget = createPermissionChipsWidget(perms);
+        ui->tblPermission->setCellWidget(i, 3, chipsWidget);
+    }
+    ui->tblPermission->resizeRowsToContents(); // adjust its height according to the content
+}
+
+void AdminWindow::refreshStaffDashboard(vector<tuple<int, QString, QString, QString, bool, QString>> listUser){
+    int n = listUser.size();
+    ui->tblStaff->setRowCount(0); // clear old list
+    ui->tblStaff->setAlternatingRowColors(true); // Enable zebra striping
+    
+    for (int i = 0; i < n; i++){
+        tuple<int, QString, QString, QString, bool, QString>& user = listUser[i];
+        ui->tblStaff->insertRow(i);
+        
+        // Col 0: ID (Primary Style)
+        QTableWidgetItem* idItem = new QTableWidgetItem(QString::number(get<0>(user)));
+        idItem->setForeground(QColor(241, 245, 249)); // Off-white
+        ui->tblStaff->setItem(i, 0, idItem);
+        
+        // Col 1: Username (Secondary Muted Style)
+        QTableWidgetItem* userItem = new QTableWidgetItem(get<1>(user));
+        userItem->setForeground(QColor(148, 163, 184)); // Muted slate-gray
+        ui->tblStaff->setItem(i, 1, userItem);
+        
+        // Col 2: Full Name (Primary Style)
+        QTableWidgetItem* nameItem = new QTableWidgetItem(get<2>(user));
+        nameItem->setForeground(QColor(241, 245, 249)); // Off-white
+        ui->tblStaff->setItem(i, 2, nameItem);
+        
+        // Col 3: Phone number (Secondary Muted Style)
+        QTableWidgetItem* phoneItem = new QTableWidgetItem(get<3>(user));
+        phoneItem->setForeground(QColor(148, 163, 184)); // Muted slate-gray
+        ui->tblStaff->setItem(i, 3, phoneItem);
+        
+        // Col 4: Status (Modern translucent Pill Badge)
+        bool isActive = get<4>(user);
+        QTableWidgetItem* statusSortItem = new QTableWidgetItem(""); // Set text to empty to prevent selection text overlay
+        statusSortItem->setData(Qt::UserRole, isActive ? "Active" : "Inactive"); // Store actual value in UserRole for editing
+        ui->tblStaff->setItem(i, 4, statusSortItem);
+        
+        QWidget* statusWidget = isActive 
+            ? createBadgeWidget("Active", QColor(74, 222, 128), QColor(34, 197, 94))
+            : createBadgeWidget("Inactive", QColor(248, 113, 113), QColor(239, 68, 68));
+        ui->tblStaff->setCellWidget(i, 4, statusWidget);
+        
+        // Col 5: Role (Modern translucent Pill Badge)
+        QString role = get<5>(user);
+        QTableWidgetItem* roleSortItem = new QTableWidgetItem(""); // Set text to empty to prevent selection text overlay
+        roleSortItem->setData(Qt::UserRole, role); // Store actual value in UserRole for editing
+        ui->tblStaff->setItem(i, 5, roleSortItem);
+        
+        QWidget* roleWidget = nullptr;
+        if (role == "Admin") {
+            roleWidget = createBadgeWidget("Admin", QColor(34, 211, 238), QColor(6, 182, 212));
+        } else if (role == "Doctor") {
+            roleWidget = createBadgeWidget("Doctor", QColor(45, 212, 191), QColor(45, 212, 191));
+        } else {
+            roleWidget = createBadgeWidget("Receptionist", QColor(165, 180, 252), QColor(129, 140, 248));
+        }
+        ui->tblStaff->setCellWidget(i, 5, roleWidget);
+    }
+}
 
 void AdminWindow::on_btnActivityLogs_clicked()
 {
     navigateToPage(3, ui->btnActivityLogs);
 }
 
-
 void AdminWindow::on_btnReport_clicked()
 {
     navigateToPage(4, ui->btnReport);
-}
-
-void AdminWindow::refreshStaffDashboard(vector<tuple<int, QString, QString, QString, bool, QString>> listUser){
-    int n = listUser.size();
-    ui->tblStaff->setRowCount(0); // clear old list
-    for (int i = 0; i < n; i++){
-        tuple<int, QString, QString, QString, bool, QString>& user = listUser[i];
-        ui->tblStaff->insertRow(i);
-        // row - column - data
-        ui->tblStaff->setItem(i, 0, new QTableWidgetItem(QString::number(get<0>(user))));
-        ui->tblStaff->setItem(i, 1, new QTableWidgetItem(get<1>(user)));
-        ui->tblStaff->setItem(i, 2, new QTableWidgetItem(get<2>(user)));
-        ui->tblStaff->setItem(i, 3, new QTableWidgetItem(get<3>(user)));
-        ui->tblStaff->setItem(i, 5, new QTableWidgetItem(get<5>(user)));
-        QTableWidgetItem* statusItem = new QTableWidgetItem(get<4>(user) ? "Active" : "Inactive");
-        if (get<4>(user)) {
-            statusItem->setForeground(QBrush(QColor(34, 197, 94))); // Green text for Active
-        } else {
-            statusItem->setForeground(QBrush(QColor(239, 68, 68))); // Red text for Inactive
-        }
-        ui->tblStaff->setItem(i, 4, statusItem);
-    }
 }
 
 void AdminWindow::navigateToPage(int pageIndex, QPushButton* activeBtn){
@@ -310,12 +405,371 @@ void AdminWindow::on_btnSearch_clicked()
         if (trimmedName.size() == 0){
             listUser = User::GetAllUser();
         }
-        else listUser = User::SearchUserBy(ui->txtSearch->text()); // remove trim
+        else listUser = User::SearchUserBy(name); // remove trim
     }
     else if (trimmedName.size() == 0)
         listUser = User::SearchUserByRole(role);
     else listUser = User::SearchUserBy(name, role);
 
     refreshStaffDashboard(listUser);
+}
+
+void AdminWindow::on_btnEditStaff_clicked() {
+    int currentRow = ui->tblStaff->currentRow();
+    if (currentRow < 0) {
+        QMessageBox::warning(this, "No Selection", "Please select a staff member from the table to edit.");
+        return;
+    }
+
+    QString id = ui->tblStaff->item(currentRow, 0)->text();
+    QString username = ui->tblStaff->item(currentRow, 1)->text();
+    QString fullName = ui->tblStaff->item(currentRow, 2)->text();
+    QString phone = ui->tblStaff->item(currentRow, 3)->text();
+    QString status = ui->tblStaff->item(currentRow, 4)->data(Qt::UserRole).toString(); // Read from UserRole instead of visible text
+    QString role = ui->tblStaff->item(currentRow, 5)->data(Qt::UserRole).toString();   // Read from UserRole instead of visible text
+
+    // Populate overlay fields
+    ui->txtEditUsername->setText(username);
+    ui->txtEditFullName->setText(fullName);
+    ui->txtEditPhone->setText(phone);
+    
+    // Reset password field and checkbox
+    ui->txtEditPassword->clear();
+    ui->txtEditPassword->setEnabled(false);
+    ui->chkChangePassword->setChecked(false);
+
+    // Set Combobox role
+    int roleIdx = ui->cbEditRole->findText(role);
+    if (roleIdx >= 0) ui->cbEditRole->setCurrentIndex(roleIdx);
+
+    // Set Combobox status
+    int statusIdx = ui->cbEditActive->findText(status);
+    if (statusIdx >= 0) ui->cbEditActive->setCurrentIndex(statusIdx);
+
+    // Save selected ID for update operation
+    ui->overlayEditStaffFrame->setProperty("selectedStaffId", id.toInt());
+
+    showEditStaffOverlay();
+}
+
+void AdminWindow::on_btnCancelEditStaff_clicked() {
+    hideEditStaffOverlay();
+}
+
+void AdminWindow::on_chkChangePassword_toggled(bool checked) {
+    ui->txtEditPassword->setEnabled(checked);
+    if (!checked) {
+        ui->txtEditPassword->clear();
+    }
+}
+
+void AdminWindow::on_btnSaveEditStaff_clicked() {
+    int id = ui->overlayEditStaffFrame->property("selectedStaffId").toInt();
+    QString fullName = ui->txtEditFullName->text().trimmed();
+    QString phone = ui->txtEditPhone->text().trimmed();
+    QString role = ui->cbEditRole->currentText();
+    bool isActive = (ui->cbEditActive->currentText() == "Active");
+
+    QString newPassword = "";
+    if (ui->chkChangePassword->isChecked()) {
+        newPassword = ui->txtEditPassword->text();
+        if (newPassword.isEmpty()) {
+            QMessageBox::warning(this, "Validation Error", "Password cannot be empty when changing password.");
+            return;
+        }
+    }
+
+    if (fullName.isEmpty()) {
+        QMessageBox::warning(this, "Validation Error", "Full Name is required.");
+        return;
+    }
+
+    bool success = Admin::updateAccount(id, fullName, phone, role, isActive, newPassword);
+    if (success) {
+        QMessageBox::information(this, "Success", "Staff account updated successfully!");
+        
+        // Refresh table and stats
+        on_btnRefreshStaff_clicked();
+        updateDashboardInfo();
+        
+        hideEditStaffOverlay();
+    } else {
+        QMessageBox::critical(this, "Error", "Failed to update staff account.");
+    }
+}
+
+void AdminWindow::showEditStaffOverlay() {
+    // 1. Disable background interactions
+    ui->bgWidget->setEnabled(false);
+
+    // 2. Set geometry to cover full window size dynamically
+    ui->overlayEditStaffFrame->setGeometry(0, 0, this->width(), this->height());
+    int cardX = (this->width() - ui->cardEditStaff->width()) / 2;
+    int cardY = (this->height() - ui->cardEditStaff->height()) / 2;
+    ui->cardEditStaff->move(cardX, cardY);
+
+    // 3. Apply single blur to background container
+    QGraphicsBlurEffect *blur = new QGraphicsBlurEffect(this);
+    blur->setBlurRadius(8);
+    ui->bgWidget->setGraphicsEffect(blur);
+    ui->bgWidget->repaint();
+
+    // 4. Clear graphics effect on overlay
+    ui->overlayEditStaffFrame->setGraphicsEffect(nullptr);
+
+    // 5. Show overlay frame
+    ui->overlayEditStaffFrame->show();
+    ui->overlayEditStaffFrame->raise();
+
+    // 6. Setup opacity animation for smooth fade-in
+    QGraphicsOpacityEffect *opacityEffect = new QGraphicsOpacityEffect(ui->overlayEditStaffFrame);
+    ui->overlayEditStaffFrame->setGraphicsEffect(opacityEffect);
+
+    QPropertyAnimation *fadeAnimation = new QPropertyAnimation(opacityEffect, "opacity");
+    fadeAnimation->setDuration(100);
+    fadeAnimation->setStartValue(0.0);
+    fadeAnimation->setEndValue(1.0);
+    fadeAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void AdminWindow::hideEditStaffOverlay() {
+    // 1. Remove background blur and re-enable background interactions
+    ui->bgWidget->setGraphicsEffect(nullptr);
+    ui->bgWidget->setEnabled(true);
+
+    // 2. Hide overlay
+    ui->overlayEditStaffFrame->hide();
+}
+
+void AdminWindow::on_btnDeleteStaff_clicked() {
+    int currentRow = ui->tblStaff->currentRow();
+    if (currentRow < 0) {
+        QMessageBox::warning(this, "No Selection", "Please select a staff member from the table to delete.");
+        return;
+    }
+
+    QString id = ui->tblStaff->item(currentRow, 0)->text();
+    QString username = ui->tblStaff->item(currentRow, 1)->text();
+    QString fullName = ui->tblStaff->item(currentRow, 2)->text();
+
+    // Prevent deletion of self
+    if (id.toInt() == User::GetActiveUser().GetID()) {
+        QMessageBox::warning(this, "Action Denied", "You cannot delete your own administrator account.");
+        return;
+    }
+
+    // Set details text in overlay
+    ui->lblDeleteStaffDetails->setText(QString("Username: %1\nName:     %2").arg(username).arg(fullName));
+
+    // Save ID for confirm deletion slot
+    ui->overlayDeleteStaffFrame->setProperty("deleteStaffId", id.toInt());
+
+    showDeleteStaffOverlay();
+}
+
+void AdminWindow::on_btnCancelDeleteStaff_clicked() {
+    hideDeleteStaffOverlay();
+}
+
+void AdminWindow::on_btnConfirmDeleteStaff_clicked() {
+    int id = ui->overlayDeleteStaffFrame->property("deleteStaffId").toInt();
+
+    bool success = Admin::deleteAccount(id);
+    if (success) {
+        QMessageBox::information(this, "Success", "Staff account deleted successfully!");
+        
+        // Refresh table and stats
+        on_btnRefreshStaff_clicked();
+        updateDashboardInfo();
+        
+        hideDeleteStaffOverlay();
+    } else {
+        QMessageBox::critical(this, "Error", "Failed to delete staff account.");
+    }
+}
+
+void AdminWindow::showDeleteStaffOverlay() {
+    // 1. Disable background interactions
+    ui->bgWidget->setEnabled(false);
+
+    // 2. Set geometry to cover full window size dynamically
+    ui->overlayDeleteStaffFrame->setGeometry(0, 0, this->width(), this->height());
+    int cardX = (this->width() - ui->cardDeleteStaff->width()) / 2;
+    int cardY = (this->height() - ui->cardDeleteStaff->height()) / 2;
+    ui->cardDeleteStaff->move(cardX, cardY);
+
+    // 3. Apply single blur to background container
+    QGraphicsBlurEffect *blur = new QGraphicsBlurEffect(this);
+    blur->setBlurRadius(8);
+    ui->bgWidget->setGraphicsEffect(blur);
+    ui->bgWidget->repaint();
+
+    // 4. Clear graphics effect on overlay
+    ui->overlayDeleteStaffFrame->setGraphicsEffect(nullptr);
+
+    // 5. Show overlay frame
+    ui->overlayDeleteStaffFrame->show();
+    ui->overlayDeleteStaffFrame->raise();
+
+    // 6. Setup opacity animation for smooth fade-in
+    QGraphicsOpacityEffect *opacityEffect = new QGraphicsOpacityEffect(ui->overlayDeleteStaffFrame);
+    ui->overlayDeleteStaffFrame->setGraphicsEffect(opacityEffect);
+
+    QPropertyAnimation *fadeAnimation = new QPropertyAnimation(opacityEffect, "opacity");
+    fadeAnimation->setDuration(100);
+    fadeAnimation->setStartValue(0.0);
+    fadeAnimation->setEndValue(1.0);
+    fadeAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void AdminWindow::hideDeleteStaffOverlay() {
+    // 1. Remove background blur and re-enable background interactions
+    ui->bgWidget->setGraphicsEffect(nullptr);
+    ui->bgWidget->setEnabled(true);
+
+    // 2. Hide overlay
+    ui->overlayDeleteStaffFrame->hide();
+}
+
+
+void AdminWindow::on_btnSearchPermission_clicked()
+{
+
+    vector<tuple<int, QString, QString, QList<Permission> > > listPermission;
+    QString name = ui->txtSearchPermission->text();
+    QString trimmedName = name.trimmed();
+    QString role = ui->cbRolePermission->currentText();
+    if (role == "All"){
+        if (trimmedName.size() == 0){
+            listPermission = User::GetAllUserPermission();
+        }
+        else listPermission = User::SearchPermissionBy(name); // remove trim
+    }
+    else if (trimmedName.size() == 0)
+        listPermission = User::SearchPermissionByRole(role);
+    else listPermission = User::SearchPermissionBy(name, role);
+
+    refreshPermissionTable(listPermission);
+}
+
+QWidget* AdminWindow::createBadgeWidget(const QString& text, const QColor& textColor, const QColor& bgColor) {
+    QWidget* container = new QWidget();
+    QHBoxLayout* layout = new QHBoxLayout(container);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setAlignment(Qt::AlignCenter);
+
+    QLabel* label = new QLabel(text);
+    label->setStyleSheet(QString(
+        "QLabel {"
+        "  color: %1;"
+        "  background-color: rgba(%2, %3, %4, 0.15);"
+        "  border-radius: 10px;"
+        "  padding: 4px 10px;"
+        "  font-size: 11px;"
+        "  font-weight: bold;"
+        "}"
+    ).arg(textColor.name(QColor::HexRgb))
+     .arg(bgColor.red()).arg(bgColor.green()).arg(bgColor.blue()));
+
+    layout->addWidget(label);
+    container->setLayout(layout);
+    return container;
+}
+
+QWidget* AdminWindow::createPermissionChipsWidget(const QList<Permission>& perms) {
+    QWidget* container = new QWidget();
+    QGridLayout* layout = new QGridLayout(container);
+    layout->setContentsMargins(6, 4, 6, 4);
+    layout->setHorizontalSpacing(6);
+    layout->setVerticalSpacing(4);
+
+    int row = 0;
+    int col = 0;
+    const int maxCols = 2; // Lay chips out in 2 columns maximum to prevent narrowing and fit nicely in row height
+    
+    for (const Permission& p : perms) {
+        Permission::Type type = static_cast<Permission::Type>(p);
+        QString labelText = Permission::permissionToReadableString(p);
+        
+        QColor textColor;
+        QColor bgColor;
+
+        // Group colors
+        switch (type) {
+            // Purple for System Management
+            case Permission::viewLog:
+            case Permission::addLog:
+            case Permission::changePermission:
+            case Permission::manageUsers:
+                textColor = QColor(216, 180, 254);
+                bgColor = QColor(168, 85, 247);
+                break;
+                
+            // Blue for Medical Records
+            case Permission::createRecord:
+            case Permission::viewRecord:
+            case Permission::editRecord:
+                textColor = QColor(147, 197, 253);
+                bgColor = QColor(59, 130, 246);
+                break;
+                
+            // Emerald Green for Patients
+            case Permission::createPatient:
+            case Permission::editPatient:
+                textColor = QColor(110, 231, 183);
+                bgColor = QColor(16, 185, 129);
+                break;
+                
+            // Amber for Billing
+            case Permission::createInvoice:
+            case Permission::viewInvoice:
+                textColor = QColor(253, 230, 138);
+                bgColor = QColor(245, 158, 11);
+                break;
+                
+            // Pink for Drugs/Services
+            case Permission::manageDrugs:
+                textColor = QColor(249, 168, 212);
+                bgColor = QColor(236, 72, 153);
+                break;
+                
+            default:
+                textColor = QColor(241, 245, 249);
+                bgColor = QColor(148, 163, 184);
+                break;
+        }
+
+        QLabel* chip = new QLabel(labelText);
+        chip->setAlignment(Qt::AlignCenter);
+        chip->setStyleSheet(QString(
+            "QLabel {"
+            "  color: %1;"
+            "  background-color: rgba(%2, %3, %4, 0.15);"
+            "  border-radius: 4px;"
+            "  padding: 2px 6px;"
+            "  font-size: 11px;"
+            "  font-weight: bold;"
+            "}"
+        ).arg(textColor.name(QColor::HexRgb))
+         .arg(bgColor.red()).arg(bgColor.green()).arg(bgColor.blue()));
+
+        layout->addWidget(chip, row, col);
+        
+        col++;
+        if (col >= maxCols) {
+            col = 0;
+            row++;
+        }
+    }
+    
+    // Fallback if no permissions
+    if (perms.isEmpty()) {
+        QLabel* emptyLabel = new QLabel("No Permissions");
+        emptyLabel->setStyleSheet("color: rgb(100, 116, 139); font-size: 11px; font-style: italic;");
+        layout->addWidget(emptyLabel, 0, 0);
+    }
+
+    container->setLayout(layout);
+    return container;
 }
 

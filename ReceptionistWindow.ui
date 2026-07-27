@@ -283,9 +283,23 @@ QLineEdit:focus, QComboBox:focus {
 QTableWidget {
     background-color: rgb(15, 23, 42);
     color: rgb(226, 232, 240);
-    gridline-color: rgb(51, 65, 85);
+    gridline-color: rgb(30, 41, 59);
     border: 1px solid rgb(51, 65, 85);
     border-radius: 8px;
+    alternate-background-color: rgb(22, 30, 49);
+}
+QTableWidget::item {
+    padding: 6px;
+}
+QTableWidget::item:hover {
+    background-color: rgba(6, 182, 212, 0.08);
+}
+QTableWidget::item:selected {
+    background-color: rgb(30, 41, 59);
+    color: rgb(6, 182, 212);
+}
+QTableWidget::item:focus {
+    outline: none;
 }
 QHeaderView::section {
     background-color: rgb(30, 41, 59);
@@ -916,9 +930,23 @@ QLineEdit:focus, QComboBox:focus, QDateEdit:focus {
 QTableWidget {
     background-color: rgb(15, 23, 42);
     color: rgb(226, 232, 240);
-    gridline-color: rgb(51, 65, 85);
+    gridline-color: rgb(30, 41, 59);
     border: 1px solid rgb(51, 65, 85);
     border-radius: 8px;
+    alternate-background-color: rgb(22, 30, 49);
+}
+QTableWidget::item {
+    padding: 6px;
+}
+QTableWidget::item:hover {
+    background-color: rgba(6, 182, 212, 0.08);
+}
+QTableWidget::item:selected {
+    background-color: rgb(30, 41, 59);
+    color: rgb(6, 182, 212);
+}
+QTableWidget::item:focus {
+    outline: none;
 }
 QHeaderView::section {
     background-color: rgb(30, 41, 59);
@@ -1401,9 +1429,23 @@ QLineEdit:focus, QComboBox:focus {
 QTableWidget {
     background-color: rgb(15, 23, 42);
     color: rgb(226, 232, 240);
-    gridline-color: rgb(51, 65, 85);
+    gridline-color: rgb(30, 41, 59);
     border: 1px solid rgb(51, 65, 85);
     border-radius: 8px;
+    alternate-background-color: rgb(22, 30, 49);
+}
+QTableWidget::item {
+    padding: 6px;
+}
+QTableWidget::item:hover {
+    background-color: rgba(6, 182, 212, 0.08);
+}
+QTableWidget::item:selected {
+    background-color: rgb(30, 41, 59);
+    color: rgb(6, 182, 212);
+}
+QTableWidget::item:focus {
+    outline: none;
 }
 QHeaderView::section {
     background-color: rgb(30, 41, 59);
@@ -1667,9 +1709,23 @@ QLineEdit:focus, QDateEdit:focus {
 QTableWidget {
     background-color: rgb(15, 23, 42);
     color: rgb(226, 232, 240);
-    gridline-color: rgb(51, 65, 85);
+    gridline-color: rgb(30, 41, 59);
     border: 1px solid rgb(51, 65, 85);
     border-radius: 8px;
+    alternate-background-color: rgb(22, 30, 49);
+}
+QTableWidget::item {
+    padding: 6px;
+}
+QTableWidget::item:hover {
+    background-color: rgba(6, 182, 212, 0.08);
+}
+QTableWidget::item:selected {
+    background-color: rgb(30, 41, 59);
+    color: rgb(6, 182, 212);
+}
+QTableWidget::item:focus {
+    outline: none;
 }
 QHeaderView::section {
     background-color: rgb(30, 41, 59);

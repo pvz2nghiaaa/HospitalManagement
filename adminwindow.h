@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QPushButton>
+#include "permission.h"
 using namespace std;
 
 namespace Ui {
@@ -34,8 +35,6 @@ private slots:
 
     void updateDashboardInfo();
 
-    void refreshStaffDashboard(vector<tuple<int, QString, QString, QString, bool, QString>> listUser);
-
     // Overlay form helpers and slots
     void on_btnAddStaff_clicked();
     void on_btnAddStaffQuick_clicked();
@@ -51,12 +50,33 @@ private slots:
     void showPatientOverlay();
     void hidePatientOverlay();
 
+    // Edit Staff Overlay
+    void on_btnEditStaff_clicked();
+    void on_btnCancelEditStaff_clicked();
+    void on_btnSaveEditStaff_clicked();
+    void on_chkChangePassword_toggled(bool checked);
+    void showEditStaffOverlay();
+    void hideEditStaffOverlay();
+
+    // Delete Staff Overlay
+    void on_btnDeleteStaff_clicked();
+    void on_btnCancelDeleteStaff_clicked();
+    void on_btnConfirmDeleteStaff_clicked();
+    void showDeleteStaffOverlay();
+    void hideDeleteStaffOverlay();
+
     void on_btnRefreshStaff_clicked();
 
     void on_btnSearch_clicked();
 
+    void on_btnSearchPermission_clicked();
+
 private:
     Ui::AdminWindow *ui;
+    void refreshStaffDashboard(vector<tuple<int, QString, QString, QString, bool, QString>> listUser);
+    void refreshPermissionTable(vector<tuple<int, QString, QString, QList<Permission> > > list);
+    QWidget* createBadgeWidget(const QString& text, const QColor& textColor, const QColor& bgColor);
+    QWidget* createPermissionChipsWidget(const QList<Permission>& perms);
 };
 
 #endif // ADMINWINDOW_H
