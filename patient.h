@@ -58,4 +58,58 @@ public:
             return false;
         }
     }
+    static QList<std::tuple<QString, QString, QString, QString, QString, QString>> findPatient(QString searchID, QString searchName, QString searchPhone)
+    {
+        QString baseSql = "SELECT ID, FullName, Phone, BirthDate, Sex, Address FROM Patients";
+        QStringList conditions;
+
+        if (!searchID.isEmpty()) {
+            conditions.append("ID = :id");
+        }
+        if (!searchName.isEmpty()) {
+            conditions.append("FullName LIKE :name");
+        }
+        if (!searchPhone.isEmpty()) {
+            conditions.append("Phone = :phone");
+        }
+        if (!conditions.isEmpty()) {
+            baseSql += " WHERE " + conditions.join(" AND ");
+        }
+
+        QSqlQuery query;
+        query.prepare(baseSql);
+
+        if (!searchID.isEmpty()) {
+            query.bindValue(":id", searchID);
+        }
+
+        if (!searchName.isEmpty()) {
+            // Adds % wildcards around input for flexible searching
+            query.bindValue(":name", "%" + searchName + "%");
+        }
+
+        if (!searchPhone.isEmpty()) {
+            query.bindValue(":phone", searchPhone);
+        }
+
+        QList<std::tuple<QString, QString, QString, QString, QString, QString>> lstPatient;
+        if (!query.exec()) {
+            qDebug() << "Query failed:" << query.lastError().text();
+            return lstPatient;
+        }
+
+        while (query.next())
+        {
+            QString id    = query.value(0).toString();
+            QString name  = query.value(1).toString();
+            QString phone = query.value(2).toString();
+            QString dob   = query.value(3).toString();
+            QString sex   = query.value(4).toString();
+            QString addr  = query.value(5).toString();
+
+            lstPatient.append(std::tuple<QString, QString, QString, QString, QString, QString>{id, name, phone, dob, sex, addr});
+        }
+
+        return lstPatient;
+    }
 };
