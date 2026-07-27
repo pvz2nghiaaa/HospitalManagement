@@ -36,6 +36,7 @@ private slots:
     void on_btnSearch_16_clicked();
     void on_btnSearch_17_clicked();
     void on_btnSearch_18_clicked();
+    void on_pushButton_clicked();
     void on_tblPatient_2_cellClicked(int row, int column);
 
 private:
