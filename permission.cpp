@@ -68,7 +68,7 @@ QList<Permission> Permission::GetActiveUserPermission(){
     return list;
 }
 
-QList<Permission> Permission::GetActiveUserPermission(int userID){
+QList<Permission> Permission::GetUserPermission(int userID){
     QList<Permission> list;
     if (!User::GetActiveUser().hasPermission(Permission::manageUsers))
         return list;

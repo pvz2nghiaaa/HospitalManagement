@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QPushButton>
+#include "permission.h"
 using namespace std;
 
 namespace Ui {
@@ -33,9 +34,6 @@ private slots:
     void on_btnLogout_clicked();
 
     void updateDashboardInfo();
-
-    void refreshStaffDashboard(vector<tuple<int, QString, QString, QString, bool, QString>> listUser);
-    void refreshPermissionTable();
 
     // Overlay form helpers and slots
     void on_btnAddStaff_clicked();
@@ -71,8 +69,14 @@ private slots:
 
     void on_btnSearch_clicked();
 
+    void on_btnSearchPermission_clicked();
+
 private:
     Ui::AdminWindow *ui;
+    void refreshStaffDashboard(vector<tuple<int, QString, QString, QString, bool, QString>> listUser);
+    void refreshPermissionTable(vector<tuple<int, QString, QString, QList<Permission> > > list);
+    QWidget* createBadgeWidget(const QString& text, const QColor& textColor, const QColor& bgColor);
+    QWidget* createPermissionChipsWidget(const QList<Permission>& perms);
 };
 
 #endif // ADMINWINDOW_H
