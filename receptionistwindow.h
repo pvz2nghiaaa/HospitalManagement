@@ -54,6 +54,8 @@ private:
     QString getDrugStatus(int stockQuantity) const;
 
     bool RemoveDrug(int drugID);
+
+    void GetDrugStockHistory(int drugID);
 };
 
 #endif // RECEPTIONISTWINDOW_H
