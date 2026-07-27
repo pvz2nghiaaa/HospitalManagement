@@ -174,6 +174,94 @@ void insertSampleData() {
     } else {
         qDebug() << "Failed to register patient:" << query.lastError().text();
     }
+    // Insert Sample Drugs
+
+    query.prepare(
+        "INSERT INTO Drugs (Name, Unit, Price, StockQuantity) "
+        "VALUES (:name,:unit,:price,:stock)"
+    );
+
+    query.bindValue(":name", "Paracetamol");
+    query.bindValue(":unit", "Tablet");
+    query.bindValue(":price", 5000);
+    query.bindValue(":stock", 200);
+
+    if (query.exec())
+        qDebug() << "Drug 1 inserted.";
+    else
+        qDebug() << query.lastError().text();
+
+
+
+    query.prepare(
+        "INSERT INTO Drugs (Name, Unit, Price, StockQuantity) "
+        "VALUES (:name,:unit,:price,:stock)"
+    );
+
+    query.bindValue(":name", "Amoxicillin");
+    query.bindValue(":unit", "Capsule");
+    query.bindValue(":price", 12000);
+    query.bindValue(":stock", 150);
+
+    if (query.exec())
+        qDebug() << "Drug 2 inserted.";
+    else
+        qDebug() << query.lastError().text();
+
+
+
+    query.prepare(
+        "INSERT INTO Drugs (Name, Unit, Price, StockQuantity) "
+        "VALUES (:name,:unit,:price,:stock)"
+    );
+
+    query.bindValue(":name", "Vitamin C");
+    query.bindValue(":unit", "Tablet");
+    query.bindValue(":price", 3500);
+    query.bindValue(":stock", 350);
+
+    if (query.exec())
+        qDebug() << "Drug 3 inserted.";
+    else
+        qDebug() << query.lastError().text();
+
+
+
+    query.prepare(
+        "INSERT INTO Drugs (Name, Unit, Price, StockQuantity) "
+        "VALUES (:name,:unit,:price,:stock)"
+    );
+
+    query.bindValue(":name", "Cefixime");
+    query.bindValue(":unit", "Capsule");
+    query.bindValue(":price", 18000);
+    query.bindValue(":stock", 80);
+
+    if (query.exec())
+        qDebug() << "Drug 4 inserted.";
+    else
+        qDebug() << query.lastError().text();
+
+
+
+    query.prepare(
+        "INSERT INTO Drugs (Name, Unit, Price, StockQuantity) "
+        "VALUES (:name,:unit,:price,:stock)"
+    );
+
+    query.bindValue(":name", "Insulin");
+    query.bindValue(":unit", "Vial");
+    query.bindValue(":price", 250000);
+    query.bindValue(":stock", 25);
+
+    if (query.exec())
+        qDebug() << "Drug 5 inserted.";
+    else
+        qDebug() << query.lastError().text();
+
+
+
+    qDebug() << "=> Sample drugs inserted successfully!";
 }
 
 int main(int argc, char *argv[])
@@ -183,6 +271,7 @@ int main(int argc, char *argv[])
     if (!setupDatabase()) {
         return -1;
     }
+     Drug::initTable();
     insertSampleData();
     qDebug() << "-------\n";
     LoginWindow w;
