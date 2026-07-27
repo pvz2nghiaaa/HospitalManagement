@@ -518,3 +518,190 @@ void ReceptionistWindow::on_tblPatient_2_cellClicked(int row,int column){
         << drugID
         << drugName;
 }
+
+
+bool ReceptionistWindow::RemoveDrug(int drugID)
+{
+    QSqlQuery query;
+
+
+    query.prepare(
+        "SELECT StockQuantity "
+        "FROM Drugs "
+        "WHERE DrugID=:id"
+    );
+
+    query.bindValue(":id", drugID);
+
+
+    query.exec();
+
+    query.next();
+
+
+    int oldStock =
+        query.value(0).toInt();
+
+
+
+    // Save history
+
+    QSqlQuery history;
+
+
+    history.prepare(
+        "INSERT INTO DrugStockHistory "
+        "(DrugID,Action,OldQuantity,NewQuantity,Time,Operator)"
+        "VALUES "
+        "(:id,'DELETE',:old,0,datetime('now'),'Receptionist')"
+    );
+
+
+    history.bindValue(":id", drugID);
+    history.bindValue(":old", oldStock);
+
+
+    history.exec();
+
+
+
+    // Delete
+
+    QSqlQuery del;
+
+
+    del.prepare(
+        "DELETE FROM Drugs "
+        "WHERE DrugID=:id"
+    );
+
+
+    del.bindValue(":id", drugID);
+
+
+
+    return del.exec();
+}
+void ReceptionistWindow::on_btnSearch_17_clicked()
+{
+
+    int row =
+        ui->tblPatient_2->currentRow();
+
+
+    if (row < 0)
+    {
+        QMessageBox::warning(
+            this,
+            "Delete",
+            "Select a drug first"
+        );
+        return;
+    }
+
+
+
+    int drugID =
+        ui->tblPatient_2
+        ->item(row, 0)
+        ->text()
+        .toInt();
+
+
+
+    if (RemoveDrug(drugID))
+    {
+
+        QMessageBox::information(
+            this,
+            "Delete",
+            "Delete successfully"
+        );
+
+
+        loadAllDrugs();
+
+    }
+
+}
+
+void ReceptionistWindow::GetDrugStockHistory(int drugID)
+{
+
+    QSqlQuery query;
+
+
+    query.prepare(
+        "SELECT Action,"
+        "OldQuantity,"
+        "NewQuantity,"
+        "Time,"
+        "Operator "
+        "FROM DrugStockHistory "
+        "WHERE DrugID=:id"
+    );
+
+
+    query.bindValue(":id", drugID);
+
+
+
+    query.exec();
+
+
+
+    QString result;
+
+
+
+    while (query.next())
+    {
+        result +=
+            query.value(0).toString()
+            + " | "
+            + query.value(1).toString()
+            + " -> "
+            + query.value(2).toString()
+            + "\n";
+    }
+
+
+
+    QMessageBox::information(
+        this,
+        "Drug History",
+        result
+    );
+}
+
+void ReceptionistWindow::on_pushButton_clicked()
+{
+
+    int row =
+        ui->tblPatient_2->currentRow();
+
+
+
+    if (row < 0)
+    {
+        QMessageBox::warning(
+            this,
+            "History",
+            "Select drug first"
+        );
+
+        return;
+    }
+
+
+
+    int drugID =
+        ui->tblPatient_2
+        ->item(row, 0)
+        ->text()
+        .toInt();
+
+
+
+    GetDrugStockHistory(drugID);
+}
