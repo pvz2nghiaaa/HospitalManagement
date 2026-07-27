@@ -65,10 +65,13 @@ bool setupDatabase() {
 }
 
 
-
 void insertSampleData() {
     QSqlQuery query;
-    // Insert Admin
+
+    // ==========================================
+    // 1. INSERT USERS (ADMIN, DOCTOR, RECEPTIONIST)
+    // ==========================================
+    // Insert Admin (Sẽ tự động nhận UserID = 1)
     query.prepare("INSERT INTO User (Username, EncryptedPassword, FullName, PhoneNumber, Role, IsActive) "
                   "VALUES (:user, :pass, :name, :phone, :role, 1)");
     query.bindValue(":user", "admin");
@@ -90,7 +93,7 @@ void insertSampleData() {
         }
     }
 
-    // Insert Doctor
+    // Insert Doctor (Sẽ tự động nhận UserID = 2)
     query.prepare("INSERT INTO User (Username, EncryptedPassword, FullName, PhoneNumber, Role, IsActive) "
                   "VALUES (:user, :pass, :name, :phone, :role, 1)");
     query.bindValue(":user", "doctor");
@@ -112,7 +115,7 @@ void insertSampleData() {
         }
     }
 
-    // Insert Receptionist
+    // Insert Receptionist (Sẽ tự động nhận UserID = 3)
     query.prepare("INSERT INTO User (Username, EncryptedPassword, FullName, PhoneNumber, Role, IsActive) "
                   "VALUES (:user, :pass, :name, :phone, :role, 1)");
     query.bindValue(":user", "receptionist");
@@ -133,7 +136,55 @@ void insertSampleData() {
             permQuery.exec();
         }
     }
-    qDebug() << "=> Sample users and permissions inserted successfully!";
+
+    if (!query.exec("INSERT INTO Patients (ID, FullName, Sex, BirthDate, Address) "
+                    "VALUES (201, 'Nguyen Van A', 'Male', '1990-05-15', 'Q1, TP.HCM')")) {
+        qDebug() << "LỖI BỆNH NHÂN 201:" << query.lastError().text();
+    }
+    if (!query.exec("INSERT INTO Patients (ID, FullName, Sex, BirthDate, Address) "
+                    "VALUES (202, 'Tran Thi B', 'Female', '1985-10-20', 'Q3, TP.HCM')")) {
+        qDebug() << "LỖI BỆNH NHÂN 202:" << query.lastError().text();
+    }
+
+    // Thêm Bệnh án (Bảng MedicalRecords - Giữ nguyên)
+    if (!query.exec("INSERT INTO MedicalRecords (RecordID, PatientID, Date, IsComplete) "
+                    "VALUES (301, 201, '27-07-2026', 1)")) {
+        qDebug() << "LỖI BỆNH ÁN 301:" << query.lastError().text();
+    }
+    if (!query.exec("INSERT INTO MedicalRecords (RecordID, PatientID, Date, IsComplete) "
+                    "VALUES (302, 202, '28-07-2026', 0)")) {
+        qDebug() << "LỖI BỆNH ÁN 302:" << query.lastError().text();
+    }
+
+    // Thêm Chẩn đoán (Bảng Diagnoses - Đổi tên bảng và đổi cột Note thành ICDCode)
+    if (!query.exec("INSERT INTO Diagnoses (DiagnosisID, RecordID, DoctorID, ConditionName, Severity, ICDCode) "
+                    "VALUES (401, 301, 2, 'Influenza', 'Moderate', 'J09')")) {
+        qDebug() << "LỖI CHẨN ĐOÁN 401:" << query.lastError().text();
+    }
+
+    // Thêm Danh mục Thuốc (Bảng Drugs)
+    if (!query.exec("INSERT INTO Drugs (DrugID, Name, Unit, Price) "
+                    "VALUES (501, 'Paracetamol 500mg', 'Viên', 2000)")) {
+        qDebug() << "LỖI THUỐC 501:" << query.lastError().text();
+    }
+    if (!query.exec("INSERT INTO Drugs (DrugID, Name, Unit, Price) "
+                    "VALUES (502, 'Amoxicillin 250mg', 'Viên', 5000)")) {
+        qDebug() << "LỖI THUỐC 502:" << query.lastError().text();
+    }
+    if (!query.exec("INSERT INTO Drugs (DrugID, Name, Unit, Price) "
+                    "VALUES (503, 'Oresol', 'Gói', 3000)")) {
+        qDebug() << "LỖI THUỐC 503:" << query.lastError().text();
+    }
+
+    // Thêm Đơn thuốc (Bảng Prescriptions - Đổi PrescriptionID thành DetailID)
+    if (!query.exec("INSERT INTO Prescriptions (DetailID, DiagnosisID, DrugID, Quantity, Note) "
+                    "VALUES (601, 401, 501, 10, 'Uống 2 viên/ngày sau ăn')")) {
+        qDebug() << "LỖI ĐƠN THUỐC 601:" << query.lastError().text();
+    }
+    if (!query.exec("INSERT INTO Prescriptions (DetailID, DiagnosisID, DrugID, Quantity, Note) "
+                    "VALUES (602, 401, 503, 5, 'Pha 1 gói với 200ml nước')")) {
+        qDebug() << "LỖI ĐƠN THUỐC 602:" << query.lastError().text();
+    }
 }
 
 int main(int argc, char *argv[])

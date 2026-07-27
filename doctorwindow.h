@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QPushButton>
 
+
 namespace Ui {
 class DoctorWindow;
 }
@@ -24,6 +25,11 @@ private slots:
     void on_btnDoctors_clicked();
 
     void on_btnLogout_clicked();
+
+    void on_btnSearch_5_clicked();
+    void on_btnRefreshRecords_clicked();
+    void on_tblMedicalRecords_cellClicked(int row, int column);
+    void on_btnPrintRecord_clicked();
 
 private:
     Ui::DoctorWindow *ui;

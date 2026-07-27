@@ -1,4 +1,9 @@
 #pragma once
+#include <QPdfWriter>
+#include <QPageSize>
+#include <QPainter>
+#include <QFont>
+
 #include "user.h"
 #include "permission.h"
 #include "patient.h"
@@ -25,10 +30,11 @@ public:
     static bool RemovePrescriptionItem(int Prescription);
     static bool SavePrescription(int recordId, const QString& dateIssued, const QList<Prescription>& items);
 
-    static QList<MedicalRecord> SearchRecordsBy(const QString& keyword, const QString& status, const QString& date);
+    static QList<MedicalRecord> SearchRecordsBy(const QString& keyword, const QString& status);
     static MedicalRecord GetRecordDetails(int recordId);
     static QList<Prescription> GetRecordPrescriptions(int recordId);
-    void Doctor::PrintRecord(int recordId, const QString& filePath) {
+    static void GetRecordExtraInfo(int recordId, QString& patientName, QString& doctorName, QString& diagnosis);
+    static void PrintRecord(int recordId, const QString& filePath);
 
     static User GetMyProfileInfo();
     static QList<Permission> GetMyPermissions();

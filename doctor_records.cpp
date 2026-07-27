@@ -3,14 +3,14 @@
 #include <QVariant>
 
 
-
-QList<MedicalRecord> Doctor::SearchRecordsBy(const QString& keyword, const QString& status, const QString& date) {
+QList<MedicalRecord> Doctor::SearchRecordsBy(const QString& keyword, const QString& status) {
     QList<MedicalRecord> records;
     QSqlQuery query;
     QString sql = "SELECT m.RecordID, m.Date, m.IsComplete, m.PatientID "
                   "FROM MedicalRecords m "
                   "JOIN Patients p ON m.PatientID = p.ID "
                   "WHERE 1=1 ";
+
     if (!keyword.isEmpty()) {
         sql += "AND (p.FullName LIKE :keyword OR p.ID = :id_keyword) ";
     }
@@ -19,9 +19,7 @@ QList<MedicalRecord> Doctor::SearchRecordsBy(const QString& keyword, const QStri
         sql += "AND m.IsComplete = :status ";
     }
 
-    if (!date.isEmpty()) {
-        sql += "AND m.Date = :date ";
-    }
+    sql += "ORDER BY m.RecordID DESC";
 
     query.prepare(sql);
 
@@ -29,15 +27,12 @@ QList<MedicalRecord> Doctor::SearchRecordsBy(const QString& keyword, const QStri
         query.bindValue(":keyword", "%" + keyword + "%");
         query.bindValue(":id_keyword", keyword.toInt());
     }
+
     if (status == "Completed") {
         query.bindValue(":status", 1);
     } else if (status == "Pending") {
         query.bindValue(":status", 0);
     }
-    if (!date.isEmpty()) {
-        query.bindValue(":date", date);
-    }
-
     if (query.exec()) {
         while (query.next()) {
             MedicalRecord rec;
@@ -51,6 +46,11 @@ QList<MedicalRecord> Doctor::SearchRecordsBy(const QString& keyword, const QStri
         qDebug() << "SearchRecordsBy error:" << query.lastError().text();
     }
 
+    QSqlQuery check1("SELECT COUNT(*) FROM Patients");
+    if (check1.next()) qDebug() << "Tổng số Bệnh nhân trong DB:" << check1.value(0).toInt();
+
+    QSqlQuery check2("SELECT COUNT(*) FROM MedicalRecords");
+    if (check2.next()) qDebug() << "Tổng số Bệnh án trong DB:" << check2.value(0).toInt();
     return records;
 }
 
@@ -80,7 +80,7 @@ QList<Prescription> Doctor::GetRecordPrescriptions(int recordId) {
     QList<Prescription> items;
 
     QSqlQuery diagQuery;
-    diagQuery.prepare("SELECT DiagnosisID FROM Diagnosis WHERE RecordID = :recId");
+    diagQuery.prepare("SELECT DiagnosisID FROM Diagnoses WHERE RecordID = :recId");
     diagQuery.bindValue(":recId", recordId);
 
     if (diagQuery.exec()) {
@@ -127,6 +127,29 @@ QList<Prescription> Doctor::GetRecordPrescriptions(int recordId) {
     return items;
 }
 
+void Doctor::GetRecordExtraInfo(int recordId, QString& patientName, QString& doctorName, QString& diagnosis) {
+    patientName = "Unknown";
+    doctorName = "Unknown";
+    diagnosis = "N/A";
+
+    QSqlQuery q;
+    q.prepare("SELECT p.FullName AS PatientName, u.FullName AS DoctorName, d.ConditionName "
+              "FROM MedicalRecords m "
+              "JOIN Patients p ON m.PatientID = p.ID "
+              "LEFT JOIN Diagnoses d ON m.RecordID = d.RecordID "
+              "LEFT JOIN User u ON d.DoctorID = u.UserID "
+              "WHERE m.RecordID = :recId");
+    q.bindValue(":recId", recordId);
+
+    if (q.exec() && q.next()) {
+        patientName = q.value("PatientName").toString();
+        doctorName = q.value("DoctorName").toString();
+        diagnosis = q.value("ConditionName").toString();
+    } else {
+        qDebug() << "GetRecordExtraInfo error:" << q.lastError().text();
+    }
+}
+
 void Doctor::PrintRecord(int recordId, const QString& filePath) {
     if (filePath.isEmpty()) return;
 
@@ -142,7 +165,7 @@ void Doctor::PrintRecord(int recordId, const QString& filePath) {
     q.prepare("SELECT p.FullName AS PatientName, u.FullName AS DoctorName, d.ConditionName "
               "FROM MedicalRecords m "
               "JOIN Patients p ON m.PatientID = p.ID "
-              "LEFT JOIN Diagnosis d ON m.RecordID = d.RecordID "
+              "LEFT JOIN Diagnoses d ON m.RecordID = d.RecordID "
               "LEFT JOIN User u ON d.DoctorID = u.UserID "
               "WHERE m.RecordID = :recId");
     q.bindValue(":recId", recordId);
@@ -159,30 +182,62 @@ void Doctor::PrintRecord(int recordId, const QString& filePath) {
     pdfWriter.setResolution(300);
 
     QPainter painter(&pdfWriter);
-    painter.setPen(Qt::black);
+    painter.setRenderHint(QPainter::Antialiasing);
 
-    painter.setFont(QFont("Arial", 16, QFont::Bold));
-    painter.drawText(0, 500, "MEDIFLOW HOSPITAL - MEDICAL RECORD");
-    painter.drawLine(0, 700, 4000, 700);
+    int margin = 200;
+    int pageWidth = pdfWriter.width();
+    int startX = margin;
+    int endX = pageWidth - margin;
+    int contentWidth = endX - startX;
 
-    painter.setFont(QFont("Arial", 12));
-    int y = 1200;
-    int lineSpacing = 300;
+    painter.setFont(QFont("Arial", 22, QFont::Bold));
+    painter.setPen(QColor(6, 182, 212));
 
-    painter.drawText(0, y, "Patient ID: " + QString::number(rec.GetPatientID()));
-    painter.drawText(2000, y, "Patient Name: " + patientName);
-    y += lineSpacing;
-
-    painter.drawText(0, y, "Doctor: " + doctorName);
-    painter.drawText(2000, y, "Date: " + rec.GetDate());
-    y += lineSpacing;
-
-    painter.drawText(0, y, "Diagnosis: " + diagnosis);
-    y += lineSpacing * 2;
+    painter.drawText(QRect(startX, margin, contentWidth, 300), Qt::AlignCenter, "MEDIFLOW HOSPITAL");
 
     painter.setFont(QFont("Arial", 14, QFont::Bold));
-    painter.drawText(0, y, "PRESCRIPTION:");
+    painter.setPen(Qt::darkGray);
+    painter.drawText(QRect(startX, margin + 250, contentWidth, 200), Qt::AlignCenter, "OFFICIAL MEDICAL RECORD");
+
+    int y = margin + 550;
+    painter.setPen(Qt::black);
+    painter.drawLine(startX, y, endX, y);
+    y += 200;
+
+    painter.setFont(QFont("Arial", 12));
+    int lineSpacing = 200; // Khoảng cách dòng vừa phải
+
+    painter.drawText(startX, y, "Patient ID: " + QString::number(rec.GetPatientID()));
+    painter.drawText(QRect(startX, y, contentWidth, lineSpacing), Qt::AlignRight | Qt::AlignTop, "Patient Name: " + patientName);
     y += lineSpacing;
+
+    painter.drawText(startX, y, "Doctor: Dr. " + doctorName);
+    painter.drawText(QRect(startX, y, contentWidth, lineSpacing), Qt::AlignRight | Qt::AlignTop, "Visit Date: " + rec.GetDate());
+    y += lineSpacing;
+
+    painter.setFont(QFont("Arial", 12, QFont::Bold));
+    painter.drawText(startX, y, "Diagnosis: ");
+    painter.setFont(QFont("Arial", 12));
+    painter.drawText(startX + 350, y, diagnosis);
+    y += lineSpacing + 100;
+
+    painter.drawLine(startX, y, endX, y);
+    y += 200;
+
+    painter.setFont(QFont("Arial", 16, QFont::Bold));
+    painter.drawText(startX, y, "PRESCRIPTION");
+    y += lineSpacing;
+
+
+    painter.setFont(QFont("Arial", 12, QFont::Bold));
+    painter.drawText(startX, y, "No.");
+    painter.drawText(startX + 200, y, "Drug Name");
+    painter.drawText(startX + 1100, y, "Quantity");
+    painter.drawText(startX + 1500, y, "Instructions");
+
+    y += 80;
+    painter.drawLine(startX, y, endX, y);
+    y += 120;
 
     painter.setFont(QFont("Arial", 12));
     int index = 1;
@@ -192,16 +247,14 @@ void Doctor::PrintRecord(int recordId, const QString& filePath) {
         QList<QString> notes = rx.getNotes();
 
         for (int i = 0; i < drugs.size(); ++i) {
-            painter.drawText(200, y, QString::number(index++) + ". " + drugs[i].getName());
+            painter.drawText(startX, y, QString::number(index++));
+            painter.drawText(startX + 200, y, drugs[i].getName());
 
             QString qtyText = QString::number(qtys[i]) + " " + drugs[i].getUnit();
-            painter.drawText(3000, y, "Qty: " + qtyText);
-            y += lineSpacing;
+            painter.drawText(startX + 1100, y, qtyText);
 
-            if (!notes[i].isEmpty()) {
-                painter.drawText(400, y, "Note: " + notes[i]);
-                y += lineSpacing;
-            }
+            painter.drawText(startX + 1500, y, notes[i]);
+            y += lineSpacing;
         }
     }
 
