@@ -59,8 +59,14 @@ MedicalRecord& MedicalRecord::SetDate(QString nDate) { Date = nDate; return *thi
 MedicalRecord& MedicalRecord::SetIsComplete(bool nIsComplete) { IsComplete = nIsComplete; return *this; }
 MedicalRecord& MedicalRecord::SetPatientID(int nPatientID) { PatientID = nPatientID; return *this; }
 
+MedicalRecord& MedicalRecord::SetDoctorName(const QString& name) {  doctorName = name; return *this; }
+MedicalRecord& MedicalRecord::SetDiagnosis(const QString& diag) { diagnosis = diag; return *this; }
+
 // Getters
 int MedicalRecord::GetRecordID() { return RecordID; }
 QString MedicalRecord::GetDate() { return Date; }
 bool MedicalRecord::GetIsComplete() { return IsComplete; }
 int MedicalRecord::GetPatientID() { return PatientID; }
+
+QString MedicalRecord::GetDoctorName() { return doctorName; }
+QString MedicalRecord::GetDiagnosis() { return diagnosis; }

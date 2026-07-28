@@ -2,13 +2,16 @@
 #include <QSqlQuery>
 #include <QVariant>
 
-
 QList<MedicalRecord> Doctor::SearchRecordsBy(const QString& keyword, const QString& status) {
     QList<MedicalRecord> records;
     QSqlQuery query;
-    QString sql = "SELECT m.RecordID, m.Date, m.IsComplete, m.PatientID "
+    
+    QString sql = "SELECT m.RecordID, m.Date, m.IsComplete, m.PatientID, "
+                  "u.FullName AS DoctorName, d.ConditionName "
                   "FROM MedicalRecords m "
                   "JOIN Patients p ON m.PatientID = p.ID "
+                  "LEFT JOIN Diagnoses d ON m.RecordID = d.RecordID "
+                  "LEFT JOIN User u ON d.DoctorID = u.UserID "
                   "WHERE 1=1 ";
 
     if (!keyword.isEmpty()) {
@@ -20,7 +23,6 @@ QList<MedicalRecord> Doctor::SearchRecordsBy(const QString& keyword, const QStri
     }
 
     sql += "ORDER BY m.RecordID DESC";
-
     query.prepare(sql);
 
     if (!keyword.isEmpty()) {
@@ -33,24 +35,29 @@ QList<MedicalRecord> Doctor::SearchRecordsBy(const QString& keyword, const QStri
     } else if (status == "Pending") {
         query.bindValue(":status", 0);
     }
+
     if (query.exec()) {
         while (query.next()) {
             MedicalRecord rec;
+            
             rec.SetRecordID(query.value("RecordID").toInt())
-                .SetDate(query.value("Date").toString())
-                .SetIsComplete(query.value("IsComplete").toBool())
-                .SetPatientID(query.value("PatientID").toInt());
+               .SetDate(query.value("Date").toString())
+               .SetIsComplete(query.value("IsComplete").toBool())
+               .SetPatientID(query.value("PatientID").toInt());
+            
+
+            QString dName = query.value("DoctorName").toString();
+            if (!dName.isEmpty()) dName = "Dr. " + dName;
+            
+            rec.SetDoctorName(dName)
+               .SetDiagnosis(query.value("ConditionName").toString());
+
             records.append(rec);
         }
     } else {
         qDebug() << "SearchRecordsBy error:" << query.lastError().text();
     }
-
-    QSqlQuery check1("SELECT COUNT(*) FROM Patients");
-    if (check1.next()) qDebug() << "Tổng số Bệnh nhân trong DB:" << check1.value(0).toInt();
-
-    QSqlQuery check2("SELECT COUNT(*) FROM MedicalRecords");
-    if (check2.next()) qDebug() << "Tổng số Bệnh án trong DB:" << check2.value(0).toInt();
+    
     return records;
 }
 

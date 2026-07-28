@@ -85,7 +85,6 @@ void DoctorWindow::on_btnSearch_5_clicked()
     QString keyword = ui->txtSearch_5->text();
     QString status = ui->cbStatusFilter->currentText();
 
-
     qDebug() << "=== ĐANG CHẠY HÀM SEARCH ===";
     qDebug() << "Keyword:" << keyword << "| Status:" << status;
 
@@ -103,10 +102,15 @@ void DoctorWindow::on_btnSearch_5_clicked()
         ui->tblMedicalRecords->setItem(i, 1, new QTableWidgetItem(QString::number(rec.GetPatientID())));
         ui->tblMedicalRecords->setItem(i, 2, new QTableWidgetItem(rec.GetDate()));
 
+        ui->tblMedicalRecords->setItem(i, 3, new QTableWidgetItem(rec.GetDoctorName()));
+        ui->tblMedicalRecords->setItem(i, 4, new QTableWidgetItem(rec.GetDiagnosis()));
+
         QString statusText = rec.GetIsComplete() ? "Completed" : "Pending";
         ui->tblMedicalRecords->setItem(i, 5, new QTableWidgetItem(statusText));
 
         ui->tblMedicalRecords->item(i, 0)->setTextAlignment(Qt::AlignCenter);
+        ui->tblMedicalRecords->item(i, 1)->setTextAlignment(Qt::AlignCenter);
+        ui->tblMedicalRecords->item(i, 2)->setTextAlignment(Qt::AlignCenter);
         ui->tblMedicalRecords->item(i, 5)->setTextAlignment(Qt::AlignCenter);
     }
 }
@@ -166,6 +170,12 @@ void DoctorWindow::on_btnPrintRecord_clicked()
     int row = ui->tblMedicalRecords->currentRow();
     if (row < 0) {
         QMessageBox::warning(this, "Warning", "Please select a medical record from the list to print!");
+        return;
+    }
+
+    QTableWidgetItem* statusItem = ui->tblMedicalRecords->item(row, 5);
+    if (statusItem && statusItem->text() == "Pending") {
+        QMessageBox::warning(this, "Warning", "Cannot print a Pending medical record. Please complete it first!");
         return;
     }
 
