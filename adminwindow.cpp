@@ -11,6 +11,7 @@
 #include <QGraphicsOpacityEffect>
 #include <QPropertyAnimation>
 #include "admin.h"
+#include "attendancelog.h"
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QFrame>
@@ -170,6 +171,76 @@ void AdminWindow::refreshStaffDashboard(vector<tuple<int, QString, QString, QStr
     }
 }
 
+void AdminWindow::refreshLogsDashboard(QList<AttendanceLog> list){
+    int n = list.size();
+    ui->tblActivityLog->setRowCount(0); // clear old list
+    ui->tblActivityLog->setAlternatingRowColors(true); // Enable zebra striping
+
+    auto users = User::GetAllUser();
+
+    for (int i = 0; i < n; i++){
+        ui->tblActivityLog->insertRow(i);
+
+        int empId = list[i].getEmployeeId();
+        QString username = "Unknown";
+        QString role = "Unknown";
+        for (const auto& u : users) {
+            if (get<0>(u) == empId) {
+                username = get<1>(u);
+                role = get<5>(u);
+                break;
+            }
+        }
+
+        // Col 0: ID (Primary Style)
+        QTableWidgetItem* idItem = new QTableWidgetItem(QString::number(list[i].getId()));
+        idItem->setForeground(QColor(241, 245, 249)); // Off-white
+        ui->tblActivityLog->setItem(i, 0, idItem);
+
+        // Col 1: Time (Secondary Muted Style)
+        QTableWidgetItem* timeItem = new QTableWidgetItem(list[i].getDate());
+        timeItem->setForeground(QColor(148, 163, 184)); // Muted slate-gray
+        ui->tblActivityLog->setItem(i, 1, timeItem);
+
+        // Col 2: Username (Primary Style)
+        QTableWidgetItem* userItem = new QTableWidgetItem(username);
+        userItem->setForeground(QColor(241, 245, 249)); // Off-white
+        ui->tblActivityLog->setItem(i, 2, userItem);
+
+        // Col 3: Role (Modern translucent Pill Badge)
+        QTableWidgetItem* roleSortItem = new QTableWidgetItem(""); // Set text to empty to prevent selection text overlay
+        roleSortItem->setData(Qt::UserRole, role); // Store actual value in UserRole for editing
+        ui->tblActivityLog->setItem(i, 3, roleSortItem);
+
+        QWidget* roleWidget = nullptr;
+        if (role == "Admin") {
+            roleWidget = createBadgeWidget("Admin", QColor(34, 211, 238), QColor(6, 182, 212));
+        } else if (role == "Doctor") {
+            roleWidget = createBadgeWidget("Doctor", QColor(45, 212, 191), QColor(45, 212, 191));
+        } else {
+            roleWidget = createBadgeWidget("Receptionist", QColor(165, 180, 252), QColor(129, 140, 248));
+        }
+        ui->tblActivityLog->setCellWidget(i, 3, roleWidget);
+
+        // Col 4: Action (Modern translucent Pill Badge)
+        bool isPresent = list[i].getIsPresent();
+        QTableWidgetItem* actionSortItem = new QTableWidgetItem("");
+        actionSortItem->setData(Qt::UserRole, isPresent ? "Present" : "Absent");
+        ui->tblActivityLog->setItem(i, 4, actionSortItem);
+
+        QWidget* actionWidget = isPresent
+                                    ? createBadgeWidget("Present", QColor(74, 222, 128), QColor(34, 197, 94))
+                                    : createBadgeWidget("Absent", QColor(248, 113, 113), QColor(239, 68, 68));
+        ui->tblActivityLog->setCellWidget(i, 4, actionWidget);
+
+        // Col 5: Description (Secondary Muted Style)
+        QString desc = isPresent ? "Employee checked in / Present" : "Employee marked as Absent";
+        QTableWidgetItem* descItem = new QTableWidgetItem(desc);
+        descItem->setForeground(QColor(148, 163, 184)); // Muted slate-gray
+        ui->tblActivityLog->setItem(i, 5, descItem);
+    }
+}
+
 void AdminWindow::on_btnActivityLogs_clicked()
 {
     navigateToPage(3, ui->btnActivityLogs);
@@ -199,6 +270,7 @@ void AdminWindow::navigateToPage(int pageIndex, QPushButton* activeBtn){
     activeBtn->style()->unpolish(activeBtn);
     activeBtn->style()->polish(activeBtn);
 
+    refreshLogsDashboard(AttendanceLog::GetRecentLogs());
 }
 
 void AdminWindow::on_btnLogout_clicked()
@@ -320,7 +392,7 @@ void AdminWindow::on_btnCancelPat_clicked() {
 void AdminWindow::on_btnSavePat_clicked() {
     QString fullName = ui->txtPatFullName->text().trimmed();
     QString phoneNo = ui->txtPatPhone->text().trimmed();
-    QString birthDate = ui->datePatDOB->date().toString("yyyy-MM-dd");
+    QString birthDate = ui->datePatDOB->date().toString("dd-MM-yyyy");
     QString sex = ui->cbPatGender->currentText();
     QString address = ui->txtPatAddress->text().trimmed();
 

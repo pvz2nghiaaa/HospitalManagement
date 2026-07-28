@@ -259,7 +259,7 @@ QPushButton:hover {
       <enum>QFrame::Shape::NoFrame</enum>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="pageDashboard">
       <widget class="QFrame" name="frameDashboard_2">
@@ -1770,6 +1770,9 @@ QPushButton#btnSearchActivity:pressed {
         <attribute name="horizontalHeaderStretchLastSection">
          <bool>true</bool>
         </attribute>
+        <attribute name="verticalHeaderVisible">
+         <bool>false</bool>
+        </attribute>
         <column>
          <property name="text">
           <string>Log ID</string>
@@ -1905,6 +1908,9 @@ QPushButton:hover {
           <height>28</height>
          </rect>
         </property>
+        <property name="displayFormat">
+         <string>dd-MM-yyyy</string>
+        </property>
        </widget>
        <widget class="QLabel" name="lblDateTo">
         <property name="geometry">
@@ -1932,6 +1938,9 @@ QPushButton:hover {
           <width>110</width>
           <height>28</height>
          </rect>
+        </property>
+        <property name="displayFormat">
+         <string>dd-MM-yyyy</string>
         </property>
        </widget>
        <widget class="QPushButton" name="btnGenerateReport">
@@ -2446,6 +2455,9 @@ QPushButton:hover {
         <widget class="QDateEdit" name="datePatDOB">
          <property name="calendarPopup">
           <bool>true</bool>
+         </property>
+         <property name="displayFormat">
+          <string>dd-MM-yyyy</string>
          </property>
         </widget>
        </item>
@@ -3269,12 +3281,12 @@ QPushButton:hover {
      </widget>
     </widget>
    </widget>
+   <zorder>overlayEditStaffFrame</zorder>
+   <zorder>overlayEditPermissionFrame</zorder>
    <zorder>overlayFrame</zorder>
    <zorder>overlayPatientFrame</zorder>
-   <zorder>overlayEditStaffFrame</zorder>
    <zorder>overlayDeleteStaffFrame</zorder>
    <zorder>bgWidget</zorder>
-   <zorder>overlayEditPermissionFrame</zorder>
   </widget>
  </widget>
  <resources/>

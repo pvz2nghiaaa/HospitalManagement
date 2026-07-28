@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QPushButton>
 #include "permission.h"
+#include "attendancelog.h"
 using namespace std;
 
 namespace Ui {
@@ -82,6 +83,7 @@ private:
     Ui::AdminWindow *ui;
     void refreshStaffDashboard(vector<tuple<int, QString, QString, QString, bool, QString>> listUser);
     void refreshPermissionTable(vector<tuple<int, QString, QString, QList<Permission> > > list);
+    void refreshLogsDashboard(QList<AttendanceLog> list);
     QWidget* createBadgeWidget(const QString& text, const QColor& textColor, const QColor& bgColor);
     QWidget* createPermissionChipsWidget(const QList<Permission>& perms);
 };

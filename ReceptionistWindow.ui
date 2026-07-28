@@ -800,6 +800,9 @@ QPushButton#pushButton_5:hover, QPushButton#btnSearch_5:hover {
         <property name="readOnly">
          <bool>true</bool>
         </property>
+        <property name="displayFormat">
+         <string>dd-MM-yyyy</string>
+        </property>
        </widget>
        <widget class="QLabel" name="label_34">
         <property name="geometry">
@@ -1237,6 +1240,9 @@ QPushButton#btnSearch_10:hover, QPushButton#btnSearch_11:hover, QPushButton#btnS
         </property>
         <property name="readOnly">
          <bool>true</bool>
+        </property>
+        <property name="displayFormat">
+         <string>dd-MM-yyyy</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_39">
@@ -2026,6 +2032,9 @@ color: rgb(148, 163, 184);</string>
            <height>28</height>
           </rect>
          </property>
+         <property name="displayFormat">
+          <string>dd-MM-yyyy</string>
+         </property>
         </widget>
         <widget class="QLabel" name="label_32">
          <property name="geometry">
@@ -2048,6 +2057,9 @@ color: rgb(148, 163, 184);</string>
            <width>120</width>
            <height>28</height>
           </rect>
+         </property>
+         <property name="displayFormat">
+          <string>dd-MM-yyyy</string>
          </property>
         </widget>
         <widget class="QPushButton" name="btnSearchActivity">
