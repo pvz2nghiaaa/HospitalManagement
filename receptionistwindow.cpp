@@ -406,6 +406,8 @@ void ReceptionistWindow::on_btnSearch_17_clicked()
             "Delete",
             "Delete successfully"
         );
+    }
+}
 void ReceptionistWindow::setBackgroundActiveState(const bool activeState)
 {
     ui->stackedWidget->setEnabled(activeState);
