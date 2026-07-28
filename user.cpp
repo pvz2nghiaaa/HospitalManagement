@@ -357,3 +357,16 @@ bool User::GetIsActive() {
 QString User::GetRole() {
     return Role;
 }
+
+QString User::GetUsernameById(int userID) {
+    if (!User::GetActiveUser().hasPermission(Permission::manageUsers))
+        return "Unknown";
+
+    QSqlQuery query;
+    query.prepare("SELECT Username FROM User WHERE UserID = :id");
+    query.bindValue(":id", userID);
+    if (query.exec() && query.next()) {
+        return query.value("Username").toString();
+    }
+    return "Unknown";
+}
