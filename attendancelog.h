@@ -33,6 +33,5 @@ public:
 
     static AttendanceLog* getById(int searchId);
     static QList<AttendanceLog> getByEmployeeId(const int &empId);
-    static QList<AttendanceLog> GetRecentLogs();
 };
 
