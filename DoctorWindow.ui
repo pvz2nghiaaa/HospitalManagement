@@ -551,9 +551,6 @@ QPushButton#btnComplete:hover {
            <height>28</height>
           </rect>
          </property>
-         <property name="displayFormat">
-          <string>dd-MM-yyyy</string>
-         </property>
         </widget>
         <widget class="QLabel" name="label_4">
          <property name="geometry">
@@ -738,9 +735,6 @@ QPushButton#btnComplete:hover {
            <height>28</height>
           </rect>
          </property>
-         <property name="displayFormat">
-          <string>dd-MM-yyyy</string>
-         </property>
         </widget>
         <widget class="QLabel" name="label_12">
          <property name="geometry">
@@ -809,19 +803,16 @@ QPushButton#btnComplete:hover {
           <string>Date Issued</string>
          </property>
         </widget>
-         <widget class="QDateEdit" name="dateIssued">
-          <property name="geometry">
-           <rect>
-            <x>100</x>
-            <y>15</y>
-            <width>110</width>
-            <height>28</height>
-           </rect>
-          </property>
-          <property name="displayFormat">
-           <string>dd-MM-yyyy</string>
-          </property>
-         </widget>
+        <widget class="QDateEdit" name="dateIssued">
+         <property name="geometry">
+          <rect>
+           <x>100</x>
+           <y>15</y>
+           <width>110</width>
+           <height>28</height>
+          </rect>
+         </property>
+        </widget>
         <widget class="QTableWidget" name="tblPrescription">
          <property name="geometry">
           <rect>
@@ -1140,9 +1131,6 @@ QPushButton#btnCloseRecord:hover {
          <height>28</height>
         </rect>
        </property>
-       <property name="displayFormat">
-        <string>dd-MM-yyyy</string>
-       </property>
       </widget>
       <widget class="QPushButton" name="btnSearch_5">
        <property name="geometry">
@@ -1343,9 +1331,6 @@ QPushButton#btnCloseRecord:hover {
           <width>110</width>
           <height>28</height>
          </rect>
-        </property>
-        <property name="displayFormat">
-         <string>dd-MM-yyyy</string>
         </property>
         <property name="readOnly">
          <bool>true</bool>
@@ -1784,9 +1769,6 @@ color: rgb(148, 163, 184);</string>
            <height>28</height>
           </rect>
          </property>
-         <property name="displayFormat">
-          <string>dd-MM-yyyy</string>
-         </property>
         </widget>
         <widget class="QLabel" name="label_32">
          <property name="geometry">
@@ -1809,9 +1791,6 @@ color: rgb(148, 163, 184);</string>
            <width>120</width>
            <height>28</height>
           </rect>
-         </property>
-         <property name="displayFormat">
-          <string>dd-MM-yyyy</string>
          </property>
         </widget>
         <widget class="QPushButton" name="btnSearchActivity">

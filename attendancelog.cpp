@@ -1,6 +1,4 @@
 #include "attendancelog.h"
-#include "user.h"
-#include "permission.h"
 #include <QDebug>
 
 
@@ -98,29 +96,6 @@ AttendanceLog* AttendanceLog::getById(int searchId) {
     return nullptr;
 }
 
-QList<AttendanceLog> AttendanceLog::GetRecentLogs(){
-    QList<AttendanceLog> list;
-    if (!User::GetActiveUser().hasPermission(Permission::viewLog))
-        return list;
-
-    QSqlQuery query;
-    query.prepare("SELECT LogID, Date, IsPresent, EmployeeID FROM AttendanceLogs");
-
-    if (query.exec()) {
-        int maxLogs = 10;
-        while(query.next() && maxLogs--) {
-            list.push_back(AttendanceLog(
-                query.value(0).toInt(),
-                query.value(1).toString(),
-                query.value(2).toInt(),
-                query.value(3).toInt())
-            );
-        }
-    }
-    else qDebug() << "Error Fetching Attendance Log: " << query.lastError().text();
-    return list;
-}
-
 QList<AttendanceLog> AttendanceLog::getByEmployeeId(const int &empId) {
     QList<AttendanceLog> list;
     QSqlQuery query;
@@ -134,7 +109,7 @@ QList<AttendanceLog> AttendanceLog::getByEmployeeId(const int &empId) {
                 query.value(1).toString(),
                 query.value(2).toInt(),
                 query.value(3).toInt()
-            ));
+                ));
         }
     } else {
         qDebug() << "Failed to retrieve logs by EmployeeID:" << query.lastError().text();
