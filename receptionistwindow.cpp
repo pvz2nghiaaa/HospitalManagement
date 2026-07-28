@@ -10,7 +10,7 @@
 #include <QDebug>
 #include "loginwindow.h"
 #include "patient.h"
-ReceptionistWindow::ReceptionistWindow(QWidget *parent)
+ReceptionistWindow::ReceptionistWindow(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::ReceptionistWindow)
 {
@@ -23,8 +23,8 @@ ReceptionistWindow::ReceptionistWindow(QWidget *parent)
     navigateToPage(0, ui->btnPatient);
 
 
-    
-        // Drug Management
+
+    // Drug Management
     ui->tblPatient_2->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tblPatient_2->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tblPatient_2->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -67,7 +67,7 @@ void ReceptionistWindow::on_btnProfile_clicked()
     navigateToPage(4, ui->btnProfile);
 }
 
-void ReceptionistWindow::navigateToPage(int pageIndex, QPushButton* activeBtn){
+void ReceptionistWindow::navigateToPage(int pageIndex, QPushButton* activeBtn) {
     ui->stackedWidget->setCurrentIndex(pageIndex);
     QList<QPushButton*> sidebarButtons = {
         ui->btnPatient,
@@ -76,7 +76,7 @@ void ReceptionistWindow::navigateToPage(int pageIndex, QPushButton* activeBtn){
         ui->btnDrug,
         ui->btnProfile
     };
-    for (QPushButton* btn: sidebarButtons){
+    for (QPushButton* btn : sidebarButtons) {
         btn->setProperty("active", false); // "active" properties along with its style is declared in .ui
         btn->style()->unpolish(btn); // refresh stylesheet
         btn->style()->polish(btn);
@@ -94,7 +94,7 @@ void ReceptionistWindow::on_btnLogout_clicked()
     User::logout();
     QMessageBox::information(this, "Program info", "Logged out successfully!");
 
-    LoginWindow *loginWin = new LoginWindow();
+    LoginWindow* loginWin = new LoginWindow();
     loginWin->setAttribute(Qt::WA_DeleteOnClose);
     loginWin->show();
 
@@ -130,125 +130,76 @@ void ReceptionistWindow::on_btnPatientSearch_clicked()
     }
 }
 
- // Drug Management
-QString ReceptionistWindow::getDrugStatus(int stockQuantity) const
-{
-    if (stockQuantity <= 0)
-        return "Out of Stock";
+// Drug Management
 
-    if (stockQuantity <= 10)
-        return "Low Stock";
-
-    return "Available";
-}
-//Search
-void ReceptionistWindow::SearchDrugsBy(const QString &nameOrID,const QString &stockStatus)
-{
-    QSqlQuery query;
-
-    QString sql =
-        "SELECT DrugID, Name AS DrugName, Unit, Price, StockQuantity "
-        "FROM Drugs "
-        "WHERE 1 = 1 ";
-
-    QString keyword = nameOrID.trimmed();
-
-    // Search theo DrugID hoặc Name
-    if (!keyword.isEmpty())
-    {
-        sql +=
-            "AND (CAST(DrugID AS TEXT) LIKE :keyword "
-            "OR Name LIKE :keyword) ";
-    }
-
-    // Filter theo Stock Status
-    if (stockStatus == "Available")
-    {
-        sql += "AND StockQuantity > 10 ";
-    }
-    else if (stockStatus == "Low Stock")
-    {
-        sql +=
-            "AND StockQuantity > 0 "
-            "AND StockQuantity <= 10 ";
-    }
-    else if (stockStatus == "Out of Stock")
-    {
-        sql += "AND StockQuantity = 0 ";
-    }
-
-    sql += "ORDER BY DrugID ASC";
-
-    query.prepare(sql);
-
-    if (!keyword.isEmpty())
-    {
-        query.bindValue(
-            ":keyword",
-            "%" + keyword + "%"
-        );
-    }
-
-    if (!query.exec())
-    {
-        QMessageBox::critical(
-            this,
-            "Database Error",
-            query.lastError().text()
-        );
-
-        return;
-    }
-
-    // Xóa dữ liệu cũ
-    ui->tblPatient_2->setRowCount(0);
-
-    int row = 0;
-
-    while (query.next())
-    {
-        ui->tblPatient_2->insertRow(row);
-
-        // Column 0: Drug ID
-        ui->tblPatient_2->setItem(row,0,new QTableWidgetItem(query.value("DrugID").toString()));
-
-        // Column 1: Drug Name
-        ui->tblPatient_2->setItem(row,1,new QTableWidgetItem(query.value("DrugName").toString())
-        );
-
-        // Column 2: Unit
-        ui->tblPatient_2->setItem(row,2,new QTableWidgetItem(query.value("Unit").toString()));
-
-        // Column 3: Price
-        ui->tblPatient_2->setItem(row,3,new QTableWidgetItem(QString::number(query.value("Price").toDouble(),'f',2)));
-
-        int stock =query.value("StockQuantity").toInt();
-
-        // Column 4: Stock
-        ui->tblPatient_2->setItem(row,4,new QTableWidgetItem(QString::number(stock)));
-
-        // Column 5: Status
-        ui->tblPatient_2->setItem(row,5,new QTableWidgetItem(getDrugStatus(stock)));
-        row++;
-    }
-}
 
 void ReceptionistWindow::on_btnSearch_14_clicked()
 {
-    QString keyword =
-        ui->txtSearch_8->text();
+    QString keyword = ui->txtSearch_8->text().trimmed();
 
-    QString stockStatus =
-        ui->comboBox_3->currentText();
+    QString stockStatus = ui->comboBox_3->currentText();
 
-    SearchDrugsBy(keyword,stockStatus);
+    QList<Drug> drugs = Drug::SearchDrugsBy(keyword, stockStatus);
+
+    ui->tblPatient_2->setRowCount(0);
+
+    for (int i = 0; i < drugs.size(); i++)
+    {
+        ui->tblPatient_2->insertRow(i);
+
+        ui->tblPatient_2->setItem(i, 0,
+            new QTableWidgetItem(QString::number(drugs[i].getDrugID())));
+
+        ui->tblPatient_2->setItem(i, 1,
+            new QTableWidgetItem(drugs[i].getName()));
+
+        ui->tblPatient_2->setItem(i, 2,
+            new QTableWidgetItem(drugs[i].getUnit()));
+
+        ui->tblPatient_2->setItem(i, 3,
+            new QTableWidgetItem(QString::number(drugs[i].getPrice(), 'f', 2)));
+
+        ui->tblPatient_2->setItem(i, 4,
+            new QTableWidgetItem(QString::number(drugs[i].getStockQuantity())));
+
+        ui->tblPatient_2->setItem(i, 5,
+            new QTableWidgetItem(
+                Drug::GetDrugStatus(drugs[i].getStockQuantity())));
+    }
 }
-
 
 //Refresh
 void ReceptionistWindow::loadAllDrugs()
 {
-    SearchDrugsBy("","All");
+    QList<Drug> drugs = Drug::SearchDrugsBy("", "");
+
+    ui->tblPatient_2->setRowCount(0);
+
+    for (int i = 0; i < drugs.size(); i++)
+    {
+        ui->tblPatient_2->insertRow(i);
+
+        ui->tblPatient_2->setItem(i, 0,
+            new QTableWidgetItem(QString::number(drugs[i].getDrugID())));
+
+        ui->tblPatient_2->setItem(i, 1,
+            new QTableWidgetItem(drugs[i].getName()));
+
+        ui->tblPatient_2->setItem(i, 2,
+            new QTableWidgetItem(drugs[i].getUnit()));
+
+        ui->tblPatient_2->setItem(i, 3,
+            new QTableWidgetItem(
+                QString::number(drugs[i].getPrice(), 'f', 2)));
+
+        ui->tblPatient_2->setItem(i, 4,
+            new QTableWidgetItem(
+                QString::number(drugs[i].getStockQuantity())));
+
+        ui->tblPatient_2->setItem(i, 5,
+            new QTableWidgetItem(
+                Drug::GetDrugStatus(drugs[i].getStockQuantity())));
+    }
 }
 
 void ReceptionistWindow::on_btnSearch_18_clicked()
@@ -260,170 +211,65 @@ void ReceptionistWindow::on_btnSearch_18_clicked()
 
 
 
-//Update/Add druvg
-bool ReceptionistWindow::AddNewDrug(
-    const QString &name,
-    const QString &unit,
-    double price,
-    int stockQuantity)
-{
-    if (name.trimmed().isEmpty())
-        return false;
 
-    if (unit.trimmed().isEmpty())
-        return false;
-
-    if (price < 0)
-        return false;
-
-    if (stockQuantity < 0)
-        return false;
-
-    QSqlQuery query;
-
-    query.prepare(
-        "INSERT INTO Drugs "
-        "(Name, Unit, Price, StockQuantity) "
-        "VALUES "
-        "(:name, :unit, :price, :stock)"
-    );
-
-    query.bindValue(
-        ":name",
-        name.trimmed()
-    );
-
-    query.bindValue(
-        ":unit",
-        unit.trimmed()
-    );
-
-    query.bindValue(
-        ":price",
-        price
-    );
-
-    query.bindValue(
-        ":stock",
-        stockQuantity
-    );
-
-    if (!query.exec())
-    {
-        qDebug()
-            << "Add Drug Error:"
-            << query.lastError().text();
-
-        return false;
-    }
-
-    return true;
-}
 
 void ReceptionistWindow::on_btnSearch_15_clicked()
 {
     bool ok;
-    
+
     // Drug Name
-    QString name =QInputDialog::getText(this,"Add New Drug","Drug Name:",QLineEdit::Normal,"",&ok);
+    QString name = QInputDialog::getText(this, "Add New Drug", "Drug Name:", QLineEdit::Normal, "", &ok);
     if (!ok)
         return;
     name = name.trimmed();
     if (name.isEmpty())
     {
-        QMessageBox::warning(this,"Invalid Input","Drug name cannot be empty."
+        QMessageBox::warning(this, "Invalid Input", "Drug name cannot be empty."
         );
         return;
     }
 
     // Unit
     QString unit =
-        QInputDialog::getText(this,"Add New Drug","Unit:",QLineEdit::Normal,"",&ok);
+        QInputDialog::getText(this, "Add New Drug", "Unit:", QLineEdit::Normal, "", &ok);
     if (!ok)
         return;
     unit = unit.trimmed();
 
     // Price
-    double price =QInputDialog::getDouble(this,"Add New Drug","Price:",0.0,0.0,1000000000.0,2,&ok);
+    double price = QInputDialog::getDouble(this, "Add New Drug", "Price:", 0.0, 0.0, 1000000000.0, 2, &ok);
     if (!ok)
         return;
 
     // Stock Quantity
-    int stock =QInputDialog::getInt(this,"Add New Drug","Stock Quantity:",0,0,1000000,1,&ok);
+    int stock = QInputDialog::getInt(this, "Add New Drug", "Stock Quantity:", 0, 0, 1000000, 1, &ok);
     if (!ok)
         return;
 
 
     // Add to database=
-    if (AddNewDrug(name,unit,price,stock)){
-        QMessageBox::information(this,"Success","New drug added successfully.");
+    if (Drug::AddNewDrug(name, unit, price, stock)) {
+        QMessageBox::information(this, "Success", "New drug added successfully.");
 
         loadAllDrugs();
     }
     else
     {
-        QMessageBox::critical(this,"Error","Failed to add new drug."
+        QMessageBox::critical(this, "Error", "Failed to add new drug."
         );
     }
 }
 
 
-//Edit drug info
-bool ReceptionistWindow::UpdateDrugInfo(
-    int drugID,
-    const QString &name,
-    const QString &unit,
-    double price,
-    int stockQuantity)
-{
-    if (drugID <= 0)
-        return false;
 
-    if (name.trimmed().isEmpty())
-        return false;
-
-    if (unit.trimmed().isEmpty())
-        return false;
-
-    if (price < 0)
-        return false;
-
-    if (stockQuantity < 0)
-        return false;
-
-
-    QSqlQuery query;
-
-    query.prepare("UPDATE Drugs ""SET Name = :name, ""Unit = :unit, ""Price = :price, ""StockQuantity = :stock ""WHERE DrugID = :id");
-
-    query.bindValue(":id",drugID );
-
-    query.bindValue(":name",name.trimmed());
-
-    query.bindValue(":unit",unit.trimmed());
-
-    query.bindValue(":price",price);
-
-    query.bindValue(":stock",stockQuantity);
-
-
-    if (!query.exec())
-    {
-        qDebug()
-            << "Update Drug Error:"
-            << query.lastError().text();
-        return false;
-    }
-    return query.numRowsAffected() > 0;
-}
 
 void ReceptionistWindow::on_btnSearch_16_clicked()
 {
-    int row =ui->tblPatient_2->currentRow();
+    int row = ui->tblPatient_2->currentRow();
 
     if (row < 0)
     {
-        QMessageBox::warning(this,"Warning","Please select a drug first."
+        QMessageBox::warning(this, "Warning", "Please select a drug first."
         );
         return;
     }
@@ -432,75 +278,75 @@ void ReceptionistWindow::on_btnSearch_16_clicked()
     // Get current drug
     int drugID =
         ui->tblPatient_2
-            ->item(row, 0)
-            ->text()
-            .toInt();
+        ->item(row, 0)
+        ->text()
+        .toInt();
 
     QString oldName =
         ui->tblPatient_2
-            ->item(row, 1)
-            ->text();
+        ->item(row, 1)
+        ->text();
 
     QString oldUnit =
         ui->tblPatient_2
-            ->item(row, 2)
-            ->text();
+        ->item(row, 2)
+        ->text();
 
     double oldPrice =
         ui->tblPatient_2
-            ->item(row, 3)
-            ->text()
-            .toDouble();
+        ->item(row, 3)
+        ->text()
+        .toDouble();
 
     int oldStock =
         ui->tblPatient_2
-            ->item(row, 4)
-            ->text()
-            .toInt();
+        ->item(row, 4)
+        ->text()
+        .toInt();
 
 
     bool ok;
 
 
     // New Drug Name
-    QString name =QInputDialog::getText(this,"Update Drug","Drug Name:",QLineEdit::Normal,oldName,&ok);
+    QString name = QInputDialog::getText(this, "Update Drug", "Drug Name:", QLineEdit::Normal, oldName, &ok);
     if (!ok)
         return;
 
 
     // New Unit
-    QString unit =QInputDialog::getText(this,"Update Drug","Unit:",QLineEdit::Normal,oldUnit,&ok);
+    QString unit = QInputDialog::getText(this, "Update Drug", "Unit:", QLineEdit::Normal, oldUnit, &ok);
     if (!ok)
         return;
 
 
     // New Price
-    double price =QInputDialog::getDouble(this,"Update Drug","Price:",oldPrice,0.0,1000000000.0,2,&ok);
+    double price = QInputDialog::getDouble(this, "Update Drug", "Price:", oldPrice, 0.0, 1000000000.0, 2, &ok);
     if (!ok)
         return;
 
 
     // New Stock
-    int stock =QInputDialog::getInt(this,"Update Drug","Stock Quantity:",oldStock,0,1000000,1,&ok);
+    int stock = QInputDialog::getInt(this, "Update Drug", "Stock Quantity:", oldStock, 0, 1000000, 1, &ok);
     if (!ok)
         return;
 
 
     // Update database
-    if (UpdateDrugInfo(drugID,name,unit,price,stock))
+    if (Drug::UpdateDrugInfo(drugID, name, unit, price, stock))
     {
-        QMessageBox::information(this,"Success","Drug information updated successfully.");
+        QMessageBox::information(this, "Success", "Drug information updated successfully.");
 
         loadAllDrugs();
     }
     else
     {
-        QMessageBox::critical(this,"Error","Failed to update drug."
+        QMessageBox::critical(this, "Error", "Failed to update drug."
         );
     }
 }
 
-void ReceptionistWindow::on_tblPatient_2_cellClicked(int row,int column){
+void ReceptionistWindow::on_tblPatient_2_cellClicked(int row, int column) {
     Q_UNUSED(column);
 
     if (row < 0)
@@ -508,14 +354,14 @@ void ReceptionistWindow::on_tblPatient_2_cellClicked(int row,int column){
 
     int drugID =
         ui->tblPatient_2
-            ->item(row, 0)
-            ->text()
-            .toInt();
+        ->item(row, 0)
+        ->text()
+        .toInt();
 
     QString drugName =
         ui->tblPatient_2
-            ->item(row, 1)
-            ->text();
+        ->item(row, 1)
+        ->text();
 
     qDebug()
         << "Selected Drug:"
@@ -523,6 +369,45 @@ void ReceptionistWindow::on_tblPatient_2_cellClicked(int row,int column){
         << drugName;
 }
 
+
+
+void ReceptionistWindow::on_btnSearch_17_clicked()
+{
+
+    int row =
+        ui->tblPatient_2->currentRow();
+
+
+    if (row < 0)
+    {
+        QMessageBox::warning(
+            this,
+            "Delete",
+            "Select a drug first"
+        );
+        return;
+    }
+
+
+
+    int drugID =
+        ui->tblPatient_2
+        ->item(row, 0)
+        ->text()
+        .toInt();
+
+
+
+    if (Drug::RemoveDrug(drugID))
+    {
+
+        QMessageBox::information(
+            this,
+            "Delete",
+            "Delete successfully"
+        );
+    }
+}
 void ReceptionistWindow::setBackgroundActiveState(const bool activeState)
 {
     ui->stackedWidget->setEnabled(activeState);
