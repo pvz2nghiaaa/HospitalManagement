@@ -67,6 +67,7 @@ bool setupDatabase() {
 
 
 void insertSampleData() {
+    QSqlDatabase::database().transaction();
     QSqlQuery query;
     // Insert Admin
     query.prepare("INSERT INTO User (Username, EncryptedPassword, FullName, PhoneNumber, Role, IsActive) "
@@ -174,6 +175,7 @@ void insertSampleData() {
     } else {
         qDebug() << "Failed to register patient:" << query.lastError().text();
     }
+    QSqlDatabase::database().commit();
 }
 
 int main(int argc, char *argv[])
@@ -187,7 +189,5 @@ int main(int argc, char *argv[])
     qDebug() << "-------\n";
     LoginWindow w;
     w.show();
-    abs
-
     return a.exec();
 }

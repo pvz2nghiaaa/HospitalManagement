@@ -543,6 +543,9 @@ QPushButton#btnComplete:hover {
          </property>
         </widget>
         <widget class="QDateEdit" name="dateDOB">
+         <property name="displayFormat">
+          <string>dd-MM-yyyy</string>
+         </property>
          <property name="geometry">
           <rect>
            <x>130</x>
@@ -727,6 +730,9 @@ QPushButton#btnComplete:hover {
          </property>
         </widget>
         <widget class="QDateEdit" name="dateDiagnosed">
+         <property name="displayFormat">
+          <string>dd-MM-yyyy</string>
+         </property>
          <property name="geometry">
           <rect>
            <x>350</x>
@@ -804,6 +810,9 @@ QPushButton#btnComplete:hover {
          </property>
         </widget>
         <widget class="QDateEdit" name="dateIssued">
+         <property name="displayFormat">
+          <string>dd-MM-yyyy</string>
+         </property>
          <property name="geometry">
           <rect>
            <x>100</x>
@@ -1123,6 +1132,9 @@ QPushButton#btnCloseRecord:hover {
        </property>
       </widget>
       <widget class="QDateEdit" name="dateFilter">
+         <property name="displayFormat">
+          <string>dd-MM-yyyy</string>
+         </property>
        <property name="geometry">
         <rect>
          <x>440</x>
@@ -1324,6 +1336,9 @@ QPushButton#btnCloseRecord:hover {
         </property>
        </widget>
        <widget class="QDateEdit" name="dateEdit">
+         <property name="displayFormat">
+          <string>dd-MM-yyyy</string>
+         </property>
         <property name="geometry">
          <rect>
           <x>110</x>
@@ -1761,6 +1776,9 @@ color: rgb(148, 163, 184);</string>
          </property>
         </widget>
         <widget class="QDateEdit" name="dateEdit_2">
+         <property name="displayFormat">
+          <string>dd-MM-yyyy</string>
+         </property>
          <property name="geometry">
           <rect>
            <x>30</x>
@@ -1784,6 +1802,9 @@ color: rgb(148, 163, 184);</string>
          </property>
         </widget>
         <widget class="QDateEdit" name="dateEdit_3">
+         <property name="displayFormat">
+          <string>dd-MM-yyyy</string>
+         </property>
          <property name="geometry">
           <rect>
            <x>30</x>
