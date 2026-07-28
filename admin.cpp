@@ -3,7 +3,6 @@
 #include <QVariant>
 #include "permission.h"
 #include "user.h"
-#include <QSqlDatabase>
 
 Admin::Admin() {}
 
@@ -14,9 +13,6 @@ bool Admin::createNewAccount(QString username, QString password, QString fullNam
         qDebug() << "Access Denied: Current user does not have permission to create an account.";
         return false;
     }
-    QSqlDatabase db = QSqlDatabase::database();
-    db.transaction();
-
     QSqlQuery query;
     query.prepare("INSERT INTO User (Username, EncryptedPassword, FullName, PhoneNumber, IsActive, Role) "
                   "VALUES (:user, :pass, :name, :phone, 1, :role)");
@@ -54,20 +50,15 @@ bool Admin::createNewAccount(QString username, QString password, QString fullNam
         {
             permQuery.bindValue(":uid", newUserId);
             permQuery.bindValue(":ptype", static_cast<int>(pType));
-            if (!permQuery.exec()) {
+            if (!permQuery.exec())
                 qDebug() << "[Admin] Error assigning permission" << pType << ":" << permQuery.lastError().text();
-                db.rollback();
-                return false;
-            }
         }
         qDebug() << "[Admin] Successfully assigned" << defaultPerms.size() << "default permissions.";
-        db.commit();
         return true;
     }
     else
     {
         qDebug() << "[Admin] Error creating account:" << query.lastError().text();
-        db.rollback();
         return false;
     }
 }
