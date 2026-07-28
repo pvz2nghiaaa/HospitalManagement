@@ -88,6 +88,8 @@ void DoctorWindow::on_btnSearchActivity_clicked()
     QString dateFrom = ui->dateEdit_2->date().toString("yyyy-MM-dd");
     QString dateTo = ui->dateEdit_3->date().toString("yyyy-MM-dd");
 
+    ui->dateEdit_2->date().toString("dd-MM-yyyy");
+    ui->dateEdit_3->date().toString("dd-MM-yyyy");
     QList<AttendanceLog> logs = Doctor::SearchMyActivityLogs(dateFrom, dateTo);
 
     ui->tblMyActivity->setRowCount(0);
@@ -96,7 +98,10 @@ void DoctorWindow::on_btnSearchActivity_clicked()
     for (int i = 0; i < logs.size(); i++) {
 
         QString fullDateString = logs[i].getDate();
-        QTableWidgetItem *itemDate = new QTableWidgetItem(fullDateString);
+        QDate parsedDate = QDate::fromString(fullDateString, "yyyy-MM-dd");
+        QString displayDate = parsedDate.isValid() ? parsedDate.toString("dd-MM-yyyy") : fullDateString;
+
+        QTableWidgetItem *itemDate = new QTableWidgetItem(displayDate);
         QTableWidgetItem *itemTime = new QTableWidgetItem("-");
         QTableWidgetItem *itemAction = new QTableWidgetItem("Attendance");
 
