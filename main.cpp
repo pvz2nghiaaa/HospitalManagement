@@ -187,6 +187,7 @@ int main(int argc, char *argv[])
     qDebug() << "-------\n";
     LoginWindow w;
     w.show();
+    abs
 
     return a.exec();
 }
