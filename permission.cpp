@@ -22,25 +22,19 @@ bool Permission::initTable(){
     }
     return true;
 }
-bool Permission::changeUserPermission(User &other, Permission per, bool isOn){
+bool Permission::changeUserPermission(int userID, Permission per, bool isOn){
     if (!User::GetActiveUser().hasPermission(Permission::changePermission))
         return false;
     if (isOn){
-        if (other.hasPermission(per))
-            return true;
-        other.appendPermission(per);
         QSqlQuery query;
         query.prepare("INSERT INTO Permission(UserID, PermissionType) VALUES(:id, :type)");
-        query.bindValue(":id", other.GetID());
+        query.bindValue(":id", userID);
         query.bindValue(":type", per.toUnderlying());
         return query.exec();
     }
-    if (!other.hasPermission(per))
-        return true;
-    other.erasePermission(per);
     QSqlQuery query;
     query.prepare("DELETE FROM Permission WHERE UserID = :id and PermissionType = :type");
-    query.bindValue(":id", other.GetID());
+    query.bindValue(":id", userID);
     query.bindValue(":type", per.toUnderlying());
     return query.exec();
 }

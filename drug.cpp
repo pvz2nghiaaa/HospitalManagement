@@ -14,27 +14,81 @@ Drug::Drug(int drugID, QString name, QString unit, double price)
 
 Drug::Drug(int drugID, QString name,QString unit, double price,int stockQuantity)
     : drugID(drugID),name(name),unit(unit),price(price),stockQuantity(stockQuantity){}
-
-bool Drug::initTable() {
+bool Drug::initTable()
+{
     static bool tableLoaded = false;
-    if (!tableLoaded) {
+
+    if (!tableLoaded)
+    {
         QSqlQuery query;
-        tableLoaded = query.exec("CREATE TABLE IF NOT EXISTS Drugs ("
-                                 "DrugID INTEGER PRIMARY KEY AUTOINCREMENT, "
-                                 "Name TEXT, "
-                                 "Unit TEXT, "
-                                 "Price REAL,"
-                                 "StockQuantity INTEGER NOT NULL DEFAULT 0)"
-            );
-        if (!tableLoaded) {
-            qDebug() << "Failed to create Drugs table:" << query.lastError().text();
-        } else {
-            qDebug() << "Drugs table is initialized";
+
+
+        // ======================
+        // Drugs table
+        // ======================
+
+        bool drugTable = query.exec(
+            "CREATE TABLE IF NOT EXISTS Drugs ("
+            "DrugID INTEGER PRIMARY KEY AUTOINCREMENT,"
+            "Name TEXT,"
+            "Unit TEXT,"
+            "Price REAL,"
+            "StockQuantity INTEGER NOT NULL DEFAULT 0"
+            ")"
+        );
+
+
+        if (!drugTable)
+        {
+            qDebug()
+                << "Create Drugs error:"
+                << query.lastError().text();
+
+            return false;
         }
-        return tableLoaded;
+
+
+
+        // ======================
+        // Drug Stock History
+        // ======================
+
+        bool historyTable = query.exec(
+            "CREATE TABLE IF NOT EXISTS DrugStockHistory ("
+            "HistoryID INTEGER PRIMARY KEY AUTOINCREMENT,"
+            "DrugID INTEGER,"
+            "Action TEXT,"
+            "OldQuantity INTEGER,"
+            "NewQuantity INTEGER,"
+            "Time TEXT,"
+            "Operator TEXT,"
+            "FOREIGN KEY(DrugID) REFERENCES Drugs(DrugID)"
+            ")"
+        );
+
+
+        if (!historyTable)
+        {
+            qDebug()
+                << "Create History error:"
+                << query.lastError().text();
+
+            return false;
+        }
+
+
+
+        tableLoaded = true;
+
+
+        qDebug()
+            << "Drugs and History tables initialized";
     }
+
+
     return true;
 }
+
 
 // Getters
 int Drug::getDrugID() const { return drugID; }
