@@ -787,6 +787,9 @@ QPushButton#pushButton_5:hover, QPushButton#btnSearch_5:hover {
         </property>
        </widget>
        <widget class="QDateEdit" name="dateEdit">
+         <property name="displayFormat">
+          <string>dd-MM-yyyy</string>
+         </property>
         <property name="geometry">
          <rect>
           <x>120</x>
@@ -1225,6 +1228,9 @@ QPushButton#btnSearch_10:hover, QPushButton#btnSearch_11:hover, QPushButton#btnS
         </property>
        </widget>
        <widget class="QDateEdit" name="dateEdit_4">
+         <property name="displayFormat">
+          <string>dd-MM-yyyy</string>
+         </property>
         <property name="geometry">
          <rect>
           <x>320</x>
@@ -2016,6 +2022,9 @@ color: rgb(148, 163, 184);</string>
          </property>
         </widget>
         <widget class="QDateEdit" name="dateEdit_2">
+         <property name="displayFormat">
+          <string>dd-MM-yyyy</string>
+         </property>
          <property name="geometry">
           <rect>
            <x>30</x>
@@ -2039,6 +2048,9 @@ color: rgb(148, 163, 184);</string>
          </property>
         </widget>
         <widget class="QDateEdit" name="dateEdit_3">
+         <property name="displayFormat">
+          <string>dd-MM-yyyy</string>
+         </property>
          <property name="geometry">
           <rect>
            <x>30</x>
@@ -2308,6 +2320,9 @@ QPushButton:hover {
        </item>
        <item row="1" column="0">
         <widget class="QDateEdit" name="datePatDOB">
+         <property name="displayFormat">
+          <string>dd-MM-yyyy</string>
+         </property>
          <property name="calendarPopup">
           <bool>true</bool>
          </property>

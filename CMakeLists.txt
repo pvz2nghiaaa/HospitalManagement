@@ -32,6 +32,8 @@ set(PROJECT_SOURCES
         prescription.cpp
         diagnosis.h
         diagnosis.cpp
+        activitychartwidget.h
+        activitychartwidget.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -89,6 +91,7 @@ else()
 endif()
 
 target_link_libraries(HospitalManagement PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt6::Sql)
+target_include_directories(HospitalManagement PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

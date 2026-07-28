@@ -4,6 +4,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
+#include <QDate>
 
 class AttendanceLog {
 private:
@@ -33,5 +34,13 @@ public:
 
     static AttendanceLog* getById(int searchId);
     static QList<AttendanceLog> getByEmployeeId(const int &empId);
+    static QList<AttendanceLog> GetRecentLogs();
+    static QList<AttendanceLog> GetLogsBetweenDates(const QDate &from, const QDate &to);
+    static QList<AttendanceLog> SearchByDate(QString date);
+    static QList<AttendanceLog> SearchByRole(QString role);
+    static QList<AttendanceLog> SearchByActivity(bool isActive);
+
+    // operator ==
+    bool operator ==(const AttendanceLog& other) const {return id == other.id;}
 };
 
