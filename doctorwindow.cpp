@@ -14,6 +14,21 @@ DoctorWindow::DoctorWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->lblAdmin->setText("Dr. " + User::GetActiveUser().GetFullName() + " (Online)");
+
+    ui->lineEdit_2->setReadOnly(true); // Doctor ID
+    ui->lineEdit_3->setReadOnly(true); // Full Name
+    ui->lineEdit_4->setReadOnly(true); // Gender
+    ui->lineEdit_5->setReadOnly(true); // Date of Birth
+    ui->lineEdit_6->setReadOnly(true); // Phone Number
+    ui->tblMyActivity->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tblMyPermissions->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    ui->dateEdit_2->setDisplayFormat("dd-MM-yyyy");
+    ui->dateEdit_3->setDisplayFormat("dd-MM-yyyy");
+    ui->dateEdit_2->setDate(QDate::currentDate().addDays(-30));
+    ui->dateEdit_3->setDate(QDate::currentDate());
+
+    loadProfileData();
     navigateToPage(0, ui->btnDashboard);
 
     ui->txtRecordID->setReadOnly(true);
@@ -261,4 +276,112 @@ void DoctorWindow::on_btnUpdatePatient_clicked() {
     } else {
         QMessageBox::warning(this, "Error", "Update failed! Check permissions or connection.");
     }
+}
+void DoctorWindow::on_btnSearchActivity_clicked()
+{
+    QString dateFrom = ui->dateEdit_2->date().toString("yyyy-MM-dd");
+    QString dateTo = ui->dateEdit_3->date().toString("yyyy-MM-dd");
+
+    ui->dateEdit_2->date().toString("dd-MM-yyyy");
+    ui->dateEdit_3->date().toString("dd-MM-yyyy");
+    QList<AttendanceLog> logs = Doctor::SearchMyActivityLogs(dateFrom, dateTo);
+
+    ui->tblMyActivity->setRowCount(0);
+    ui->tblMyActivity->setRowCount(logs.size());
+
+    for (int i = 0; i < logs.size(); i++) {
+
+        QString fullDateString = logs[i].getDate();
+        QDate parsedDate = QDate::fromString(fullDateString, "yyyy-MM-dd");
+        QString displayDate = parsedDate.isValid() ? parsedDate.toString("dd-MM-yyyy") : fullDateString;
+
+        QTableWidgetItem *itemDate = new QTableWidgetItem(displayDate);
+        QTableWidgetItem *itemTime = new QTableWidgetItem("-");
+        QTableWidgetItem *itemAction = new QTableWidgetItem("Attendance");
+
+        QString status = (logs[i].getIsPresent() == 1) ? "Present" : "Absent";
+        QTableWidgetItem *itemDesc = new QTableWidgetItem(status);
+
+        itemDate->setTextAlignment(Qt::AlignCenter);
+        itemTime->setTextAlignment(Qt::AlignCenter);
+        itemAction->setTextAlignment(Qt::AlignCenter);
+        itemDesc->setTextAlignment(Qt::AlignCenter);
+
+        ui->tblMyActivity->setItem(i, 0, itemDate);
+        ui->tblMyActivity->setItem(i, 1, itemTime);
+        ui->tblMyActivity->setItem(i, 2, itemAction);
+        ui->tblMyActivity->setItem(i, 3, itemDesc);
+    }
+}
+
+
+void DoctorWindow::loadProfileData()
+{
+    User& myProfile = Doctor::GetMyProfileInfo();
+    ui->lineEdit_2->setText(QString::number(myProfile.GetID()));
+    ui->lineEdit_3->setText(myProfile.GetFullName());
+    ui->lineEdit_4->setText("N/A");
+    ui->lineEdit_5->setText("N/A");
+    ui->lineEdit_6->setText(myProfile.GetPhoneNumber());
+    ui->lineEdit_7->setText(myProfile.GetRole());
+
+
+    QList<Permission> myPerms = Doctor::GetMyPermissions();
+    ui->tblMyPermissions->setRowCount(0);
+    ui->tblMyPermissions->setRowCount(myPerms.size());
+
+    QString permissionsText = "";
+
+    for (int i = 0; i < myPerms.size(); ++i) {
+        int pType = myPerms[i].toUnderlying(); 
+        
+        QString pName = "Unknown Permission";
+        switch (pType) {
+            case Permission::createRecord:
+                pName = "Create Medical Record"; 
+                break;
+            case Permission::viewRecord:
+                pName = "View Medical Record"; 
+                break;
+            case Permission::editRecord:
+                pName = "Edit Medical Record"; 
+                break;
+            case Permission::manageDrugs:
+                pName = "Manage Drugs";
+                break;
+            case Permission::viewLog:
+                pName = "View Logs"; 
+                break;
+            case Permission::addLog:
+                pName = "Add Logs";
+                break;
+            case Permission::changePermission:
+                pName = "Change Permissions"; 
+                break;
+            case Permission::manageUsers:
+                pName = "Manage Users"; 
+                break;
+            case Permission::createPatient:
+                pName = "Create Patient"; 
+                break;
+            case Permission::editPatient:
+                pName = "Edit Patient"; 
+                break;
+            case Permission::createInvoice:
+                pName = "Create Invoice"; 
+                break;
+            case Permission::viewInvoice:
+                pName = "View Invoice"; 
+                break;
+        }
+
+        permissionsText += "- " + pName + "\n";
+        QTableWidgetItem *itemPerm = new QTableWidgetItem(pName);
+        QTableWidgetItem *itemStatus = new QTableWidgetItem("Granted");
+        itemStatus->setTextAlignment(Qt::AlignCenter);
+
+        ui->tblMyPermissions->setItem(i, 0, itemPerm);
+        ui->tblMyPermissions->setItem(i, 1, itemStatus);
+    }
+
 }

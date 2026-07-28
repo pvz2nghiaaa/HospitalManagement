@@ -36,7 +36,7 @@ public:
     static void GetRecordExtraInfo(int recordId, QString& patientName, QString& doctorName, QString& diagnosis);
     static void PrintRecord(int recordId, const QString& filePath);
 
-    static User GetMyProfileInfo();
+    static User& GetMyProfileInfo();
     static QList<Permission> GetMyPermissions();
     static QList<AttendanceLog> SearchMyActivityLogs(const QString& dateFrom, const QString& dateTo);
 };

@@ -102,7 +102,9 @@ void insertSampleData() {
     query.bindValue(":phone", "987654321");
     query.bindValue(":role", "Doctor");
     if (query.exec()) {
-        int doctorId = query.lastInsertId().toInt();
+        int doctorId = query.lastInsertId().toInt(); // Lấy ID của Doctor vừa tạo
+
+        // Cấp quyền cho Doctor
         QList<Permission::Type> docPerms = {
             Permission::createRecord, Permission::viewRecord, Permission::editRecord, Permission::manageDrugs
         };
@@ -112,6 +114,22 @@ void insertSampleData() {
             permQuery.bindValue(":uid", doctorId);
             permQuery.bindValue(":ptype", static_cast<int>(p));
             permQuery.exec();
+        }
+
+        // ---> BỔ SUNG: THÊM DỮ LIỆU ATTENDANCE LOG MẪU CHO BÁC SĨ NÀY <---
+        QList<QString> sampleDates = {"2026-07-20", "2026-07-21", "2026-07-22", "2026-07-23", "2026-07-24", "2026-07-25"};
+        QList<int> sampleStatus = {1, 1, 0, 1, 1, 1}; // 1 = Present (Có mặt), 0 = Absent (Vắng)
+
+        for (int i = 0; i < sampleDates.size(); ++i) {
+            QSqlQuery logQuery;
+            logQuery.prepare("INSERT INTO AttendanceLogs (Date, IsPresent, EmployeeID) VALUES (:date, :isPresent, :empId)");
+            logQuery.bindValue(":date", sampleDates[i]);
+            logQuery.bindValue(":isPresent", sampleStatus[i]);
+            logQuery.bindValue(":empId", doctorId); // Gắn chính xác với ID của bác sĩ
+
+            if (!logQuery.exec()) {
+                qDebug() << "Failed to insert sample attendance log:" << logQuery.lastError().text();
+            }
         }
     }
 
@@ -211,6 +229,7 @@ void insertSampleData() {
         qDebug() << "LỖI ĐƠN THUỐC 603:" << query.lastError().text();
     }
 
+    qDebug() << "=> Sample users, permissions, and attendance logs inserted successfully!";
 }
 
 int main(int argc, char *argv[])
