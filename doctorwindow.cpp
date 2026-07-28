@@ -13,6 +13,15 @@ DoctorWindow::DoctorWindow(QWidget *parent)
     ui->setupUi(this);
     ui->lblAdmin->setText("Dr. " + User::GetActiveUser().GetFullName() + " (Online)");
     navigateToPage(0, ui->btnDashboard);
+
+    ui->txtRecordID->setReadOnly(true);
+    ui->txtRecordID_2->setReadOnly(true);
+    ui->txtRecordID_4->setReadOnly(true);
+    ui->txtRecordID_3->setReadOnly(true);
+    ui->txtRecordID_5->setReadOnly(true);
+
+    ui->tblRecordPrescription->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tblMedicalRecords->setEditTriggers(QAbstractItemView::NoEditTriggers);
 }
 
 DoctorWindow::~DoctorWindow()
@@ -176,4 +185,18 @@ void DoctorWindow::on_btnPrintRecord_clicked()
     Doctor::PrintRecord(recordId, filePath);
 
     QMessageBox::information(this, "Success", "PDF exported successfully at:\n" + filePath);
+}
+void DoctorWindow::on_btnCloseRecord_clicked()
+{
+    ui->txtRecordID->clear();
+    ui->txtRecordID_2->clear();
+    ui->txtRecordID_3->clear();
+    ui->txtRecordID_4->clear();
+    ui->txtRecordID_5->clear();
+
+    ui->tblRecordPrescription->setRowCount(0);
+
+    ui->tblMedicalRecords->clearSelection();
+    ui->tblMedicalRecords->setCurrentItem(nullptr);
+
 }

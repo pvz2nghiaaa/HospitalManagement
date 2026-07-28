@@ -156,6 +156,7 @@ void insertSampleData() {
         qDebug() << "LỖI BỆNH ÁN 302:" << query.lastError().text();
     }
 
+
     // Thêm Chẩn đoán (Bảng Diagnoses - Đổi tên bảng và đổi cột Note thành ICDCode)
     if (!query.exec("INSERT INTO Diagnoses (DiagnosisID, RecordID, DoctorID, ConditionName, Severity, ICDCode) "
                     "VALUES (401, 301, 2, 'Influenza', 'Moderate', 'J09')")) {
@@ -185,6 +186,31 @@ void insertSampleData() {
                     "VALUES (602, 401, 503, 5, 'Pha 1 gói với 200ml nước')")) {
         qDebug() << "LỖI ĐƠN THUỐC 602:" << query.lastError().text();
     }
+
+    // 1. Thêm Bệnh án mới cho Bệnh nhân 201 (RecordID: 303)
+    if (!query.exec("INSERT INTO MedicalRecords (RecordID, PatientID, Date, IsComplete) "
+                    "VALUES (303, 201, '28-07-2026', 0)")) {
+        qDebug() << "LỖI BỆNH ÁN 303:" << query.lastError().text();
+    }
+
+    // 2. Thêm Chẩn đoán mới liên kết với Bệnh án 303 (DiagnosisID: 402)
+    if (!query.exec("INSERT INTO Diagnoses (DiagnosisID, RecordID, DoctorID, ConditionName, Severity, ICDCode) "
+                    "VALUES (402, 303, 1, 'Acute Gastritis', 'Mild', 'K29.1')")) {
+        qDebug() << "LỖI CHẨN ĐOÁN 402:" << query.lastError().text();
+    }
+
+    // 3. Thêm Thuốc mới vào danh mục nếu cần (DrugID: 504)
+    if (!query.exec("INSERT INTO Drugs (DrugID, Name, Unit, Price) "
+                    "VALUES (504, 'Omeprazole 20mg', 'Viên', 4000)")) {
+        qDebug() << "LỖI THUỐC 504:" << query.lastError().text();
+    }
+
+    // 4. Kê đơn thuốc cho Chẩn đoán 402 (DetailID: 603)
+    if (!query.exec("INSERT INTO Prescriptions (DetailID, DiagnosisID, DrugID, Quantity, Note) "
+                    "VALUES (603, 402, 504, 14, 'Uống 1 viên trước khi ăn sáng 30 phút')")) {
+        qDebug() << "LỖI ĐƠN THUỐC 603:" << query.lastError().text();
+    }
+
 }
 
 int main(int argc, char *argv[])

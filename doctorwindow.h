@@ -30,6 +30,7 @@ private slots:
     void on_btnRefreshRecords_clicked();
     void on_tblMedicalRecords_cellClicked(int row, int column);
     void on_btnPrintRecord_clicked();
+    void on_btnCloseRecord_clicked();
 
 private:
     Ui::DoctorWindow *ui;

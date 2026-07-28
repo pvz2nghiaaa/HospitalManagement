@@ -149,7 +149,6 @@ void Doctor::GetRecordExtraInfo(int recordId, QString& patientName, QString& doc
         qDebug() << "GetRecordExtraInfo error:" << q.lastError().text();
     }
 }
-
 void Doctor::PrintRecord(int recordId, const QString& filePath) {
     if (filePath.isEmpty()) return;
 
@@ -184,79 +183,150 @@ void Doctor::PrintRecord(int recordId, const QString& filePath) {
     QPainter painter(&pdfWriter);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    int margin = 200;
     int pageWidth = pdfWriter.width();
+    int pageHeight = pdfWriter.height();
+    int margin = pageWidth * 0.08;
+
     int startX = margin;
     int endX = pageWidth - margin;
     int contentWidth = endX - startX;
 
-    painter.setFont(QFont("Arial", 22, QFont::Bold));
+    int gapSmall = pageHeight * 0.01;
+    int gapMed = pageHeight * 0.02;
+    int gapLarge = pageHeight * 0.04;
+
+    int col1 = startX;
+    int col2 = startX + contentWidth * 0.10;
+    int col3 = startX + contentWidth * 0.55;
+    int col4 = startX + contentWidth * 0.75;
+
+    QFont titleFont("Arial", 22, QFont::Bold);
+    QFont subTitleFont("Arial", 14, QFont::Bold);
+    QFont headerFont("Arial", 16, QFont::Bold);
+    QFont normalFont("Arial", 12);
+    QFont boldFont("Arial", 12, QFont::Bold);
+    QFont italicFont("Arial", 12, QFont::StyleItalic);
+
+    int y = margin;
+
+    painter.setFont(titleFont);
     painter.setPen(QColor(6, 182, 212));
+    int titleH = painter.fontMetrics().height();
+    painter.drawText(QRect(startX, y, contentWidth, titleH), Qt::AlignCenter, "MEDIFLOW HOSPITAL");
+    y += titleH + gapSmall;
 
-    painter.drawText(QRect(startX, margin, contentWidth, 300), Qt::AlignCenter, "MEDIFLOW HOSPITAL");
-
-    painter.setFont(QFont("Arial", 14, QFont::Bold));
+    painter.setFont(subTitleFont);
     painter.setPen(Qt::darkGray);
-    painter.drawText(QRect(startX, margin + 250, contentWidth, 200), Qt::AlignCenter, "OFFICIAL MEDICAL RECORD");
+    int subH = painter.fontMetrics().height();
+    painter.drawText(QRect(startX, y, contentWidth, subH), Qt::AlignCenter, "OFFICIAL MEDICAL RECORD");
+    y += subH + gapLarge;
 
-    int y = margin + 550;
     painter.setPen(Qt::black);
     painter.drawLine(startX, y, endX, y);
-    y += 200;
+    y += gapMed;
 
-    painter.setFont(QFont("Arial", 12));
-    int lineSpacing = 200; // Khoảng cách dòng vừa phải
+    painter.setFont(normalFont);
+    int normH = painter.fontMetrics().height();
+    int normAscent = painter.fontMetrics().ascent();
+    int lineSpacing = normH * 2;
 
-    painter.drawText(startX, y, "Patient ID: " + QString::number(rec.GetPatientID()));
-    painter.drawText(QRect(startX, y, contentWidth, lineSpacing), Qt::AlignRight | Qt::AlignTop, "Patient Name: " + patientName);
+    painter.drawText(startX, y + normAscent, "Patient ID: " + QString::number(rec.GetPatientID()));
+    painter.drawText(QRect(startX, y, contentWidth, normH), Qt::AlignRight | Qt::AlignTop, "Patient Name: " + patientName);
     y += lineSpacing;
 
-    painter.drawText(startX, y, "Doctor: Dr. " + doctorName);
-    painter.drawText(QRect(startX, y, contentWidth, lineSpacing), Qt::AlignRight | Qt::AlignTop, "Visit Date: " + rec.GetDate());
+    painter.drawText(startX, y + normAscent, "Doctor: Dr. " + doctorName);
+    painter.drawText(QRect(startX, y, contentWidth, normH), Qt::AlignRight | Qt::AlignTop, "Visit Date: " + rec.GetDate());
     y += lineSpacing;
 
-    painter.setFont(QFont("Arial", 12, QFont::Bold));
-    painter.drawText(startX, y, "Diagnosis: ");
-    painter.setFont(QFont("Arial", 12));
-    painter.drawText(startX + 350, y, diagnosis);
-    y += lineSpacing + 100;
+    painter.setFont(boldFont);
+    painter.drawText(startX, y + painter.fontMetrics().ascent(), "Diagnosis: ");
+    painter.setFont(normalFont);
+    painter.drawText(startX + contentWidth * 0.15, y + painter.fontMetrics().ascent(), diagnosis);
+    y += gapLarge;
 
     painter.drawLine(startX, y, endX, y);
-    y += 200;
+    y += gapMed;
 
-    painter.setFont(QFont("Arial", 16, QFont::Bold));
-    painter.drawText(startX, y, "PRESCRIPTION");
-    y += lineSpacing;
+    painter.setFont(headerFont);
+    int h16 = painter.fontMetrics().height();
+    painter.drawText(startX, y + painter.fontMetrics().ascent(), "PRESCRIPTION");
+    y += h16 + gapMed;
 
+    auto drawTableHeader = [&]() {
+        painter.setFont(boldFont);
+        int boldH = painter.fontMetrics().height();
+        int asc = painter.fontMetrics().ascent();
+        painter.drawText(col1, y + asc, "No.");
+        painter.drawText(col2, y + asc, "Drug Name");
+        painter.drawText(col3, y + asc, "Quantity");
+        painter.drawText(col4, y + asc, "Instructions");
+        y += boldH + gapSmall;
+        painter.drawLine(startX, y, endX, y);
+        y += gapSmall;
+    };
 
-    painter.setFont(QFont("Arial", 12, QFont::Bold));
-    painter.drawText(startX, y, "No.");
-    painter.drawText(startX + 200, y, "Drug Name");
-    painter.drawText(startX + 1100, y, "Quantity");
-    painter.drawText(startX + 1500, y, "Instructions");
-
-    y += 80;
-    painter.drawLine(startX, y, endX, y);
-    y += 120;
-
-    painter.setFont(QFont("Arial", 12));
+    drawTableHeader();
+    painter.setFont(normalFont);
     int index = 1;
+    int signatureSpace = gapLarge * 4;
+
     for (const Prescription& rx : rxList) {
         QList<Drug> drugs = rx.getDrugs();
         QList<int> qtys = rx.getQuantities();
         QList<QString> notes = rx.getNotes();
 
         for (int i = 0; i < drugs.size(); ++i) {
-            painter.drawText(startX, y, QString::number(index++));
-            painter.drawText(startX + 200, y, drugs[i].getName());
+            int instructionWidth = endX - col4;
+            QRect targetRect(col4, y, instructionWidth, 5000);
+
+            // boundingRect sẽ giả lập quá trình in để xem phần hướng dẫn dài bao nhiêu pixel khi bị wrap
+            QRect textRect = painter.boundingRect(targetRect, Qt::AlignLeft | Qt::TextWordWrap, notes[i]);
+
+            int rowHeight = qMax(normH * 2, textRect.height() + gapSmall);
+
+            if (y + rowHeight > pageHeight - margin - signatureSpace) {
+                pdfWriter.newPage();
+                y = margin;
+                drawTableHeader();
+                painter.setFont(normalFont);
+            }
+
+            int textAscent = painter.fontMetrics().ascent();
+            painter.drawText(col1, y + textAscent, QString::number(index++));
+            painter.drawText(col2, y + textAscent, drugs[i].getName());
 
             QString qtyText = QString::number(qtys[i]) + " " + drugs[i].getUnit();
-            painter.drawText(startX + 1100, y, qtyText);
+            painter.drawText(col3, y + textAscent, qtyText);
 
-            painter.drawText(startX + 1500, y, notes[i]);
-            y += lineSpacing;
+            painter.drawText(textRect, Qt::AlignLeft | Qt::TextWordWrap, notes[i]);
+
+            y += rowHeight;
         }
     }
+
+    if (y + signatureSpace > pageHeight - margin) {
+        pdfWriter.newPage();
+        y = margin;
+    } else {
+        y += gapLarge;
+    }
+
+    int sigBlockWidth = contentWidth * 0.40;
+    int sigBlockX = endX - sigBlockWidth;
+
+    painter.setFont(italicFont);
+    int itH = painter.fontMetrics().height();
+    painter.drawText(QRect(sigBlockX, y, sigBlockWidth, itH), Qt::AlignCenter, "Date: " + rec.GetDate());
+    y += itH + gapSmall;
+
+    painter.setFont(boldFont);
+    int bH = painter.fontMetrics().height();
+    painter.drawText(QRect(sigBlockX, y, sigBlockWidth, bH), Qt::AlignCenter, "Attending Doctor");
+
+    y += gapLarge * 2;
+
+    painter.setFont(normalFont);
+    painter.drawText(QRect(sigBlockX, y, sigBlockWidth, normH), Qt::AlignCenter, "Dr. " + doctorName);
 
     painter.end();
     qDebug() << "Successfully generated PDF at:" << filePath;
