@@ -15,8 +15,12 @@ ReceptionistWindow::ReceptionistWindow(QWidget *parent)
     , ui(new Ui::ReceptionistWindow)
 {
     ui->setupUi(this);
+
+    // default hide overlay
+    ui->overlayPatientFrame->hide();
+
     ui->lblAdmin->setText("Rect. " + User::GetActiveUser().GetFullName()+ " (Online)");
-    navigateToPage(0, ui->btnDashboard);
+    navigateToPage(0, ui->btnPatient);
 
 
     
@@ -34,43 +38,43 @@ ReceptionistWindow::~ReceptionistWindow()
     delete ui;
 }
 
-void ReceptionistWindow::on_btnDashboard_clicked()
+void ReceptionistWindow::on_btnPatient_clicked()
 {
-    navigateToPage(0, ui->btnDashboard);
+    navigateToPage(0, ui->btnPatient);
 }
 
 
-void ReceptionistWindow::on_btnPatients_clicked()
+void ReceptionistWindow::on_btnRecord_clicked()
 {
-    navigateToPage(1, ui->btnPatients);
+    navigateToPage(1, ui->btnRecord);
 }
 
 
-void ReceptionistWindow::on_btnPatients_2_clicked()
+void ReceptionistWindow::on_btnInvoice_clicked()
 {
-    navigateToPage(2, ui->btnPatients_2);
+    navigateToPage(2, ui->btnInvoice);
 }
 
 
-void ReceptionistWindow::on_btnPatients_3_clicked()
+void ReceptionistWindow::on_btnDrug_clicked()
 {
-    navigateToPage(3, ui->btnPatients_3);
+    navigateToPage(3, ui->btnDrug);
 }
 
 
-void ReceptionistWindow::on_btnDoctors_clicked()
+void ReceptionistWindow::on_btnProfile_clicked()
 {
-    navigateToPage(4, ui->btnDoctors);
+    navigateToPage(4, ui->btnProfile);
 }
 
 void ReceptionistWindow::navigateToPage(int pageIndex, QPushButton* activeBtn){
     ui->stackedWidget->setCurrentIndex(pageIndex);
     QList<QPushButton*> sidebarButtons = {
-        ui->btnDashboard,
-        ui->btnPatients,
-        ui->btnPatients_2,
-        ui->btnPatients_3,
-        ui->btnDoctors
+        ui->btnPatient,
+        ui->btnRecord,
+        ui->btnInvoice,
+        ui->btnDrug,
+        ui->btnProfile
     };
     for (QPushButton* btn: sidebarButtons){
         btn->setProperty("active", false); // "active" properties along with its style is declared in .ui
@@ -519,189 +523,74 @@ void ReceptionistWindow::on_tblPatient_2_cellClicked(int row,int column){
         << drugName;
 }
 
-
-bool ReceptionistWindow::RemoveDrug(int drugID)
+void ReceptionistWindow::setBackgroundActiveState(const bool activeState)
 {
-    QSqlQuery query;
+    ui->stackedWidget->setEnabled(activeState);
+    ui->btnLogout->setEnabled(activeState);
 
-
-    query.prepare(
-        "SELECT StockQuantity "
-        "FROM Drugs "
-        "WHERE DrugID=:id"
-    );
-
-    query.bindValue(":id", drugID);
-
-
-    query.exec();
-
-    query.next();
-
-
-    int oldStock =
-        query.value(0).toInt();
-
-
-
-    // Save history
-
-    QSqlQuery history;
-
-
-    history.prepare(
-        "INSERT INTO DrugStockHistory "
-        "(DrugID,Action,OldQuantity,NewQuantity,Time,Operator)"
-        "VALUES "
-        "(:id,'DELETE',:old,0,datetime('now'),'Receptionist')"
-    );
-
-
-    history.bindValue(":id", drugID);
-    history.bindValue(":old", oldStock);
-
-
-    history.exec();
-
-
-
-    // Delete
-
-    QSqlQuery del;
-
-
-    del.prepare(
-        "DELETE FROM Drugs "
-        "WHERE DrugID=:id"
-    );
-
-
-    del.bindValue(":id", drugID);
-
-
-
-    return del.exec();
+    for (int i = 0; i < ui->verticalLayout->count(); i++)
+        ui->verticalLayout->itemAt(i)->widget()->setEnabled(activeState);
 }
-void ReceptionistWindow::on_btnSearch_17_clicked()
+
+void ReceptionistWindow::showOverlayPatientFrame()
 {
+    // disable background
+    ReceptionistWindow::setBackgroundActiveState(false);
 
-    int row =
-        ui->tblPatient_2->currentRow();
+    // set card position
+    ui->overlayPatientFrame->setGeometry(0, 0, this->width(), this->height());
+    int cardX = (this->width() - ui->cardRegisterPatient->width()) / 2;
+    int cardY = (this->height() - ui->cardRegisterPatient->height()) / 2;
+    ui->cardRegisterPatient->move(cardX, cardY);
+
+    ui->overlayPatientFrame->show();
+    ui->overlayPatientFrame->raise();
+}
+
+void ReceptionistWindow::hideOverlayPatientFrame()
+{
+    ui->overlayPatientFrame->hide();
+    ReceptionistWindow::setBackgroundActiveState(true);
+}
+
+void ReceptionistWindow::on_btnNewPatient_clicked()
+{
+    ReceptionistWindow::showOverlayPatientFrame();
+}
+
+void ReceptionistWindow::on_btnCancelPat_clicked()
+{
+    ReceptionistWindow::hideOverlayPatientFrame();
+}
 
 
-    if (row < 0)
-    {
-        QMessageBox::warning(
-            this,
-            "Delete",
-            "Select a drug first"
-        );
+void ReceptionistWindow::on_btnSavePat_clicked()
+{
+    QString fullName = ui->txtPatFullName->text().trimmed();
+    QString phoneNo = ui->txtPatPhone->text().trimmed();
+    QString birthDate = ui->datePatDOB->date().toString("dd/MM/yyyy");
+    QString sex = ui->cbPatGender->currentText();
+    QString address = ui->txtPatAddress->text().trimmed();
+
+    if (fullName.isEmpty()) {
+        QMessageBox::warning(this, "Validation Error", "Patient full name is required.");
         return;
     }
 
+    bool success = Patient::createPatient(fullName, phoneNo, birthDate, sex, address);
+    if (success) {
+        QMessageBox::information(this, "Success", "Patient registered successfully!");
 
+        // Reset fields
+        ui->txtPatFullName->clear();
+        ui->txtPatPhone->clear();
+        ui->datePatDOB->setDate(QDate::currentDate());
+        ui->cbPatGender->setCurrentIndex(0);
+        ui->txtPatAddress->clear();
 
-    int drugID =
-        ui->tblPatient_2
-        ->item(row, 0)
-        ->text()
-        .toInt();
-
-
-
-    if (RemoveDrug(drugID))
-    {
-
-        QMessageBox::information(
-            this,
-            "Delete",
-            "Delete successfully"
-        );
-
-
-        loadAllDrugs();
-
+        ReceptionistWindow::hideOverlayPatientFrame();
+    } else {
+        QMessageBox::critical(this, "Error", "Failed to register patient in database.");
     }
-
 }
 
-void ReceptionistWindow::GetDrugStockHistory(int drugID)
-{
-
-    QSqlQuery query;
-
-
-    query.prepare(
-        "SELECT Action,"
-        "OldQuantity,"
-        "NewQuantity,"
-        "Time,"
-        "Operator "
-        "FROM DrugStockHistory "
-        "WHERE DrugID=:id"
-    );
-
-
-    query.bindValue(":id", drugID);
-
-
-
-    query.exec();
-
-
-
-    QString result;
-
-
-
-    while (query.next())
-    {
-        result +=
-            query.value(0).toString()
-            + " | "
-            + query.value(1).toString()
-            + " -> "
-            + query.value(2).toString()
-            + "\n";
-    }
-
-
-
-    QMessageBox::information(
-        this,
-        "Drug History",
-        result
-    );
-}
-
-void ReceptionistWindow::on_pushButton_clicked()
-{
-
-    int row =
-        ui->tblPatient_2->currentRow();
-
-
-
-    if (row < 0)
-    {
-        QMessageBox::warning(
-            this,
-            "History",
-            "Select drug first"
-        );
-
-        return;
-    }
-
-
-
-    int drugID =
-        ui->tblPatient_2
-        ->item(row, 0)
-        ->text()
-        .toInt();
-
-
-
-    GetDrugStockHistory(drugID);
-}
