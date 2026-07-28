@@ -17,15 +17,15 @@ public:
     ~ReceptionistWindow();
 
 private slots:
-    void on_btnPatient_clicked();
+    void on_btnDashboard_clicked();
 
-    void on_btnRecord_clicked();
+    void on_btnPatients_clicked();
 
-    void on_btnInvoice_clicked();
+    void on_btnPatients_2_clicked();
 
-    void on_btnDrug_clicked();
+    void on_btnPatients_3_clicked();
 
-    void on_btnProfile_clicked();
+    void on_btnDoctors_clicked();
 
     void on_btnLogout_clicked();
 
@@ -37,12 +37,6 @@ private slots:
     //void on_btnSearch_17_clicked();
     void on_btnSearch_18_clicked();
     void on_tblPatient_2_cellClicked(int row, int column);
-
-    void on_btnNewPatient_clicked();
-
-    void on_btnCancelPat_clicked();
-
-    void on_btnSavePat_clicked();
 
 private:
     Ui::ReceptionistWindow *ui;
@@ -59,10 +53,9 @@ private:
 
     QString getDrugStatus(int stockQuantity) const;
 
-    void setBackgroundActiveState(const bool activeState);
+    bool RemoveDrug(int drugID);
 
-    void showOverlayPatientFrame();
-    void hideOverlayPatientFrame();
+    void GetDrugStockHistory(int drugID);
 };
 
 #endif // RECEPTIONISTWINDOW_H
