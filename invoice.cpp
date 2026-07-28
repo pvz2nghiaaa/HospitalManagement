@@ -10,7 +10,7 @@
 
 Invoice::Invoice(int recordID, int patientID)
     : invoiceID(-1), recordID(recordID), patientID(patientID), totalAmount(0.0), isPaid(false) {
-    dateIssued = QDateTime::currentDateTime().toString("dd-MM-yyyy HH:mm:ss");
+    dateIssued = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss");
 }
 
 Invoice::~Invoice() {
