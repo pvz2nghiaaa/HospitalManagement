@@ -1,0 +1,50 @@
+name: Build & Package Hospital Management
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-windows:
+    name: Build on Windows (Qt 6)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install Qt 6 & CMake
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.6.3'
+          host: 'windows'
+          target: 'desktop'
+          arch: 'win64_msvc2019_64'
+
+      - name: Configure CMake
+        run: |
+          cmake -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build Project
+        run: |
+          cmake --build build --config Release
+
+      - name: Deploy Qt DLL Dependencies (windeployqt)
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem -Path build -Filter "HospitalManagement.exe" -Recurse | Select-Object -ExpandProperty FullName -First 1
+          Write-Host "Found executable at: $exe"
+          windeployqt --no-compiler-runtime "$exe"
+          $distDir = Split-Path -Path $exe -Parent
+          echo "DIST_DIR=$distDir" >> $env:GITHUB_ENV
+
+      - name: Upload Executable Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: HospitalManagement-Windows-x64
+          path: ${{ env.DIST_DIR }}
