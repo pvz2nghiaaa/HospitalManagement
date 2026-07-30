@@ -3,6 +3,7 @@
 #include <QSqlError>
 #include <QDebug>
 #include <QString>
+#include <QDate>
 #include "permission.h"
 #include "user.h"
 
@@ -103,7 +104,7 @@ public:
             QString id    = query.value(0).toString();
             QString name  = query.value(1).toString();
             QString phone = query.value(2).toString();
-            QString dob   = query.value(3).toString();
+            QString dob   = QDate::fromString(query.value(3).toString(), "yyyy-MM-dd").toString("dd-MM-yyyy");
             QString sex   = query.value(4).toString();
             QString addr  = query.value(5).toString();
 
@@ -111,5 +112,24 @@ public:
         }
 
         return lstPatient;
+    }
+    static bool updatePatient(QString id, QString name, QString phone, QString dob, QString sex, QString addr)
+    {
+        QSqlQuery query;
+        query.prepare("UPDATE Patients SET FullName = :name, Phone = :phone, BirthDate = :dob, Sex = :sex, Address = :addr WHERE ID = :id");
+        query.bindValue(":id", id);
+        query.bindValue(":name", name);
+        query.bindValue(":phone", phone);
+        query.bindValue(":dob", dob);
+        query.bindValue(":sex", sex);
+        query.bindValue(":addr", addr);
+
+        if (!query.exec())
+        {
+            qDebug() << "Query failed:" << query.lastError().text();
+            return false;
+        }
+
+        return true;
     }
 };
