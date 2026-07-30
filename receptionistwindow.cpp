@@ -1,4 +1,7 @@
 #include "receptionistwindow.h"
+#include "receptionist.h"
+#include "permission.h"
+#include "attendancelog.h"
 #include "ui_ReceptionistWindow.h"
 #include "user.h"
 #include "drug.h"
@@ -8,6 +11,9 @@
 #include <QInputDialog>
 #include <QHeaderView>
 #include <QDebug>
+#include <QDate>
+#include <QDateTime>
+#include <QTableWidgetItem>
 #include "loginwindow.h"
 #include "patient.h"
 ReceptionistWindow::ReceptionistWindow(QWidget* parent)
@@ -18,6 +24,10 @@ ReceptionistWindow::ReceptionistWindow(QWidget* parent)
 
     // default hide overlay
     ui->overlayPatientFrame->hide();
+    ui->overlayDrugFrame->hide();
+    ui->cardAddDrug->hide();
+    ui->cardEditDrug->hide();
+    ui->cardDrugHistory->hide();
 
     ui->lblAdmin->setText("Rect. " + User::GetActiveUser().GetFullName()+ " (Online)");
     navigateToPage(0, ui->btnPatient);
@@ -31,6 +41,42 @@ ReceptionistWindow::ReceptionistWindow(QWidget* parent)
     ui->tblPatient_2->horizontalHeader()->setStretchLastSection(true);
     // Load all drugs
     loadAllDrugs();
+    //My profile
+    ui->dateFromProfile->setDisplayFormat("dd/MM/yyyy");
+    ui->dateToProfile->setDisplayFormat("dd/MM/yyyy");
+
+    ui->dateFromProfile->setCalendarPopup(true);
+    ui->dateToProfile->setCalendarPopup(true);
+
+    ui->dateToProfile->setDate(QDate::currentDate());
+    ui->dateFromProfile->setDate(QDate::currentDate().addMonths(-1));
+    ui->tblMyPermissions->setFocusPolicy(Qt::NoFocus);
+    ui->tblMyPermissions->setSelectionMode(
+        QAbstractItemView::NoSelection
+    );
+
+    ui->tblMyActivityLogs->setFocusPolicy(Qt::NoFocus);
+    ui->tblMyActivityLogs->setSelectionMode(
+        QAbstractItemView::NoSelection
+    );
+    ui->tblMyActivityLogs->setColumnCount(2);
+
+    ui->tblMyActivityLogs->setHorizontalHeaderLabels(
+        QStringList() << "Date" << "Status"
+    );
+
+    ui->tblMyActivityLogs->horizontalHeader()
+        ->setSectionResizeMode(QHeaderView::Stretch);
+
+    ui->tblMyActivityLogs->verticalHeader()->setVisible(false);
+
+    ui->tblMyActivityLogs->setEditTriggers(
+        QAbstractItemView::NoEditTriggers
+    );
+
+    ui->tblMyActivityLogs->setSelectionBehavior(
+        QAbstractItemView::SelectRows
+    );
 }
 
 ReceptionistWindow::~ReceptionistWindow()
@@ -65,6 +111,19 @@ void ReceptionistWindow::on_btnDrug_clicked()
 void ReceptionistWindow::on_btnProfile_clicked()
 {
     navigateToPage(4, ui->btnProfile);
+    ui->tabWidget_2->setCurrentIndex(0);
+
+    ui->dateFromProfile->setDate(
+        QDate::currentDate().addMonths(-1)
+    );
+
+    ui->dateToProfile->setDate(
+        QDate::currentDate()
+    );
+
+    loadMyProfileInfo();
+    loadMyPermissions();
+    loadMyActivityLogs();
 }
 
 void ReceptionistWindow::navigateToPage(int pageIndex, QPushButton* activeBtn) {
@@ -212,52 +271,9 @@ void ReceptionistWindow::on_btnSearch_18_clicked()
 
 
 
-
 void ReceptionistWindow::on_btnSearch_15_clicked()
 {
-    bool ok;
-
-    // Drug Name
-    QString name = QInputDialog::getText(this, "Add New Drug", "Drug Name:", QLineEdit::Normal, "", &ok);
-    if (!ok)
-        return;
-    name = name.trimmed();
-    if (name.isEmpty())
-    {
-        QMessageBox::warning(this, "Invalid Input", "Drug name cannot be empty."
-        );
-        return;
-    }
-
-    // Unit
-    QString unit =
-        QInputDialog::getText(this, "Add New Drug", "Unit:", QLineEdit::Normal, "", &ok);
-    if (!ok)
-        return;
-    unit = unit.trimmed();
-
-    // Price
-    double price = QInputDialog::getDouble(this, "Add New Drug", "Price:", 0.0, 0.0, 1000000000.0, 2, &ok);
-    if (!ok)
-        return;
-
-    // Stock Quantity
-    int stock = QInputDialog::getInt(this, "Add New Drug", "Stock Quantity:", 0, 0, 1000000, 1, &ok);
-    if (!ok)
-        return;
-
-
-    // Add to database=
-    if (Drug::AddNewDrug(name, unit, price, stock)) {
-        QMessageBox::information(this, "Success", "New drug added successfully.");
-
-        loadAllDrugs();
-    }
-    else
-    {
-        QMessageBox::critical(this, "Error", "Failed to add new drug."
-        );
-    }
+    showAddDrugFrame();
 }
 
 
@@ -269,81 +285,33 @@ void ReceptionistWindow::on_btnSearch_16_clicked()
 
     if (row < 0)
     {
-        QMessageBox::warning(this, "Warning", "Please select a drug first."
+        QMessageBox::warning(
+            this,
+            "Warning",
+            "Please select a drug first."
         );
         return;
     }
 
-
-    // Get current drug
-    int drugID =
+    currentDrugID =
         ui->tblPatient_2
         ->item(row, 0)
         ->text()
         .toInt();
 
-    QString oldName =
-        ui->tblPatient_2
-        ->item(row, 1)
-        ->text();
+    ui->txtEditDrugName->setText(
+        ui->tblPatient_2->item(row, 1)->text());
 
-    QString oldUnit =
-        ui->tblPatient_2
-        ->item(row, 2)
-        ->text();
+    ui->txtEditDrugUnit->setText(
+        ui->tblPatient_2->item(row, 2)->text());
 
-    double oldPrice =
-        ui->tblPatient_2
-        ->item(row, 3)
-        ->text()
-        .toDouble();
+    ui->spEditDrugPrice->setValue(
+        ui->tblPatient_2->item(row, 3)->text().toDouble());
 
-    int oldStock =
-        ui->tblPatient_2
-        ->item(row, 4)
-        ->text()
-        .toInt();
+    ui->spEditDrugStock->setValue(
+        ui->tblPatient_2->item(row, 4)->text().toInt());
 
-
-    bool ok;
-
-
-    // New Drug Name
-    QString name = QInputDialog::getText(this, "Update Drug", "Drug Name:", QLineEdit::Normal, oldName, &ok);
-    if (!ok)
-        return;
-
-
-    // New Unit
-    QString unit = QInputDialog::getText(this, "Update Drug", "Unit:", QLineEdit::Normal, oldUnit, &ok);
-    if (!ok)
-        return;
-
-
-    // New Price
-    double price = QInputDialog::getDouble(this, "Update Drug", "Price:", oldPrice, 0.0, 1000000000.0, 2, &ok);
-    if (!ok)
-        return;
-
-
-    // New Stock
-    int stock = QInputDialog::getInt(this, "Update Drug", "Stock Quantity:", oldStock, 0, 1000000, 1, &ok);
-    if (!ok)
-        return;
-
-
-    // Update database
-    if (Drug::UpdateDrugInfo(drugID, name, unit, price, stock))
-    {
-        QMessageBox::information(this, "Success", "Drug information updated successfully.");
-
-        loadAllDrugs();
-    }
-    else
-    {
-        QMessageBox::critical(this, "Error", "Failed to update drug."
-        );
-    }
+    showEditDrugFrame();
 }
 
 void ReceptionistWindow::on_tblPatient_2_cellClicked(int row, int column) {
@@ -401,11 +369,8 @@ void ReceptionistWindow::on_btnSearch_17_clicked()
     if (Drug::RemoveDrug(drugID))
     {
 
-        QMessageBox::information(
-            this,
-            "Delete",
-            "Delete successfully"
-        );
+        QMessageBox::information(this,"Delete","Delete successfully");
+        loadAllDrugs();
     }
 }
 void ReceptionistWindow::setBackgroundActiveState(const bool activeState)
@@ -479,3 +444,508 @@ void ReceptionistWindow::on_btnSavePat_clicked()
     }
 }
 
+void ReceptionistWindow::showAddDrugFrame()
+{
+    ui->cardEditDrug->hide();
+    ui->cardDrugHistory->hide();
+
+    ui->txtAddDrugName->clear();
+    ui->txtAddDrugUnit->clear();
+    ui->spAddDrugPrice->setValue(0);
+    ui->spAddDrugStock->setValue(0);
+
+    ui->overlayDrugFrame->show();
+    ui->cardAddDrug->show();
+
+    ui->txtAddDrugName->setFocus();
+}
+
+void ReceptionistWindow::hideAddDrugFrame()
+{
+    ui->cardAddDrug->hide();
+    ui->overlayDrugFrame->hide();
+}
+
+void ReceptionistWindow::on_btnCancelAddDrug_clicked()
+{
+    hideAddDrugFrame();
+}
+
+
+void ReceptionistWindow::on_btnSaveAddDrug_clicked()
+{
+    QString name = ui->txtAddDrugName->text().trimmed();
+    QString unit = ui->txtAddDrugUnit->text().trimmed();
+    double price = ui->spAddDrugPrice->value();
+    int stock = ui->spAddDrugStock->value();
+
+    if (Drug::AddNewDrug(name, unit, price, stock))
+    {
+        QMessageBox::information(
+            this,
+            "Success",
+            "Drug added successfully."
+        );
+
+        hideAddDrugFrame();
+        loadAllDrugs();
+    }
+}
+
+void ReceptionistWindow::showEditDrugFrame()
+{
+    ui->cardAddDrug->hide();
+    ui->cardDrugHistory->hide();
+
+    ui->overlayDrugFrame->show();
+    ui->cardEditDrug->show();
+
+    ui->txtEditDrugName->setFocus();
+}
+
+void ReceptionistWindow::hideEditDrugFrame()
+{
+    ui->cardEditDrug->hide();
+    ui->overlayDrugFrame->hide();
+}
+
+void ReceptionistWindow::on_btnCancelEditDrug_clicked()
+{
+    hideEditDrugFrame();
+}
+void ReceptionistWindow::on_btnSaveEditDrug_clicked()
+{
+    QString name =
+        ui->txtEditDrugName->text().trimmed();
+
+    QString unit =
+        ui->txtEditDrugUnit->text().trimmed();
+
+    double price =
+        ui->spEditDrugPrice->value();
+
+    int stock =
+        ui->spEditDrugStock->value();
+
+    if (Drug::UpdateDrugInfo(
+        currentDrugID,
+        name,
+        unit,
+        price,
+        stock))
+    {
+        QMessageBox::information(
+            this,
+            "Success",
+            "Drug updated successfully."
+        );
+
+        hideEditDrugFrame();
+        loadAllDrugs();
+    }
+}
+
+
+void ReceptionistWindow::on_btnCloseDrugHistory_clicked()
+{
+    hideDrugHistoryFrame();
+}
+
+void ReceptionistWindow::hideDrugHistoryFrame()
+{
+    ui->cardDrugHistory->hide();
+    ui->overlayDrugFrame->hide();
+}
+
+void ReceptionistWindow::showDrugHistoryFrame()
+{
+    ui->cardAddDrug->hide();
+    ui->cardEditDrug->hide();
+
+    ui->overlayDrugFrame->setGeometry(
+        0,
+        0,
+        width(),
+        height()
+    );
+
+    int cardX =
+        (ui->overlayDrugFrame->width()
+            - ui->cardDrugHistory->width()) / 2;
+
+    int cardY =
+        (ui->overlayDrugFrame->height()
+            - ui->cardDrugHistory->height()) / 2;
+
+    ui->cardDrugHistory->move(cardX, cardY);
+
+    ui->overlayDrugFrame->show();
+    ui->cardDrugHistory->show();
+}
+
+void ReceptionistWindow::on_pushButton_clicked()
+{
+    ui->lblPatTitle_5->setText(
+        "Drug Stock History"
+    );
+
+    showDrugHistoryFrame();
+
+    GetDrugStockHistory();
+}
+
+void ReceptionistWindow::GetDrugStockHistory()
+{
+    if (!Drug::initTable())
+    {
+        QMessageBox::critical(
+            this,
+            "History Error",
+            "Cannot initialize DrugStockHistory table."
+        );
+
+        return;
+    }
+
+    QSqlQuery query;
+
+    if (!query.exec(
+        "SELECT "
+        "HistoryID, "
+        "DrugName, "
+        "Action, "
+        "Amount, "
+        "Time "
+        "FROM DrugStockHistory "
+        "ORDER BY HistoryID DESC"
+    ))
+    {
+        QMessageBox::critical(
+            this,
+            "History Error",
+            query.lastError().text()
+        );
+
+        qDebug()
+            << "Load History Error:"
+            << query.lastError().text();
+
+        return;
+    }
+
+    ui->tblDrugHistory->clearContents();
+    ui->tblDrugHistory->setRowCount(0);
+    ui->tblDrugHistory->setColumnCount(5);
+
+    ui->tblDrugHistory->setHorizontalHeaderLabels(
+        QStringList()
+        << "ID"
+        << "Drug Name"
+        << "Action"
+        << "Amount"
+        << "Time"
+    );
+
+    int row = 0;
+
+    while (query.next())
+    {
+        ui->tblDrugHistory->insertRow(row);
+
+        QString historyID =
+            query.value(0).toString();
+
+        QString drugName =
+            query.value(1).toString();
+
+        QString action =
+            query.value(2).toString();
+
+        int amount =
+            query.value(3).toInt();
+
+        QString amountText;
+
+        if (amount > 0)
+        {
+            amountText =
+                "+" + QString::number(amount);
+        }
+        else
+        {
+            amountText =
+                QString::number(amount);
+        }
+
+        QString rawTime =
+            query.value(4).toString();
+
+        QDateTime dt =
+            QDateTime::fromString(
+                rawTime,
+                "yyyy-MM-dd HH:mm:ss"
+            );
+
+        QString time;
+
+        if (dt.isValid())
+        {
+            time =
+                dt.toString("HH:mm:ss  dd/MM/yyyy");
+        }
+        else
+        {
+            time = rawTime;
+        }
+
+        // ID
+        QTableWidgetItem* itemID =
+            new QTableWidgetItem(historyID);
+
+        itemID->setTextAlignment(
+            Qt::AlignCenter
+        );
+
+        // Drug Name
+        QTableWidgetItem* itemName =
+            new QTableWidgetItem(drugName);
+
+        itemName->setTextAlignment(
+            Qt::AlignLeft | Qt::AlignVCenter
+        );
+
+        // Action
+        QTableWidgetItem* itemAction =
+            new QTableWidgetItem(action);
+
+        itemAction->setTextAlignment(
+            Qt::AlignCenter
+        );
+
+        // Amount
+        QTableWidgetItem* itemAmount =
+            new QTableWidgetItem(amountText);
+
+        itemAmount->setTextAlignment(
+            Qt::AlignCenter
+        );
+
+        // Time
+        QTableWidgetItem* itemTime =
+            new QTableWidgetItem(time);
+
+        itemTime->setTextAlignment(
+            Qt::AlignCenter
+        );
+
+        ui->tblDrugHistory->setItem(
+            row,
+            0,
+            itemID
+        );
+
+        ui->tblDrugHistory->setItem(
+            row,
+            1,
+            itemName
+        );
+
+        ui->tblDrugHistory->setItem(
+            row,
+            2,
+            itemAction
+        );
+
+        ui->tblDrugHistory->setItem(
+            row,
+            3,
+            itemAmount
+        );
+
+        ui->tblDrugHistory->setItem(
+            row,
+            4,
+            itemTime
+        );
+
+        row++;
+    }
+
+    QHeaderView* header =
+        ui->tblDrugHistory->horizontalHeader();
+
+    header->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(1, QHeaderView::Stretch);
+    header->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(3, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(4, QHeaderView::Stretch);
+
+    qDebug()
+        << "History rows loaded:"
+        << row;
+}
+
+void ReceptionistWindow::loadMyPermissions()
+{
+    QList<Permission> permissions =
+        Receptionist::GetMyPermissions();
+
+    ui->tblMyPermissions->clearContents();
+    ui->tblMyPermissions->setRowCount(0);
+    ui->tblMyPermissions->setColumnCount(2);
+
+    ui->tblMyPermissions->setHorizontalHeaderLabels(
+        QStringList()
+        << "Permission"
+        << "Status"
+    );
+
+    int row = 0;
+
+    for (const Permission& permission : permissions)
+    {
+        ui->tblMyPermissions->insertRow(row);
+
+        Permission::Type type =
+            static_cast<Permission::Type>(
+                permission
+                );
+
+        QString name =
+            Permission::permissionToReadableString(
+                type
+            );
+
+        QTableWidgetItem* nameItem =
+            new QTableWidgetItem(name);
+
+        QTableWidgetItem* statusItem =
+            new QTableWidgetItem("Granted");
+
+        nameItem->setTextAlignment(
+            Qt::AlignVCenter | Qt::AlignLeft
+        );
+
+        statusItem->setTextAlignment(
+            Qt::AlignCenter
+        );
+
+        ui->tblMyPermissions->setItem(
+            row,
+            0,
+            nameItem
+        );
+
+        ui->tblMyPermissions->setItem(
+            row,
+            1,
+            statusItem
+        );
+
+        row++;
+    }
+
+    ui->tblMyPermissions
+        ->horizontalHeader()
+        ->setSectionResizeMode(
+            QHeaderView::Stretch
+        );
+
+    qDebug()
+        << "Loaded permissions:"
+        << permissions.size();
+}
+
+void ReceptionistWindow::loadMyActivityLogs()
+{
+    QString dateFrom =
+        ui->dateFromProfile->date().toString("yyyy-MM-dd");
+
+    QString dateTo =
+        ui->dateToProfile->date().toString("yyyy-MM-dd");
+
+    QList<AttendanceLog> logs =
+        Receptionist::SearchMyActivityLogs(dateFrom, dateTo);
+
+    ui->tblMyActivityLogs->clearContents();
+    ui->tblMyActivityLogs->setRowCount(logs.size());
+    ui->tblMyActivityLogs->setColumnCount(2);
+
+    ui->tblMyActivityLogs->setHorizontalHeaderLabels(
+        QStringList() << "Date" << "Status"
+    );
+
+    for (int i = 0; i < logs.size(); i++)
+    {
+        QString status;
+
+        if (logs[i].getIsPresent())
+            status = "Present";
+        else
+            status = "Absent";
+
+        QTableWidgetItem* dateItem =
+            new QTableWidgetItem(logs[i].getDate());
+
+        QTableWidgetItem* statusItem =
+            new QTableWidgetItem(status);
+
+        dateItem->setTextAlignment(Qt::AlignCenter);
+        statusItem->setTextAlignment(Qt::AlignCenter);
+
+        ui->tblMyActivityLogs->setItem(i, 0, dateItem);
+        ui->tblMyActivityLogs->setItem(i, 1, statusItem);
+    }
+
+    ui->tblMyActivityLogs->horizontalHeader()
+        ->setSectionResizeMode(QHeaderView::Stretch);
+
+    qDebug() << "Loaded receptionist logs:" << logs.size();
+}
+void ReceptionistWindow::on_btnSearchActivity_clicked()
+{
+    if (ui->dateFromProfile->date() >
+        ui->dateToProfile->date())
+    {
+        QMessageBox::warning(
+            this,
+            "Invalid Date",
+            "From Date cannot be later than To Date."
+        );
+
+        return;
+    }
+
+    loadMyActivityLogs();
+}
+
+void ReceptionistWindow::loadMyProfileInfo()
+{
+    User& user = Receptionist::GetMyProfileInfo();
+
+    ui->lineEdit_2->setText(
+        QString::number(user.GetID())
+    );
+
+    ui->lineEdit_3->setText(
+        user.GetFullName()
+    );
+
+    //ui->lineEdit_4->setText(
+    //    user.GetGender()
+    //);
+
+    //ui->lineEdit_5->setText(
+    //    user.GetDateOfBirth()
+    //);
+
+    ui->lineEdit_6->setText(
+        user.GetPhoneNumber()
+    );
+
+    ui->lineEdit_2->setReadOnly(true);
+    ui->lineEdit_3->setReadOnly(true);
+    ui->lineEdit_4->setReadOnly(true);
+    ui->lineEdit_5->setReadOnly(true);
+    ui->lineEdit_6->setReadOnly(true);
+}

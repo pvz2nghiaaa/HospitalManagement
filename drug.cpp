@@ -18,24 +18,112 @@ Drug::Drug(int drugID, QString name, QString unit, double price)
 Drug::Drug(int drugID, QString name,QString unit, double price,int stockQuantity)
     : drugID(drugID),name(name),unit(unit),price(price),stockQuantity(stockQuantity){}
 
-bool Drug::initTable() {
+bool Drug::initTable()
+{
     static bool tableLoaded = false;
-    if (!tableLoaded) {
-        QSqlQuery query;
-        tableLoaded = query.exec("CREATE TABLE IF NOT EXISTS Drugs ("
-                                 "DrugID INTEGER PRIMARY KEY AUTOINCREMENT, "
-                                 "Name TEXT, "
-                                 "Unit TEXT, "
-                                 "Price REAL,"
-                                 "StockQuantity INTEGER NOT NULL DEFAULT 0)"
-            );
-        if (!tableLoaded) {
-            qDebug() << "Failed to create Drugs table:" << query.lastError().text();
-        } else {
-            qDebug() << "Drugs table is initialized";
-        }
-        return tableLoaded;
+
+    if (tableLoaded)
+        return true;
+
+    QSqlQuery drugQuery;
+
+    if (!drugQuery.exec(
+        "CREATE TABLE IF NOT EXISTS Drugs ("
+        "DrugID INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "Name TEXT, "
+        "Unit TEXT, "
+        "Price REAL, "
+        "StockQuantity INTEGER NOT NULL DEFAULT 0)"
+    ))
+    {
+        qDebug()
+            << "Failed to create Drugs table:"
+            << drugQuery.lastError().text();
+
+        return false;
     }
+
+    QSqlQuery checkQuery;
+
+    if (!checkQuery.exec(
+        "PRAGMA table_info(DrugStockHistory)"
+    ))
+    {
+        qDebug()
+            << "Cannot check history table:"
+            << checkQuery.lastError().text();
+
+        return false;
+    }
+
+    QStringList historyColumns;
+
+    while (checkQuery.next())
+    {
+        historyColumns.append(
+            checkQuery.value(1).toString()
+        );
+    }
+
+    bool oldHistoryStructure = false;
+
+    if (!historyColumns.isEmpty())
+    {
+        QStringList correctColumns;
+
+        correctColumns
+            << "HistoryID"
+            << "DrugName"
+            << "Action"
+            << "Amount"
+            << "Time";
+
+        if (historyColumns != correctColumns)
+            oldHistoryStructure = true;
+    }
+
+    if (oldHistoryStructure)
+    {
+        QSqlQuery dropQuery;
+
+        if (!dropQuery.exec(
+            "DROP TABLE DrugStockHistory"
+        ))
+        {
+            qDebug()
+                << "Failed to remove old history table:"
+                << dropQuery.lastError().text();
+
+            return false;
+        }
+
+        qDebug()
+            << "Old DrugStockHistory table removed";
+    }
+
+    QSqlQuery historyQuery;
+
+    if (!historyQuery.exec(
+        "CREATE TABLE IF NOT EXISTS DrugStockHistory ("
+        "HistoryID INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "DrugName TEXT NOT NULL, "
+        "Action TEXT NOT NULL, "
+        "Amount INTEGER NOT NULL DEFAULT 0, "
+        "Time TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)"
+    ))
+    {
+        qDebug()
+            << "Failed to create DrugStockHistory table:"
+            << historyQuery.lastError().text();
+
+        return false;
+    }
+
+    tableLoaded = true;
+
+    qDebug()
+        << "Drugs and DrugStockHistory tables initialized";
+
     return true;
 }
 
@@ -138,17 +226,38 @@ bool Drug::AddNewDrug(
     double price,
     int stockQuantity)
 {
-    if (name.trimmed().isEmpty())
+    if (!initTable())
         return false;
 
-    if (unit.trimmed().isEmpty())
+    QString cleanName =
+        name.trimmed();
+
+    QString cleanUnit =
+        unit.trimmed();
+
+    if (cleanName.isEmpty())
+    {
+        qDebug() << "Drug name is empty";
         return false;
+    }
+
+    if (cleanUnit.isEmpty())
+    {
+        qDebug() << "Drug unit is empty";
+        return false;
+    }
 
     if (price < 0)
+    {
+        qDebug() << "Invalid drug price";
         return false;
+    }
 
     if (stockQuantity < 0)
+    {
+        qDebug() << "Invalid stock quantity";
         return false;
+    }
 
     QSqlQuery query;
 
@@ -161,12 +270,12 @@ bool Drug::AddNewDrug(
 
     query.bindValue(
         ":name",
-        name.trimmed()
+        cleanName
     );
 
     query.bindValue(
         ":unit",
-        unit.trimmed()
+        cleanUnit
     );
 
     query.bindValue(
@@ -188,6 +297,16 @@ bool Drug::AddNewDrug(
         return false;
     }
 
+    if (!AddHistory(
+        cleanName,
+        "ADD",
+        stockQuantity))
+    {
+        qDebug()
+            << "Drug added, but history was not saved";
+
+    }
+
     return true;
 }
 
@@ -199,106 +318,301 @@ bool Drug::UpdateDrugInfo(
     double price,
     int stockQuantity)
 {
+    if (!initTable())
+        return false;
+
     if (drugID <= 0)
+    {
+        qDebug() << "Invalid DrugID";
         return false;
+    }
 
-    if (name.trimmed().isEmpty())
-        return false;
+    QString cleanName =
+        name.trimmed();
 
-    if (unit.trimmed().isEmpty())
+    QString cleanUnit =
+        unit.trimmed();
+
+    if (cleanName.isEmpty())
+    {
+        qDebug() << "Drug name is empty";
         return false;
+    }
+
+    if (cleanUnit.isEmpty())
+    {
+        qDebug() << "Drug unit is empty";
+        return false;
+    }
 
     if (price < 0)
+    {
+        qDebug() << "Invalid drug price";
         return false;
+    }
 
     if (stockQuantity < 0)
+    {
+        qDebug() << "Invalid stock quantity";
         return false;
+    }
 
+    // ==========================================
+    // Lấy số lượng cũ
+    // ==========================================
+    QSqlQuery oldQuery;
 
-    QSqlQuery query;
+    oldQuery.prepare(
+        "SELECT StockQuantity "
+        "FROM Drugs "
+        "WHERE DrugID = :id"
+    );
 
-    query.prepare("UPDATE Drugs ""SET Name = :name, ""Unit = :unit, ""Price = :price, ""StockQuantity = :stock ""WHERE DrugID = :id");
+    oldQuery.bindValue(
+        ":id",
+        drugID
+    );
 
-    query.bindValue(":id", drugID);
+    if (!oldQuery.exec())
+    {
+        qDebug()
+            << "Get Old Drug Error:"
+            << oldQuery.lastError().text();
 
-    query.bindValue(":name", name.trimmed());
+        return false;
+    }
 
-    query.bindValue(":unit", unit.trimmed());
+    if (!oldQuery.next())
+    {
+        qDebug()
+            << "Drug not found:"
+            << drugID;
 
-    query.bindValue(":price", price);
+        return false;
+    }
 
-    query.bindValue(":stock", stockQuantity);
+    int oldStockQuantity =
+        oldQuery.value(0).toInt();
 
+    // ==========================================
+    // Update thuốc
+    // ==========================================
+    QSqlQuery updateQuery;
 
-    if (!query.exec())
+    updateQuery.prepare(
+        "UPDATE Drugs "
+        "SET Name = :name, "
+        "Unit = :unit, "
+        "Price = :price, "
+        "StockQuantity = :stock "
+        "WHERE DrugID = :id"
+    );
+
+    updateQuery.bindValue(
+        ":name",
+        cleanName
+    );
+
+    updateQuery.bindValue(
+        ":unit",
+        cleanUnit
+    );
+
+    updateQuery.bindValue(
+        ":price",
+        price
+    );
+
+    updateQuery.bindValue(
+        ":stock",
+        stockQuantity
+    );
+
+    updateQuery.bindValue(
+        ":id",
+        drugID
+    );
+
+    if (!updateQuery.exec())
     {
         qDebug()
             << "Update Drug Error:"
-            << query.lastError().text();
+            << updateQuery.lastError().text();
+
         return false;
     }
-    return query.numRowsAffected() > 0;
+
+    if (updateQuery.numRowsAffected() <= 0)
+    {
+        qDebug()
+            << "No drug was updated";
+
+        return false;
+    }
+
+    // Số lượng thay đổi
+    int amount =
+        stockQuantity - oldStockQuantity;
+
+    if (!AddHistory(
+        cleanName,
+        "UPDATE",
+        amount))
+    {
+        qDebug()
+            << "Drug updated, but history was not saved";
+    }
+
+    return true;
 }
 
 bool Drug::RemoveDrug(int drugID)
 {
+    if (!initTable())
+        return false;
+
+    if (drugID <= 0)
+    {
+        qDebug() << "Invalid DrugID";
+        return false;
+    }
+
+    // ==========================================
+    // Lấy tên và số lượng trước khi xóa
+    // ==========================================
+    QSqlQuery selectQuery;
+
+    selectQuery.prepare(
+        "SELECT Name, StockQuantity "
+        "FROM Drugs "
+        "WHERE DrugID = :id"
+    );
+
+    selectQuery.bindValue(
+        ":id",
+        drugID
+    );
+
+    if (!selectQuery.exec())
+    {
+        qDebug()
+            << "Find Drug Error:"
+            << selectQuery.lastError().text();
+
+        return false;
+    }
+
+    if (!selectQuery.next())
+    {
+        qDebug()
+            << "Drug not found:"
+            << drugID;
+
+        return false;
+    }
+
+    QString drugName =
+        selectQuery.value(0).toString();
+
+    int oldStockQuantity =
+        selectQuery.value(1).toInt();
+
+    // ==========================================
+    // Xóa thuốc
+    // ==========================================
+    QSqlQuery deleteQuery;
+
+    deleteQuery.prepare(
+        "DELETE FROM Drugs "
+        "WHERE DrugID = :id"
+    );
+
+    deleteQuery.bindValue(
+        ":id",
+        drugID
+    );
+
+    if (!deleteQuery.exec())
+    {
+        qDebug()
+            << "Delete Drug Error:"
+            << deleteQuery.lastError().text();
+
+        return false;
+    }
+
+    if (deleteQuery.numRowsAffected() <= 0)
+    {
+        qDebug()
+            << "No drug was deleted";
+
+        return false;
+    }
+
+    // Khi xóa, toàn bộ stock bị giảm nên dùng số âm
+    if (!AddHistory(
+        drugName,
+        "DELETE",
+        -oldStockQuantity))
+    {
+        qDebug()
+            << "Drug deleted, but history was not saved";
+    }
+
+    return true;
+}
+bool Drug::AddHistory(
+    const QString& drugName,
+    const QString& action,
+    int amount)
+{
+    if (!initTable())
+    {
+        qDebug()
+            << "AddHistory: cannot initialize tables";
+
+        return false;
+    }
+
     QSqlQuery query;
 
-
     query.prepare(
-        "SELECT StockQuantity "
-        "FROM Drugs "
-        "WHERE DrugID=:id"
-    );
-
-    query.bindValue(":id", drugID);
-
-
-    query.exec();
-
-    query.next();
-
-
-    int oldStock =
-        query.value(0).toInt();
-
-
-
-    // Save history
-
-    QSqlQuery history;
-
-
-    history.prepare(
         "INSERT INTO DrugStockHistory "
-        "(DrugID,Action,OldQuantity,NewQuantity,Time,Operator)"
+        "(DrugName, Action, Amount, Time) "
         "VALUES "
-        "(:id,'DELETE',:old,0,datetime('now'),'Receptionist')"
+        "(:name, :action, :amount, "
+        "datetime('now', 'localtime'))"
     );
 
-
-    history.bindValue(":id", drugID);
-    history.bindValue(":old", oldStock);
-
-
-    history.exec();
-
-
-
-    // Delete
-
-    QSqlQuery del;
-
-
-    del.prepare(
-        "DELETE FROM Drugs "
-        "WHERE DrugID=:id"
+    query.bindValue(
+        ":name",
+        drugName.trimmed()
     );
 
+    query.bindValue(
+        ":action",
+        action.trimmed()
+    );
 
-    del.bindValue(":id", drugID);
+    query.bindValue(
+        ":amount",
+        amount
+    );
 
+    if (!query.exec())
+    {
+        qDebug()
+            << "Add History Error:"
+            << query.lastError().text();
 
+        return false;
+    }
 
-    return del.exec();
+    qDebug()
+        << "History saved:"
+        << drugName
+        << action
+        << amount;
+
+    return true;
 }

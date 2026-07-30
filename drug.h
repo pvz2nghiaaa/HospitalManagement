@@ -1,9 +1,10 @@
 #pragma once
 #include <QString>
+#include <QList>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QVariant>
 #include <QDebug>
-#include <QList>
 class Drug
 {
 private:
@@ -12,7 +13,7 @@ private:
     QString unit;
     double price;
     int stockQuantity;
-
+  
 public:
     // Constructors
     Drug();
@@ -65,5 +66,10 @@ public:
         int stockQuantity);
 
     static bool RemoveDrug(int drugID);
-
+    static bool AddHistory(
+        const QString& drugName,
+        const QString& action,
+        int amount
+    );
+    
 };
