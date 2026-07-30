@@ -18,9 +18,11 @@ ReceptionistWindow::ReceptionistWindow(QWidget* parent)
 
     // default hide overlay
     ui->overlayPatientFrame->hide();
+    ui->overlayEditPatientFrame->hide();
 
     ui->lblAdmin->setText("Rect. " + User::GetActiveUser().GetFullName()+ " (Online)");
     navigateToPage(0, ui->btnPatient);
+    ReceptionistWindow::fetchPatient();
 
 
 
@@ -86,48 +88,6 @@ void ReceptionistWindow::navigateToPage(int pageIndex, QPushButton* activeBtn) {
     activeBtn->style()->unpolish(activeBtn);
     activeBtn->style()->polish(activeBtn);
 
-}
-
-
-void ReceptionistWindow::on_btnLogout_clicked()
-{
-    User::logout();
-    QMessageBox::information(this, "Program info", "Logged out successfully!");
-
-    LoginWindow* loginWin = new LoginWindow();
-    loginWin->setAttribute(Qt::WA_DeleteOnClose);
-    loginWin->show();
-
-    this->close();
-}
-
-
-void ReceptionistWindow::on_btnPatientSearch_clicked()
-{
-    QString searchID = ui->patientIDLineEdit->text().trimmed();
-    QString searchName = ui->patientNameLineEdit->text().trimmed();
-    QString searchPhone = ui->patientPhoneLineEdit->text().trimmed();
-
-    QList<std::tuple<QString, QString, QString, QString, QString, QString>> lstPatient = Patient::findPatient(searchID, searchName, searchPhone);
-
-    ui->tblPatient->setRowCount(0);
-
-    int row = 0;
-    for (; row < (int)lstPatient.size(); row++) {
-        ui->tblPatient->insertRow(row);
-
-        ui->tblPatient->setItem(row, 0, new QTableWidgetItem(get<0>(lstPatient[row])));
-        ui->tblPatient->setItem(row, 1, new QTableWidgetItem(get<1>(lstPatient[row])));
-        ui->tblPatient->setItem(row, 2, new QTableWidgetItem(get<2>(lstPatient[row])));
-        ui->tblPatient->setItem(row, 3, new QTableWidgetItem(get<3>(lstPatient[row])));
-        ui->tblPatient->setItem(row, 4, new QTableWidgetItem(get<4>(lstPatient[row])));
-        ui->tblPatient->setItem(row, 5, new QTableWidgetItem(get<5>(lstPatient[row])));
-    }
-
-    // Optional feedback if zero rows matched
-    if (row == 0) {
-        QMessageBox::information(this, "No Results", "No matching records found.");
-    }
 }
 
 // Drug Management
@@ -408,6 +368,21 @@ void ReceptionistWindow::on_btnSearch_17_clicked()
         );
     }
 }
+
+
+void ReceptionistWindow::on_btnLogout_clicked()
+{
+    User::logout();
+    QMessageBox::information(this, "Program info", "Logged out successfully!");
+
+    LoginWindow* loginWin = new LoginWindow();
+    loginWin->setAttribute(Qt::WA_DeleteOnClose);
+    loginWin->show();
+
+    this->close();
+}
+
+
 void ReceptionistWindow::setBackgroundActiveState(const bool activeState)
 {
     ui->stackedWidget->setEnabled(activeState);
@@ -438,6 +413,27 @@ void ReceptionistWindow::hideOverlayPatientFrame()
     ReceptionistWindow::setBackgroundActiveState(true);
 }
 
+void ReceptionistWindow::showOverlayEditPatientFrame()
+{
+    // disable background
+    ReceptionistWindow::setBackgroundActiveState(false);
+
+    // set card position
+    ui->overlayEditPatientFrame->setGeometry(0, 0, this->width(), this->height());
+    int cardX = (this->width() - ui->cardEditPatient->width()) / 2;
+    int cardY = (this->height() - ui->cardEditPatient->height()) / 2;
+    ui->cardEditPatient->move(cardX, cardY);
+
+    ui->overlayEditPatientFrame->show();
+    ui->overlayEditPatientFrame->raise();
+}
+
+void ReceptionistWindow::hideOverlayEditPatientFrame()
+{
+    ui->overlayEditPatientFrame->hide();
+    ReceptionistWindow::setBackgroundActiveState(true);
+}
+
 void ReceptionistWindow::on_btnNewPatient_clicked()
 {
     ReceptionistWindow::showOverlayPatientFrame();
@@ -446,6 +442,7 @@ void ReceptionistWindow::on_btnNewPatient_clicked()
 void ReceptionistWindow::on_btnCancelPat_clicked()
 {
     ReceptionistWindow::hideOverlayPatientFrame();
+    ReceptionistWindow::fetchPatient();
 }
 
 
@@ -453,7 +450,7 @@ void ReceptionistWindow::on_btnSavePat_clicked()
 {
     QString fullName = ui->txtPatFullName->text().trimmed();
     QString phoneNo = ui->txtPatPhone->text().trimmed();
-    QString birthDate = ui->datePatDOB->date().toString("dd/MM/yyyy");
+    QString birthDate = ui->datePatDOB->date().toString("yyyy-MM-dd");
     QString sex = ui->cbPatGender->currentText();
     QString address = ui->txtPatAddress->text().trimmed();
 
@@ -477,5 +474,89 @@ void ReceptionistWindow::on_btnSavePat_clicked()
     } else {
         QMessageBox::critical(this, "Error", "Failed to register patient in database.");
     }
+    ReceptionistWindow::fetchPatient();
+}
+
+void ReceptionistWindow::fetchPatient()
+{
+    QString searchID = ui->patientIDLineEdit->text().trimmed();
+    QString searchName = ui->patientNameLineEdit->text().trimmed();
+    QString searchPhone = ui->patientPhoneLineEdit->text().trimmed();
+
+    QList<std::tuple<QString, QString, QString, QString, QString, QString>> lstPatient = Patient::findPatient(searchID, searchName, searchPhone);
+
+    ui->tblPatient->setRowCount(0);
+
+    int row = 0;
+    for (; row < (int)lstPatient.size(); row++) {
+        ui->tblPatient->insertRow(row);
+
+        ui->tblPatient->setItem(row, 0, new QTableWidgetItem(get<0>(lstPatient[row])));
+        ui->tblPatient->setItem(row, 1, new QTableWidgetItem(get<1>(lstPatient[row])));
+        ui->tblPatient->setItem(row, 2, new QTableWidgetItem(get<2>(lstPatient[row])));
+        ui->tblPatient->setItem(row, 3, new QTableWidgetItem(get<3>(lstPatient[row])));
+        ui->tblPatient->setItem(row, 4, new QTableWidgetItem(get<4>(lstPatient[row])));
+        ui->tblPatient->setItem(row, 5, new QTableWidgetItem(get<5>(lstPatient[row])));
+    }
+
+    // Optional feedback if zero rows matched
+    if (row == 0) {
+        QMessageBox::information(this, "No Results", "No matching records found.");
+    }
+}
+
+void ReceptionistWindow::on_btnPatientSearch_clicked()
+{
+    ReceptionistWindow::fetchPatient();
+}
+
+void ReceptionistWindow::on_btnRefreshPatient_clicked()
+{
+    ReceptionistWindow::fetchPatient();
+}
+
+void ReceptionistWindow::on_tblPatient_cellDoubleClicked(int row, int column)
+{
+    ReceptionistWindow::showOverlayEditPatientFrame();
+    ui->lblEditPatTitle->setText(QString("Edit Patient #" + ui->tblPatient->item(row, 0)->text()));
+    ui->txtEditPatFullName->setText(ui->tblPatient->item(row, 1)->text());
+    ui->txtEditPatPhone->setText(ui->tblPatient->item(row, 2)->text());
+    ui->dateEditPatDOB->setDate(QDate::fromString(ui->tblPatient->item(row, 3)->text(), "dd-MM-yyyy"));
+    ui->cbEditPatGender->setCurrentText(ui->tblPatient->item(row, 4)->text());
+    ui->txtEditPatAddress->setText(ui->tblPatient->item(row, 5)->text());
+}
+
+void ReceptionistWindow::on_btnCancelEditPat_clicked()
+{
+    ReceptionistWindow::hideOverlayEditPatientFrame();
+    ReceptionistWindow::fetchPatient();
+}
+
+
+void ReceptionistWindow::on_btnSaveEditPat_clicked()
+{
+    QString id = ui->lblEditPatTitle->text().remove("Edit Patient #").trimmed();
+    QString name = ui->txtEditPatFullName->text().trimmed();
+    QString phone = ui->txtEditPatPhone->text().trimmed();
+    QString dob = ui->dateEditPatDOB->date().toString("yyyy-MM-dd");
+    QString sex = ui->cbEditPatGender->currentText();
+    QString addr = ui->txtEditPatAddress->text().trimmed();
+
+    if (Patient::updatePatient(id, name, phone, dob, sex, addr))
+    {
+        QMessageBox::information(this, "Success", "Patient info updated successfully!");
+
+        // Reset fields
+        ui->txtEditPatFullName->clear();
+        ui->txtEditPatPhone->clear();
+        ui->dateEditPatDOB->setDate(QDate::currentDate());
+        ui->cbEditPatGender->setCurrentIndex(0);
+        ui->txtEditPatAddress->clear();
+
+        ReceptionistWindow::hideOverlayEditPatientFrame();
+    } else {
+        QMessageBox::critical(this, "Error", "Failed to edit patient in database.");
+    }
+    ReceptionistWindow::fetchPatient();
 }
 
