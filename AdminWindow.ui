@@ -1964,10 +1964,10 @@ QPushButton:hover {
           <height>380</height>
          </rect>
         </property>
-        <property name="title">
+                <property name="title">
          <string>Summary Activity Chart</string>
         </property>
-        <widget class="ActivityChartWidget" name="chartWidget" native="true">
+        <widget class="ActivityChartWidget" name="chartWidget">
          <property name="geometry">
           <rect>
            <x>15</x>
@@ -3298,6 +3298,8 @@ QPushButton:hover {
    <zorder>bgWidget</zorder>
   </widget>
  </widget>
+ <resources/>
+ <connections/>
  <customwidgets>
   <customwidget>
    <class>ActivityChartWidget</class>
@@ -3306,6 +3308,4 @@ QPushButton:hover {
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
- <connections/>
 </ui>
