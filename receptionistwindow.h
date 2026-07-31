@@ -59,7 +59,14 @@ private slots:
     void on_btnSavePat_clicked();
     
 
-    void on_btnSearchActivity_clicked();
+    void on_btnRefreshPatient_clicked();
+
+    void on_tblPatient_cellDoubleClicked(int row, int column);
+
+    void on_btnCancelEditPat_clicked();
+
+    void on_btnSaveEditPat_clicked();
+
 private:
     Ui::ReceptionistWindow* ui;
     void navigateToPage(int pageIndex, QPushButton* activeBtn);
@@ -81,10 +88,10 @@ private:
 
     void showOverlayPatientFrame();
     void hideOverlayPatientFrame();
-    //My profile
-    void loadMyProfileInfo();
-    void loadMyPermissions();
-    void loadMyActivityLogs();
+    void showOverlayEditPatientFrame();
+    void hideOverlayEditPatientFrame();
+
+    void fetchPatient();
 };
 
 #endif // RECEPTIONISTWINDOW_H
