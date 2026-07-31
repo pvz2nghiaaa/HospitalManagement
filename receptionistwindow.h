@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QPushButton>
-
+#include "attendancelog.h"
 namespace Ui {
     class ReceptionistWindow;
 }
@@ -38,36 +38,53 @@ private slots:
     void on_btnSearch_18_clicked();
     void on_tblPatient_2_cellClicked(int row, int column);
 
+    // Add Drug Card
+    void on_btnSaveAddDrug_clicked();
+    void on_btnCancelAddDrug_clicked();
+
+    // Edit Drug Card
+    void on_btnSaveEditDrug_clicked();
+    void on_btnCancelEditDrug_clicked();
+
+    // Drug History Card
+    void on_pushButton_clicked();
+    void on_btnCloseDrugHistory_clicked();
+
+
+
     void on_btnNewPatient_clicked();
 
     void on_btnCancelPat_clicked();
 
     void on_btnSavePat_clicked();
+    
 
-    void on_btnRefreshPatient_clicked();
-
-    void on_tblPatient_cellDoubleClicked(int row, int column);
-
-    void on_btnCancelEditPat_clicked();
-
-    void on_btnSaveEditPat_clicked();
-
+    void on_btnSearchActivity_clicked();
 private:
     Ui::ReceptionistWindow* ui;
     void navigateToPage(int pageIndex, QPushButton* activeBtn);
     void loadAllDrugs();
-    void GetDrugStockHistory(int drugID);
+    void GetDrugStockHistory();
+    
+    // Drug overlay
+    void showAddDrugFrame();
+    void hideAddDrugFrame();
 
+    void showEditDrugFrame();
+    void hideEditDrugFrame();
 
+    void showDrugHistoryFrame();
+    void hideDrugHistoryFrame();
+    int currentDrugID = -1;
 
     void setBackgroundActiveState(const bool activeState);
 
     void showOverlayPatientFrame();
     void hideOverlayPatientFrame();
-    void showOverlayEditPatientFrame();
-    void hideOverlayEditPatientFrame();
-
-    void fetchPatient();
+    //My profile
+    void loadMyProfileInfo();
+    void loadMyPermissions();
+    void loadMyActivityLogs();
 };
 
 #endif // RECEPTIONISTWINDOW_H

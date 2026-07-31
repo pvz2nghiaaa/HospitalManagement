@@ -143,7 +143,7 @@ void insertSampleData() {
                   "VALUES (:name, :phoneNo, :dob, :sex, :addr)");
     query.bindValue(":name", "David Smith");
     query.bindValue(":phoneNo", "7412589630");
-    query.bindValue(":dob", "2012-09-06");
+    query.bindValue(":dob", "06/09/2012");
     query.bindValue(":sex", "Male");
     query.bindValue(":addr", "123 A Street");
     if (query.exec()) {
@@ -155,7 +155,7 @@ void insertSampleData() {
                   "VALUES (:name, :phoneNo, :dob, :sex, :addr)");
     query.bindValue(":name", "Emilia Rose");
     query.bindValue(":phoneNo", "4632105789");
-    query.bindValue(":dob", "1994-12-17");
+    query.bindValue(":dob", "17/12/1994");
     query.bindValue(":sex", "Female");
     query.bindValue(":addr", "234 B Street");
     if (query.exec()) {
@@ -167,13 +167,96 @@ void insertSampleData() {
                   "VALUES (:name, :phoneNo, :dob, :sex, :addr)");
     query.bindValue(":name", "David Bob");
     query.bindValue(":phoneNo", "9874152630");
-    query.bindValue(":dob", "1985-09-23");
+    query.bindValue(":dob", "23/09/1985");
     query.bindValue(":sex", "Male");
     query.bindValue(":addr", "471 C Street");
     if (query.exec()) {
         qDebug() << "Patient 3 registered successfully";
     } else {
         qDebug() << "Failed to register patient:" << query.lastError().text();
+    }
+
+    // Insert Sample Drugs
+    query.prepare(
+        "INSERT INTO Drugs "
+        "(Name, Unit, Price, StockQuantity) "
+        "VALUES (:name, :unit, :price, :stock)"
+    );
+
+    query.bindValue(":name", "Paracetamol");
+    query.bindValue(":unit", "Tablet");
+    query.bindValue(":price", 5000);
+    query.bindValue(":stock", 200);
+
+    if (query.exec())
+    {
+        Drug::AddHistory(
+            "Paracetamol",
+            "ADD",
+            200
+        );
+
+        qDebug() << "Paracetamol inserted successfully";
+    }
+    else
+    {
+        qDebug()
+            << "Failed to insert Paracetamol:"
+            << query.lastError().text();
+    }
+
+
+    query.prepare(
+        "INSERT INTO Drugs "
+        "(Name, Unit, Price, StockQuantity) "
+        "VALUES (:name, :unit, :price, :stock)"
+    );
+
+    query.bindValue(":name", "Amoxicillin");
+    query.bindValue(":unit", "Capsule");
+    query.bindValue(":price", 12000);
+    query.bindValue(":stock", 150);
+
+    if (query.exec())
+    {
+        Drug::AddHistory(
+            "Amoxicillin",
+            "ADD",
+            150
+        );
+    }
+    else
+    {
+        qDebug()
+            << "Failed to insert Amoxicillin:"
+            << query.lastError().text();
+    }
+
+
+    query.prepare(
+        "INSERT INTO Drugs "
+        "(Name, Unit, Price, StockQuantity) "
+        "VALUES (:name, :unit, :price, :stock)"
+    );
+
+    query.bindValue(":name", "Vitamin C");
+    query.bindValue(":unit", "Tablet");
+    query.bindValue(":price", 3000);
+    query.bindValue(":stock", 8);
+
+    if (query.exec())
+    {
+        Drug::AddHistory(
+            "Vitamin C",
+            "ADD",
+            8
+        );
+    }
+    else
+    {
+        qDebug()
+            << "Failed to insert Vitamin C:"
+            << query.lastError().text();
     }
     QSqlDatabase::database().commit();
 }
@@ -185,7 +268,9 @@ int main(int argc, char *argv[])
     if (!setupDatabase()) {
         return -1;
     }
+    Drug::initTable();
     insertSampleData();
+   
     qDebug() << "-------\n";
     LoginWindow w;
     w.show();

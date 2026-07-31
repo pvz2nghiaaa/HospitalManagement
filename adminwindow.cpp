@@ -450,7 +450,7 @@ void AdminWindow::on_btnCancelPat_clicked() {
 void AdminWindow::on_btnSavePat_clicked() {
     QString fullName = ui->txtPatFullName->text().trimmed();
     QString phoneNo = ui->txtPatPhone->text().trimmed();
-    QString birthDate = ui->datePatDOB->date().toString("yyyy-MM-dd");
+    QString birthDate = ui->datePatDOB->date().toString("dd-MM-yyyy");
     QString sex = ui->cbPatGender->currentText();
     QString address = ui->txtPatAddress->text().trimmed();
 
