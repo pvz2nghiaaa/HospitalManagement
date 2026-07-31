@@ -54,17 +54,20 @@ private slots:
 
     void on_btnNewPatient_clicked();
 
-    // Edit Drug Card
-    void on_btnSaveEditDrug_clicked();
-    void on_btnCancelEditDrug_clicked();
+    void on_btnCancelPat_clicked();
+
+    void on_btnSavePat_clicked();
     
 
     void on_btnSearchActivity_clicked();
     void on_btnRefreshPatient_clicked();
 
-    void on_btnCancelPat_clicked();
+    void on_tblPatient_cellDoubleClicked(int row, int column);
 
-    void on_btnSavePat_clicked();
+    void on_btnCancelEditPat_clicked();
+
+    void on_btnSaveEditPat_clicked();
+
 private:
     Ui::ReceptionistWindow* ui;
     void navigateToPage(int pageIndex, QPushButton* activeBtn);
