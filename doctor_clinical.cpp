@@ -107,20 +107,63 @@ QList<QString> Doctor::GetDrugsList() {
 }
 
 bool Doctor::AddPrescriptionItem(int recordId, int drugId, int quantity, const QString& instruction) {
+    QSqlQuery query;
 
+    query.prepare("INSERT INTO Prescriptions (DiagnosisID, DrugID, Quantity, Note) "
+                  "VALUES (:diagnosisId, :drugId, :quantity, :note)");
 
-    return false;
+    query.bindValue(":diagnosisId", recordId);
+    query.bindValue(":drugId", drugId);
+    query.bindValue(":quantity", quantity);
+    query.bindValue(":note", instruction);
+
+    if (!query.exec()) {
+        qDebug() << "Failed AddPrescriptionItem:" << query.lastError().text();
+        return false;
+    }
+    return true;
 }
 
 bool Doctor::RemovePrescriptionItem(int prescriptionItemId) {
+    QSqlQuery query;
+    query.prepare("DELETE FROM Prescriptions WHERE DetailID = :id");
+    query.bindValue(":id", prescriptionItemId);
 
-
-
-    return false;
+    if (!query.exec()) {
+        qDebug() << "Failed RemovePrescriptionItem:" << query.lastError().text();
+        return false;
+    }
+    return true;
 }
 
 bool Doctor::SavePrescription(int recordId, const QString& dateIssued, const QList<Prescription>& items) {
+    QSqlDatabase::database().transaction();
 
+    for (const Prescription& p : items) {
+        int currentDiagID = (p.getDiagnosisID() != -1) ? p.getDiagnosisID() : recordId;
 
-    return false;
+        QList<Drug> drugs = p.getDrugs();
+        QList<int> quantities = p.getQuantities();
+        QList<QString> notes = p.getNotes();
+
+        for (int i = 0; i < drugs.size(); ++i) {
+            QSqlQuery query;
+            query.prepare("INSERT OR REPLACE INTO Prescriptions (DiagnosisID, DrugID, Quantity, Note) "
+                          "VALUES (:diagnosisId, :drugId, :quantity, :note)");
+
+            query.bindValue(":diagnosisId", currentDiagID);
+            query.bindValue(":drugId", drugs[i].getDrugID());
+            query.bindValue(":quantity", quantities[i]);
+            query.bindValue(":note", notes[i]);
+
+            if (!query.exec()) {
+                qDebug() << "Failed SavePrescription:" << query.lastError().text();
+                QSqlDatabase::database().rollback();
+                return false;
+            }
+        }
+    }
+
+    QSqlDatabase::database().commit();
+    return true;
 }
