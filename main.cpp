@@ -143,7 +143,7 @@ void insertSampleData() {
                   "VALUES (:name, :phoneNo, :dob, :sex, :addr)");
     query.bindValue(":name", "David Smith");
     query.bindValue(":phoneNo", "7412589630");
-    query.bindValue(":dob", "2012-09-06");
+    query.bindValue(":dob", "06/09/2012");
     query.bindValue(":sex", "Male");
     query.bindValue(":addr", "123 A Street");
     if (query.exec()) {
@@ -155,7 +155,7 @@ void insertSampleData() {
                   "VALUES (:name, :phoneNo, :dob, :sex, :addr)");
     query.bindValue(":name", "Emilia Rose");
     query.bindValue(":phoneNo", "4632105789");
-    query.bindValue(":dob", "1994-12-17");
+    query.bindValue(":dob", "17/12/1994");
     query.bindValue(":sex", "Female");
     query.bindValue(":addr", "234 B Street");
     if (query.exec()) {
@@ -167,7 +167,7 @@ void insertSampleData() {
                   "VALUES (:name, :phoneNo, :dob, :sex, :addr)");
     query.bindValue(":name", "David Bob");
     query.bindValue(":phoneNo", "9874152630");
-    query.bindValue(":dob", "1985-09-23");
+    query.bindValue(":dob", "23/09/1985");
     query.bindValue(":sex", "Male");
     query.bindValue(":addr", "471 C Street");
     if (query.exec()) {
