@@ -1,4 +1,5 @@
 #include "receptionistwindow.h"
+#include "billingmanager.h"
 #include "receptionist.h"
 #include "permission.h"
 #include "attendancelog.h"
@@ -33,7 +34,50 @@ ReceptionistWindow::ReceptionistWindow(QWidget* parent)
     ui->lblAdmin->setText("Rect. " + User::GetActiveUser().GetFullName()+ " (Online)");
     navigateToPage(0, ui->btnPatient);
     ReceptionistWindow::fetchPatient();
+    //Invoice
+    // Danh sách invoice
+    ui->tableWidget->setEditTriggers(
+        QAbstractItemView::NoEditTriggers
+    );
 
+    ui->tableWidget->setSelectionBehavior(
+        QAbstractItemView::SelectRows
+    );
+
+    ui->tableWidget->setSelectionMode(
+        QAbstractItemView::SingleSelection
+    );
+
+    ui->tableWidget->verticalHeader()->hide();
+
+    // Bảng item của invoice
+    ui->tableWidget_2->setEditTriggers(
+        QAbstractItemView::NoEditTriggers
+    );
+
+    ui->tableWidget_2->setSelectionBehavior(
+        QAbstractItemView::SelectRows
+    );
+
+    ui->tableWidget_2->verticalHeader()->hide();
+
+    ui->tableWidget_2
+        ->horizontalHeader()
+        ->setSectionResizeMode(
+            QHeaderView::Stretch
+        );
+
+    // Status chỉ để hiển thị
+    ui->radioButton->setEnabled(false);
+    ui->radioButton_2->setEnabled(false);
+
+    // Các ô chi tiết không cho sửa
+    ui->txtRecordID_7->setReadOnly(true);
+    ui->txtRecordID_8->setReadOnly(true);
+    ui->txtRecordID_10->setReadOnly(true);
+    ui->txtRecordID_9->setReadOnly(true);
+
+    clearInvoiceDetails();
 
 
     // Drug Management
@@ -1029,4 +1073,383 @@ void ReceptionistWindow::loadMyProfileInfo()
     ui->lineEdit_4->setReadOnly(true);
     ui->lineEdit_5->setReadOnly(true);
     ui->lineEdit_6->setReadOnly(true);
+}
+
+
+int ReceptionistWindow::getSelectedInvoiceID() const
+{
+    int row =
+        ui->tableWidget->currentRow();
+
+    if (row < 0)
+        return -1;
+
+    QTableWidgetItem* item =
+        ui->tableWidget->item(row, 0);
+
+    if (item == nullptr)
+        return -1;
+
+    bool ok = false;
+
+    int invoiceID =
+        item->text().toInt(&ok);
+
+    if (!ok)
+        return -1;
+
+    return invoiceID;
+}
+
+void ReceptionistWindow::clearInvoiceDetails()
+{
+    ui->txtRecordID_7->clear();
+    ui->txtRecordID_8->clear();
+    ui->txtRecordID_10->clear();
+
+    ui->dateEdit_4->clear();
+
+    ui->txtRecordID_9->setText(
+        "0.00 VND"
+    );
+
+    ui->radioButton->setChecked(false);
+    ui->radioButton_2->setChecked(false);
+
+    ui->tableWidget_2->clearContents();
+    ui->tableWidget_2->setRowCount(0);
+}
+
+void ReceptionistWindow::loadInvoiceDetails(
+    int invoiceID)
+{
+    InvoiceDetails details =
+        BillingManager::GetInvoiceDetails(
+            invoiceID
+        );
+
+    if (!details.found)
+    {
+        QMessageBox::warning(
+            this,
+            "Invoice",
+            "Invoice details could not be found."
+        );
+
+        clearInvoiceDetails();
+        return;
+    }
+
+    // Invoice ID
+    ui->txtRecordID_7->setText(
+        QString::number(
+            details.invoiceID
+        )
+    );
+
+    // Patient
+    ui->txtRecordID_8->setText(
+        details.patientName
+    );
+
+    // Doctor
+    ui->txtRecordID_10->setText(
+        details.doctorName
+    );
+
+    // Date
+    QDateTime dateTime =
+        QDateTime::fromString(
+            details.dateIssued,
+            "dd-MM-yyyy HH:mm:ss"
+        );
+
+    if (dateTime.isValid())
+    {
+        ui->dateEdit_4->setDate(
+            dateTime.date()
+        );
+    }
+    else
+    {
+        QDate date =
+            QDate::fromString(
+                details.dateIssued,
+                "yyyy-MM-dd"
+            );
+
+        if (date.isValid())
+        {
+            ui->dateEdit_4->setDate(date);
+        }
+    }
+
+    ui->dateEdit_4->setDisplayFormat(
+        "dd/MM/yyyy"
+    );
+
+    // Total
+    ui->txtRecordID_9->setText(
+        QString::number(
+            details.totalAmount,
+            'f',
+            2
+        )
+        + " VND"
+    );
+
+    // Status
+    if (details.isPaid)
+    {
+        ui->radioButton->setChecked(true);
+        ui->radioButton_2->setChecked(false);
+
+        // Không cho thanh toán lần nữa
+        ui->btnSearch_12->setEnabled(false);
+        ui->btnSearch_12->setText("Paid");
+    }
+    else
+    {
+        ui->radioButton->setChecked(false);
+        ui->radioButton_2->setChecked(true);
+
+        ui->btnSearch_12->setEnabled(true);
+        ui->btnSearch_12->setText(
+            "💳 Mark as Paid"
+        );
+    }
+
+    // Danh sách item
+    ui->tableWidget_2->clearContents();
+    ui->tableWidget_2->setRowCount(0);
+    ui->tableWidget_2->setColumnCount(4);
+
+    ui->tableWidget_2
+        ->setHorizontalHeaderLabels(
+            QStringList()
+            << "Drug / Service"
+            << "Quantity"
+            << "Price"
+            << "Amount"
+        );
+
+    int row = 0;
+
+    for (const InvoiceItemDetails& item :
+        details.items)
+    {
+        ui->tableWidget_2->insertRow(row);
+
+        QTableWidgetItem* nameItem =
+            new QTableWidgetItem(item.name);
+
+        QTableWidgetItem* quantityItem =
+            new QTableWidgetItem(
+                QString::number(item.quantity)
+            );
+
+        QTableWidgetItem* priceItem =
+            new QTableWidgetItem(
+                QString::number(
+                    item.price,
+                    'f',
+                    2
+                )
+            );
+
+        QTableWidgetItem* amountItem =
+            new QTableWidgetItem(
+                QString::number(
+                    item.amount,
+                    'f',
+                    2
+                )
+            );
+
+        nameItem->setTextAlignment(
+            Qt::AlignLeft |
+            Qt::AlignVCenter
+        );
+
+        quantityItem->setTextAlignment(
+            Qt::AlignCenter
+        );
+
+        priceItem->setTextAlignment(
+            Qt::AlignRight |
+            Qt::AlignVCenter
+        );
+
+        amountItem->setTextAlignment(
+            Qt::AlignRight |
+            Qt::AlignVCenter
+        );
+
+        ui->tableWidget_2->setItem(
+            row,
+            0,
+            nameItem
+        );
+
+        ui->tableWidget_2->setItem(
+            row,
+            1,
+            quantityItem
+        );
+
+        ui->tableWidget_2->setItem(
+            row,
+            2,
+            priceItem
+        );
+
+        ui->tableWidget_2->setItem(
+            row,
+            3,
+            amountItem
+        );
+
+        row++;
+    }
+
+    ui->tableWidget_2
+        ->horizontalHeader()
+        ->setSectionResizeMode(
+            QHeaderView::Stretch
+        );
+}
+
+void ReceptionistWindow::on_tableWidget_cellClicked(
+    int row,
+    int column)
+{
+    Q_UNUSED(column);
+
+    if (row < 0)
+        return;
+
+    QTableWidgetItem* invoiceItem =
+        ui->tableWidget->item(row, 0);
+
+    if (invoiceItem == nullptr)
+        return;
+
+    bool ok = false;
+
+    int invoiceID =
+        invoiceItem->text().toInt(&ok);
+
+    if (!ok || invoiceID <= 0)
+        return;
+
+    loadInvoiceDetails(invoiceID);
+}
+
+void ReceptionistWindow::on_btnSearch_12_clicked()
+{
+    int invoiceID =
+        getSelectedInvoiceID();
+
+    if (invoiceID <= 0)
+    {
+        QMessageBox::warning(
+            this,
+            "Payment",
+            "Please select an invoice first."
+        );
+
+        return;
+    }
+
+    InvoiceDetails details =
+        BillingManager::GetInvoiceDetails(
+            invoiceID
+        );
+
+    if (!details.found)
+    {
+        QMessageBox::warning(
+            this,
+            "Payment",
+            "Invoice could not be found."
+        );
+
+        return;
+    }
+
+    if (details.isPaid)
+    {
+        QMessageBox::information(
+            this,
+            "Payment",
+            "This invoice is already paid."
+        );
+
+        return;
+    }
+
+    QMessageBox::StandardButton answer =
+        QMessageBox::question(
+            this,
+            "Confirm Payment",
+            "Are you sure you want to mark "
+            "this invoice as paid?",
+            QMessageBox::Yes |
+            QMessageBox::No
+        );
+
+    if (answer != QMessageBox::Yes)
+        return;
+
+    if (BillingManager::MarkInvoiceAsPaid(
+        invoiceID,
+        QString()))
+    {
+        QMessageBox::information(
+            this,
+            "Payment",
+            "Invoice marked as paid successfully."
+        );
+
+        loadInvoiceDetails(invoiceID);
+
+        // loadInvoices();
+    }
+    else
+    {
+        QMessageBox::critical(
+            this,
+            "Payment",
+            "Failed to mark invoice as paid."
+        );
+    }
+}
+
+void ReceptionistWindow::on_btnSearch_13_clicked()
+{
+    int invoiceID =
+        getSelectedInvoiceID();
+
+    if (invoiceID <= 0)
+    {
+        QMessageBox::warning(
+            this,
+            "Print Invoice",
+            "Please select an invoice first."
+        );
+
+        return;
+    }
+
+    bool printed =
+        BillingManager::PrintInvoice(
+            invoiceID
+        );
+
+    if (!printed)
+    {
+        qDebug()
+            << "Invoice printing was cancelled "
+            "or failed.";
+    }
 }
