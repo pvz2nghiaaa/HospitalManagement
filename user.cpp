@@ -55,21 +55,6 @@ bool User::login(QString nUsername, QString nPassword) {
         if (GetActiveUser().GetIsActive() &&
             GetActiveUser().UpdatePermissionFromDatabase())
         {
-            QString todayStr = QDate::currentDate().toString("dd-MM-yyyy");
-            int userId = GetActiveUser().GetID();
-
-            // Check if today's log already exists (in standard dd-MM-yyyy format)
-            AttendanceLog* existingLog = AttendanceLog::GetLogByEmployeeAndDate(userId, todayStr);
-            if (!existingLog) {
-                // Save check-in log for today
-                AttendanceLog log(-1, todayStr, 1, userId);
-                if (!log.save()) {
-                    qDebug() << "Failed to save login log inside User::login";
-                }
-            } else {
-                delete existingLog;
-            }
-
             return true;
         }
         logout();
@@ -79,22 +64,6 @@ bool User::login(QString nUsername, QString nPassword) {
 }
 
 void User::logout(){
-    int currentUserID = GetActiveUser().GetID();
-    if (currentUserID != -1)
-    {
-        QString todayStr = QDate::currentDate().toString("dd-MM-yyyy");
-        AttendanceLog* existingLog = AttendanceLog::GetLogByEmployeeAndDate(currentUserID, todayStr);
-        int logId = existingLog ? existingLog->getId() : -1;
-        if (existingLog) {
-            delete existingLog;
-        }
-
-        AttendanceLog log(logId, todayStr, 0, currentUserID);
-        if (!log.save()) {
-            qDebug() << "Failed to save logout log inside User::logout";
-        }
-    }
-
     GetActiveUser()
         .SetID(-1)
         .SetUsername("")
