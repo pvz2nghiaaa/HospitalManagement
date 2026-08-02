@@ -19,6 +19,7 @@ public:
     static bool initTable();
     bool MarkComplete();
     static int GetTotalRecord();
+    static int createRecord(int patientID, QString date);
 
     // Fast set attributes (Meyers' Singleton/Fluent style from User convention)
     MedicalRecord& SetRecordID(int nRecordID);

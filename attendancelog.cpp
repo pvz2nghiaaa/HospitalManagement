@@ -99,13 +99,30 @@ AttendanceLog* AttendanceLog::getById(int searchId) {
     return nullptr;
 }
 
+AttendanceLog* AttendanceLog::GetLogByEmployeeAndDate(int empId, const QString &date) {
+    QSqlQuery query;
+    query.prepare("SELECT LogID, Date, IsPresent, EmployeeID FROM AttendanceLogs WHERE EmployeeID = :empId AND Date = :date");
+    query.bindValue(":empId", empId);
+    query.bindValue(":date", date);
+
+    if (query.exec() && query.next()) {
+        return new AttendanceLog(
+            query.value(0).toInt(),
+            query.value(1).toString(),
+            query.value(2).toInt(),
+            query.value(3).toInt()
+        );
+    }
+    return nullptr;
+}
+
 QList<AttendanceLog> AttendanceLog::GetRecentLogs(){
     QList<AttendanceLog> list;
     if (!User::GetActiveUser().hasPermission(Permission::viewLog))
         return list;
 
     QSqlQuery query;
-    query.prepare("SELECT LogID, Date, IsPresent, EmployeeID FROM AttendanceLogs");
+    query.prepare("SELECT LogID, Date, IsPresent, EmployeeID FROM AttendanceLogs ORDER BY LogID DESC");
 
     if (query.exec()) {
         int maxLogs = 10;
@@ -171,7 +188,7 @@ QList<AttendanceLog> AttendanceLog::getByEmployeeId(const int &empId) {
 
 QList<AttendanceLog> AttendanceLog::SearchByDate(QString date) {
     QList<AttendanceLog> list;
-    if (!User::GetActiveUser().hasPermission(Permission::viewLog))
+    if (!User::GetActiveUser().hasPermission(Permission::viewLog) && User::GetActiveUser().GetRole() != "Receptionist")
         return list;
 
     QSqlQuery query;

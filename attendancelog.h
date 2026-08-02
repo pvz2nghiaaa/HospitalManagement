@@ -33,6 +33,7 @@ public:
     bool save();
 
     static AttendanceLog* getById(int searchId);
+    static AttendanceLog* GetLogByEmployeeAndDate(int empId, const QString &date);
     static QList<AttendanceLog> getByEmployeeId(const int &empId);
     static QList<AttendanceLog> GetRecentLogs();
     static QList<AttendanceLog> GetLogsBetweenDates(const QDate &from, const QDate &to);

@@ -70,3 +70,18 @@ int MedicalRecord::GetRecordID() { return RecordID; }
 QString MedicalRecord::GetDate() { return Date; }
 bool MedicalRecord::GetIsComplete() { return IsComplete; }
 int MedicalRecord::GetPatientID() { return PatientID; }
+
+int MedicalRecord::createRecord(int patientID, QString date)
+{
+    QSqlQuery query;
+    query.prepare("INSERT INTO MedicalRecords (Date, IsComplete, PatientID) VALUES (:date, 0, :patientID)");
+    query.bindValue(":date", date);
+    query.bindValue(":patientID", patientID);
+    if (query.exec()) {
+        int recId = query.lastInsertId().toInt();
+        qDebug() << "MedicalRecord created successfully with RecordID:" << recId;
+        return recId;
+    }
+    qDebug() << "Failed to create MedicalRecord:" << query.lastError().text();
+    return -1;
+}

@@ -11,11 +11,18 @@
 #include <QInputDialog>
 #include <QHeaderView>
 #include <QDebug>
+#include <QMap>
 #include <QDate>
 #include <QDateTime>
 #include <QTableWidgetItem>
 #include "loginwindow.h"
 #include "patient.h"
+#include "attendancelog.h"
+#include "doctor.h"
+#include "medicalrecord.h"
+#include "diagnosis.h"
+#include <QDate>
+#include <QRandomGenerator>
 ReceptionistWindow::ReceptionistWindow(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::ReceptionistWindow)
@@ -43,9 +50,22 @@ ReceptionistWindow::ReceptionistWindow(QWidget* parent)
     ui->tblPatient_2->horizontalHeader()->setStretchLastSection(true);
     // Load all drugs
     loadAllDrugs();
+
+
+    // Attendance Table setup
+    ui->tblAttendance->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tblAttendance->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tblAttendance->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tblAttendance->horizontalHeader()->setStretchLastSection(true);
+    ui->tblAttendance->verticalHeader()->setVisible(false);
+    ui->tblAttendance->setColumnWidth(0, 100);
+    ui->tblAttendance->setColumnWidth(1, 300);
+    ui->tblAttendance->setColumnWidth(2, 200);
+
+
     //My profile
-    ui->dateFromProfile->setDisplayFormat("dd/MM/yyyy");
-    ui->dateToProfile->setDisplayFormat("dd/MM/yyyy");
+    ui->dateFromProfile->setDisplayFormat("dd-MM-yyyy");
+    ui->dateToProfile->setDisplayFormat("dd-MM-yyyy");
 
     ui->dateFromProfile->setCalendarPopup(true);
     ui->dateToProfile->setCalendarPopup(true);
@@ -79,6 +99,13 @@ ReceptionistWindow::ReceptionistWindow(QWidget* parent)
     ui->tblMyActivityLogs->setSelectionBehavior(
         QAbstractItemView::SelectRows
     );
+
+    // Available Doctors Table setup
+    ui->tblAvaiDoctor->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tblAvaiDoctor->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tblAvaiDoctor->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tblAvaiDoctor->horizontalHeader()->setStretchLastSection(true);
+    ui->tblAvaiDoctor->verticalHeader()->setVisible(false);
 }
 
 ReceptionistWindow::~ReceptionistWindow()
@@ -95,6 +122,8 @@ void ReceptionistWindow::on_btnPatient_clicked()
 void ReceptionistWindow::on_btnRecord_clicked()
 {
     navigateToPage(1, ui->btnRecord);
+    ui->dateEdit->setDate(QDate::currentDate());
+    loadAvailableDoctorsToTable();
 }
 
 
@@ -135,6 +164,7 @@ void ReceptionistWindow::navigateToPage(int pageIndex, QPushButton* activeBtn) {
         ui->btnRecord,
         ui->btnInvoice,
         ui->btnDrug,
+        ui->btnAttendance,
         ui->btnProfile
     };
     for (QPushButton* btn : sidebarButtons) {
@@ -441,6 +471,116 @@ void ReceptionistWindow::on_btnSavePat_clicked()
     }
     ReceptionistWindow::fetchPatient();
 }
+
+
+void ReceptionistWindow::on_btnAttendance_clicked()
+{
+    navigateToPage(5, ui->btnAttendance);
+    ui->dateAttendance->setDate(QDate::currentDate());
+    refreshAttendanceTable();
+}
+
+void ReceptionistWindow::on_btnSearchAttendance_clicked()
+{
+    refreshAttendanceTable();
+}
+
+void ReceptionistWindow::on_btnMarkPresent_clicked()
+{
+    int row = ui->tblAttendance->currentRow();
+    if (row < 0) {
+        QMessageBox::warning(this, "Selection Required", "Please select a staff member from the table.");
+        return;
+    }
+    
+    int userId = ui->tblAttendance->item(row, 0)->text().toInt();
+    QString selectedDate = ui->dateAttendance->date().toString("dd-MM-yyyy");
+    
+    AttendanceLog* existingLog = AttendanceLog::GetLogByEmployeeAndDate(userId, selectedDate);
+    int logId = existingLog ? existingLog->getId() : -1;
+    if (existingLog) {
+        delete existingLog;
+    }
+    
+    AttendanceLog log(logId, selectedDate, 1, userId);
+    if (log.save()) {
+        refreshAttendanceTable();
+        ui->tblAttendance->setCurrentCell(row, 0);
+    } else {
+        QMessageBox::critical(this, "Error", "Failed to mark attendance.");
+    }
+}
+
+void ReceptionistWindow::on_btnMarkAbsent_clicked()
+{
+    int row = ui->tblAttendance->currentRow();
+    if (row < 0) {
+        QMessageBox::warning(this, "Selection Required", "Please select a staff member from the table.");
+        return;
+    }
+    
+    int userId = ui->tblAttendance->item(row, 0)->text().toInt();
+    QString selectedDate = ui->dateAttendance->date().toString("dd-MM-yyyy");
+    
+    AttendanceLog* existingLog = AttendanceLog::GetLogByEmployeeAndDate(userId, selectedDate);
+    int logId = existingLog ? existingLog->getId() : -1;
+    if (existingLog) {
+        delete existingLog;
+    }
+    
+    AttendanceLog log(logId, selectedDate, 0, userId);
+    if (log.save()) {
+        refreshAttendanceTable();
+        ui->tblAttendance->setCurrentCell(row, 0);
+    } else {
+        QMessageBox::critical(this, "Error", "Failed to mark attendance.");
+    }
+}
+
+void ReceptionistWindow::refreshAttendanceTable() {
+    ui->tblAttendance->setRowCount(0);
+    
+    QString selectedDate = ui->dateAttendance->date().toString("dd-MM-yyyy");
+    
+    auto users = User::GetAllUser();
+    QList<AttendanceLog> logs = AttendanceLog::SearchByDate(selectedDate);
+    
+    QMap<int, AttendanceLog> logMap;
+    for (const AttendanceLog &log : logs) {
+        logMap[log.getEmployeeId()] = log;
+    }
+    
+    int row = 0;
+    for (const auto& u : users) {
+        int userId = get<0>(u);
+        QString fullName = get<2>(u);
+        QString role = get<5>(u);
+        
+        ui->tblAttendance->insertRow(row);
+        ui->tblAttendance->setItem(row, 0, new QTableWidgetItem(QString::number(userId)));
+        ui->tblAttendance->setItem(row, 1, new QTableWidgetItem(fullName));
+        ui->tblAttendance->setItem(row, 2, new QTableWidgetItem(role));
+        
+        QString status = "Not Marked";
+        if (logMap.contains(userId)) {
+            status = (logMap[userId].getIsPresent() == 1) ? "Present" : "Absent";
+        }
+        
+        QTableWidgetItem *statusItem = new QTableWidgetItem(status);
+        if (status == "Present") {
+            statusItem->setForeground(QBrush(QColor(34, 197, 94))); // green
+        } else if (status == "Absent") {
+            statusItem->setForeground(QBrush(QColor(239, 68, 68))); // red
+        } else {
+            statusItem->setForeground(QBrush(QColor(148, 163, 184))); // slate/gray
+        }
+        ui->tblAttendance->setItem(row, 3, statusItem);
+        
+        row++;
+    }
+}
+
+
 
 void ReceptionistWindow::fetchPatient()
 {
@@ -940,10 +1080,10 @@ void ReceptionistWindow::loadMyPermissions()
 void ReceptionistWindow::loadMyActivityLogs()
 {
     QString dateFrom =
-        ui->dateFromProfile->date().toString("yyyy-MM-dd");
+        ui->dateFromProfile->date().toString("dd-MM-yyyy");
 
     QString dateTo =
-        ui->dateToProfile->date().toString("yyyy-MM-dd");
+        ui->dateToProfile->date().toString("dd-MM-yyyy");
 
     QList<AttendanceLog> logs =
         Receptionist::SearchMyActivityLogs(dateFrom, dateTo);
@@ -1030,3 +1170,140 @@ void ReceptionistWindow::loadMyProfileInfo()
     ui->lineEdit_5->setReadOnly(true);
     ui->lineEdit_6->setReadOnly(true);
 }
+
+// FrameMedicalRecord UI Implementation
+void ReceptionistWindow::loadAvailableDoctorsToTable()
+{
+    QList<std::pair<int, QString>> doctors = Doctor::getAvailableDoctors();
+    ui->tblAvaiDoctor->setRowCount(0);
+    for (int i = 0; i < doctors.size(); i++) {
+        ui->tblAvaiDoctor->insertRow(i);
+        ui->tblAvaiDoctor->setItem(i, 0, new QTableWidgetItem(QString::number(doctors[i].first)));
+        ui->tblAvaiDoctor->setItem(i, 1, new QTableWidgetItem(doctors[i].second));
+    }
+}
+
+void ReceptionistWindow::on_txtRecordID_textChanged(const QString &text)
+{
+    bool ok = false;
+    int patientId = text.trimmed().toInt(&ok);
+    if (!ok || patientId <= 0) {
+        ui->txtRecordID_2->clear();
+        ui->txtRecordID_5->clear();
+        return;
+    }
+
+    Patient p;
+    if (Patient::getPatientById(patientId, p)) {
+        ui->txtRecordID_2->setText(p.FullName);
+        ui->txtRecordID_5->setText(p.Phone);
+
+        int sexIndex = ui->comboBox->findText(p.Sex, Qt::MatchExactly);
+        if (sexIndex >= 0) {
+            ui->comboBox->setCurrentIndex(sexIndex);
+        } else {
+            ui->comboBox->setCurrentText(p.Sex);
+        }
+    } else {
+        ui->txtRecordID_2->clear();
+        ui->txtRecordID_5->clear();
+    }
+}
+
+void ReceptionistWindow::on_tblAvaiDoctor_cellClicked(int row, int column)
+{
+    Q_UNUSED(column);
+    if (row < 0 || row >= ui->tblAvaiDoctor->rowCount()) return;
+
+    QTableWidgetItem *idItem = ui->tblAvaiDoctor->item(row, 0);
+    QTableWidgetItem *nameItem = ui->tblAvaiDoctor->item(row, 1);
+
+    if (idItem && nameItem) {
+        ui->txtRecordID_4->setText(idItem->text());
+        ui->txtRecordID_3->setText(nameItem->text());
+    }
+}
+
+void ReceptionistWindow::on_btnCreateRec_clicked()
+{
+    bool okPat = false;
+    int patientId = ui->txtRecordID->text().trimmed().toInt(&okPat);
+    Patient patient;
+    if (!okPat || !Patient::getPatientById(patientId, patient)) {
+        QMessageBox::warning(this, "Validation Error", "Please enter a valid existing Patient ID.");
+        return;
+    }
+
+    bool okDoc = false;
+    int doctorId = ui->txtRecordID_4->text().trimmed().toInt(&okDoc);
+    if (!okDoc || !Doctor::isDoctorAvailable(doctorId)) {
+        QMessageBox::warning(this, "Validation Error", "Please select an assigned doctor who is currently available.");
+        return;
+    }
+
+    QString recordDate = ui->dateEdit->date().toString("yyyy-MM-dd");
+    int recordId = MedicalRecord::createRecord(patientId, recordDate);
+    if (recordId <= 0) {
+        QMessageBox::critical(this, "Database Error", "Failed to create medical record.");
+        return;
+    }
+
+    bool diagCreated = Diagnosis::createDiagnosis(doctorId, recordId, patient.FullName);
+    if (!diagCreated) {
+        QMessageBox::critical(this, "Database Error", "Medical record created, but failed to create initial diagnosis.");
+        return;
+    }
+
+    QMessageBox::information(this, "Success", QString("Medical Record #%1 created successfully with Diagnosis for patient '%2'!")
+                                                  .arg(recordId).arg(patient.FullName));
+}
+
+void ReceptionistWindow::on_btnAutoCreateRec_clicked()
+{
+    bool okPat = false;
+    int patientId = ui->txtRecordID->text().trimmed().toInt(&okPat);
+    Patient patient;
+    if (!okPat || !Patient::getPatientById(patientId, patient)) {
+        QMessageBox::warning(this, "Validation Error", "Please enter a valid existing Patient ID before auto creating a record.");
+        return;
+    }
+
+    QList<std::pair<int, QString>> availableDoctors = Doctor::getAvailableDoctors();
+    if (availableDoctors.isEmpty()) {
+        QMessageBox::warning(this, "Assignment Error", "No available doctors found in the system.");
+        return;
+    }
+
+    int randomIndex = QRandomGenerator::global()->bounded(availableDoctors.size());
+    auto selectedDoctor = availableDoctors[randomIndex];
+
+    ui->txtRecordID_4->setText(QString::number(selectedDoctor.first));
+    ui->txtRecordID_3->setText(selectedDoctor.second);
+
+    QString recordDate = ui->dateEdit->date().toString("yyyy-MM-dd");
+    int recordId = MedicalRecord::createRecord(patientId, recordDate);
+    if (recordId <= 0) {
+        QMessageBox::critical(this, "Database Error", "Failed to create medical record.");
+        return;
+    }
+
+    bool diagCreated = Diagnosis::createDiagnosis(selectedDoctor.first, recordId, patient.FullName);
+    if (!diagCreated) {
+        QMessageBox::critical(this, "Database Error", "Medical record created, but failed to create initial diagnosis.");
+        return;
+    }
+
+    QMessageBox::information(this, "Success", QString("Auto created Medical Record #%1! Assigned to Dr. %2 for patient '%3'.")
+                                                  .arg(recordId).arg(selectedDoctor.second).arg(patient.FullName));
+}
+
+void ReceptionistWindow::on_btnClear_clicked()
+{
+    ui->txtRecordID->clear();
+    ui->txtRecordID_2->clear();
+    ui->txtRecordID_3->clear();
+    ui->txtRecordID_4->clear();
+    ui->txtRecordID_5->clear();
+}
+
+

@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QDate>
 #include "permission.h"
+#include "attendancelog.h"
 
 User::User() {}
 
@@ -54,31 +55,6 @@ bool User::login(QString nUsername, QString nPassword) {
         if (GetActiveUser().GetIsActive() &&
             GetActiveUser().UpdatePermissionFromDatabase())
         {
-            QSqlQuery logQuery;
-
-            logQuery.prepare(
-                "INSERT INTO AttendanceLogs "
-                "(Date, IsPresent, EmployeeID) "
-                "VALUES (:date, :isPresent, :employeeID)"
-            );
-
-            logQuery.bindValue(
-                ":date",
-                QDate::currentDate().toString("yyyy-MM-dd")
-            );
-
-            logQuery.bindValue(":isPresent", 1);
-            logQuery.bindValue(
-                ":employeeID",
-                GetActiveUser().GetID()
-            );
-
-            if (!logQuery.exec())
-            {
-                qDebug() << "Failed to save login log:"
-                    << logQuery.lastError().text();
-            }
-
             return true;
         }
         logout();
@@ -88,33 +64,6 @@ bool User::login(QString nUsername, QString nPassword) {
 }
 
 void User::logout(){
-    int currentUserID = GetActiveUser().GetID();
-
-    if (currentUserID > 0)
-    {
-        QSqlQuery logQuery;
-
-        logQuery.prepare(
-            "INSERT INTO AttendanceLogs "
-            "(Date, IsPresent, EmployeeID) "
-            "VALUES (:date, :isPresent, :employeeID)"
-        );
-
-        logQuery.bindValue(
-            ":date",
-            QDate::currentDate().toString("yyyy-MM-dd")
-        );
-
-        logQuery.bindValue(":isPresent", 0);
-        logQuery.bindValue(":employeeID", currentUserID);
-
-        if (!logQuery.exec())
-        {
-            qDebug() << "Failed to save logout log:"
-                << logQuery.lastError().text();
-        }
-    }
-
     GetActiveUser()
         .SetID(-1)
         .SetUsername("")
@@ -143,7 +92,7 @@ int User::GetTotalStaff(){
 vector<tuple<int, QString, QString, QString, bool, QString>> User::GetAllUser() {
     vector<tuple<int, QString, QString, QString, bool, QString>> listUser;
 
-    if (!User::GetActiveUser().hasPermission(Permission::manageUsers))
+    if (!User::GetActiveUser().hasPermission(Permission::manageUsers) && User::GetActiveUser().GetRole() != "Receptionist")
         return listUser;
 
     QSqlQuery query;

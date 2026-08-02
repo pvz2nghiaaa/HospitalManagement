@@ -132,4 +132,20 @@ public:
 
         return true;
     }
+
+    static bool getPatientById(int id, Patient &outPatient) {
+        QSqlQuery query;
+        query.prepare("SELECT ID, FullName, Phone, BirthDate, Sex, Address FROM Patients WHERE ID = :id");
+        query.bindValue(":id", id);
+        if (query.exec() && query.next()) {
+            outPatient.ID = query.value("ID").toInt();
+            outPatient.FullName = query.value("FullName").toString();
+            outPatient.Phone = query.value("Phone").toString();
+            outPatient.BirthDate = query.value("BirthDate").toString();
+            outPatient.Sex = query.value("Sex").toString();
+            outPatient.Address = query.value("Address").toString();
+            return true;
+        }
+        return false;
+    }
 };

@@ -60,3 +60,19 @@ Diagnosis& Diagnosis::SetSeverity(const QString &sev) { severity = sev; return *
 Diagnosis& Diagnosis::SetDoctorID(int docID) { doctorID = docID; return *this; }
 Diagnosis& Diagnosis::SetRecordID(int recID) { recordID = recID; return *this; }
 Diagnosis& Diagnosis::SetPrescription(const Prescription &p) { prescription = p; return *this; }
+
+bool Diagnosis::createDiagnosis(int doctorID, int recordID, const QString &conditionName)
+{
+    QSqlQuery query;
+    query.prepare("INSERT INTO Diagnoses (ConditionName, ICDCode, Severity, DoctorID, RecordID) "
+                  "VALUES (:cName, '', 'Pending', :docID, :recID)");
+    query.bindValue(":cName", conditionName);
+    query.bindValue(":docID", doctorID);
+    query.bindValue(":recID", recordID);
+    if (!query.exec()) {
+        qDebug() << "Failed to create Diagnosis:" << query.lastError().text();
+        return false;
+    }
+    qDebug() << "Diagnosis created successfully for RecordID:" << recordID << "with DoctorID:" << doctorID;
+    return true;
+}
