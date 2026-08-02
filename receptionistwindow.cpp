@@ -8,8 +8,10 @@
 #include <QInputDialog>
 #include <QHeaderView>
 #include <QDebug>
+#include <QMap>
 #include "loginwindow.h"
 #include "patient.h"
+#include "attendancelog.h"
 ReceptionistWindow::ReceptionistWindow(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::ReceptionistWindow)
@@ -31,6 +33,16 @@ ReceptionistWindow::ReceptionistWindow(QWidget* parent)
     ui->tblPatient_2->horizontalHeader()->setStretchLastSection(true);
     // Load all drugs
     loadAllDrugs();
+
+    // Attendance Table setup
+    ui->tblAttendance->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tblAttendance->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tblAttendance->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tblAttendance->horizontalHeader()->setStretchLastSection(true);
+    ui->tblAttendance->verticalHeader()->setVisible(false);
+    ui->tblAttendance->setColumnWidth(0, 100);
+    ui->tblAttendance->setColumnWidth(1, 300);
+    ui->tblAttendance->setColumnWidth(2, 200);
 }
 
 ReceptionistWindow::~ReceptionistWindow()
@@ -74,6 +86,7 @@ void ReceptionistWindow::navigateToPage(int pageIndex, QPushButton* activeBtn) {
         ui->btnRecord,
         ui->btnInvoice,
         ui->btnDrug,
+        ui->btnAttendance,
         ui->btnProfile
     };
     for (QPushButton* btn : sidebarButtons) {
@@ -476,6 +489,113 @@ void ReceptionistWindow::on_btnSavePat_clicked()
         ReceptionistWindow::hideOverlayPatientFrame();
     } else {
         QMessageBox::critical(this, "Error", "Failed to register patient in database.");
+    }
+}
+
+void ReceptionistWindow::on_btnAttendance_clicked()
+{
+    navigateToPage(5, ui->btnAttendance);
+    ui->dateAttendance->setDate(QDate::currentDate());
+    refreshAttendanceTable();
+}
+
+void ReceptionistWindow::on_btnSearchAttendance_clicked()
+{
+    refreshAttendanceTable();
+}
+
+void ReceptionistWindow::on_btnMarkPresent_clicked()
+{
+    int row = ui->tblAttendance->currentRow();
+    if (row < 0) {
+        QMessageBox::warning(this, "Selection Required", "Please select a staff member from the table.");
+        return;
+    }
+    
+    int userId = ui->tblAttendance->item(row, 0)->text().toInt();
+    QString selectedDate = ui->dateAttendance->date().toString("dd-MM-yyyy");
+    
+    AttendanceLog* existingLog = AttendanceLog::GetLogByEmployeeAndDate(userId, selectedDate);
+    int logId = existingLog ? existingLog->getId() : -1;
+    if (existingLog) {
+        delete existingLog;
+    }
+    
+    AttendanceLog log(logId, selectedDate, 1, userId);
+    if (log.save()) {
+        refreshAttendanceTable();
+        ui->tblAttendance->setCurrentCell(row, 0);
+    } else {
+        QMessageBox::critical(this, "Error", "Failed to mark attendance.");
+    }
+}
+
+void ReceptionistWindow::on_btnMarkAbsent_clicked()
+{
+    int row = ui->tblAttendance->currentRow();
+    if (row < 0) {
+        QMessageBox::warning(this, "Selection Required", "Please select a staff member from the table.");
+        return;
+    }
+    
+    int userId = ui->tblAttendance->item(row, 0)->text().toInt();
+    QString selectedDate = ui->dateAttendance->date().toString("dd-MM-yyyy");
+    
+    AttendanceLog* existingLog = AttendanceLog::GetLogByEmployeeAndDate(userId, selectedDate);
+    int logId = existingLog ? existingLog->getId() : -1;
+    if (existingLog) {
+        delete existingLog;
+    }
+    
+    AttendanceLog log(logId, selectedDate, 0, userId);
+    if (log.save()) {
+        refreshAttendanceTable();
+        ui->tblAttendance->setCurrentCell(row, 0);
+    } else {
+        QMessageBox::critical(this, "Error", "Failed to mark attendance.");
+    }
+}
+
+void ReceptionistWindow::refreshAttendanceTable() {
+    ui->tblAttendance->setRowCount(0);
+    
+    QString selectedDate = ui->dateAttendance->date().toString("dd-MM-yyyy");
+    
+    auto users = User::GetAllUser();
+    QList<AttendanceLog> logs = AttendanceLog::SearchByDate(selectedDate);
+    
+    QMap<int, AttendanceLog> logMap;
+    for (const AttendanceLog &log : logs) {
+        logMap[log.getEmployeeId()] = log;
+    }
+    
+    int row = 0;
+    for (const auto& u : users) {
+        int userId = get<0>(u);
+        QString fullName = get<2>(u);
+        QString role = get<5>(u);
+        
+        ui->tblAttendance->insertRow(row);
+        ui->tblAttendance->setItem(row, 0, new QTableWidgetItem(QString::number(userId)));
+        ui->tblAttendance->setItem(row, 1, new QTableWidgetItem(fullName));
+        ui->tblAttendance->setItem(row, 2, new QTableWidgetItem(role));
+        
+        QString status = "Not Marked";
+        if (logMap.contains(userId)) {
+            status = (logMap[userId].getIsPresent() == 1) ? "Present" : "Absent";
+        }
+        
+        QTableWidgetItem *statusItem = new QTableWidgetItem(status);
+        if (status == "Present") {
+            statusItem->setForeground(QBrush(QColor(34, 197, 94))); // green
+        } else if (status == "Absent") {
+            statusItem->setForeground(QBrush(QColor(239, 68, 68))); // red
+        } else {
+            statusItem->setForeground(QBrush(QColor(148, 163, 184))); // slate/gray
+        }
+        ui->tblAttendance->setItem(row, 3, statusItem);
+        
+        row++;
     }
 }
 

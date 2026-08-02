@@ -27,6 +27,11 @@ private slots:
 
     void on_btnProfile_clicked();
 
+    void on_btnAttendance_clicked();
+    void on_btnSearchAttendance_clicked();
+    void on_btnMarkPresent_clicked();
+    void on_btnMarkAbsent_clicked();
+
     void on_btnLogout_clicked();
 
     void on_btnPatientSearch_clicked();
@@ -49,6 +54,7 @@ private:
     void navigateToPage(int pageIndex, QPushButton* activeBtn);
     void loadAllDrugs();
     void GetDrugStockHistory(int drugID);
+    void refreshAttendanceTable();
 
 
 

@@ -85,7 +85,7 @@ int User::GetTotalStaff(){
 vector<tuple<int, QString, QString, QString, bool, QString>> User::GetAllUser() {
     vector<tuple<int, QString, QString, QString, bool, QString>> listUser;
 
-    if (!User::GetActiveUser().hasPermission(Permission::manageUsers))
+    if (!User::GetActiveUser().hasPermission(Permission::manageUsers) && User::GetActiveUser().GetRole() != "Receptionist")
         return listUser;
 
     QSqlQuery query;
