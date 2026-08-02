@@ -236,7 +236,7 @@ QPushButton:hover {
      <enum>QFrame::Shape::NoFrame</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="pagePatient">
      <widget class="QFrame" name="frameDashboard_2">
@@ -423,6 +423,12 @@ QPushButton#btnComplete:hover {
        <attribute name="horizontalHeaderDefaultSectionSize">
         <number>140</number>
        </attribute>
+       <attribute name="horizontalHeaderStretchLastSection">
+        <bool>true</bool>
+       </attribute>
+       <attribute name="verticalHeaderVisible">
+        <bool>false</bool>
+       </attribute>
        <column>
         <property name="text">
          <string>ID</string>
@@ -444,7 +450,7 @@ QPushButton#btnComplete:hover {
         </rect>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="tab_3">
         <attribute name="title">
@@ -543,9 +549,6 @@ QPushButton#btnComplete:hover {
          </property>
         </widget>
         <widget class="QDateEdit" name="dateDOB">
-         <property name="displayFormat">
-          <string>dd-MM-yyyy</string>
-         </property>
          <property name="geometry">
           <rect>
            <x>130</x>
@@ -553,6 +556,9 @@ QPushButton#btnComplete:hover {
            <width>120</width>
            <height>28</height>
           </rect>
+         </property>
+         <property name="displayFormat">
+          <string>dd-MM-yyyy</string>
          </property>
         </widget>
         <widget class="QLabel" name="label_4">
@@ -730,9 +736,6 @@ QPushButton#btnComplete:hover {
          </property>
         </widget>
         <widget class="QDateEdit" name="dateDiagnosed">
-         <property name="displayFormat">
-          <string>dd-MM-yyyy</string>
-         </property>
          <property name="geometry">
           <rect>
            <x>350</x>
@@ -740,6 +743,9 @@ QPushButton#btnComplete:hover {
            <width>110</width>
            <height>28</height>
           </rect>
+         </property>
+         <property name="displayFormat">
+          <string>dd-MM-yyyy</string>
          </property>
         </widget>
         <widget class="QLabel" name="label_12">
@@ -810,9 +816,6 @@ QPushButton#btnComplete:hover {
          </property>
         </widget>
         <widget class="QDateEdit" name="dateIssued">
-         <property name="displayFormat">
-          <string>dd-MM-yyyy</string>
-         </property>
          <property name="geometry">
           <rect>
            <x>100</x>
@@ -820,6 +823,9 @@ QPushButton#btnComplete:hover {
            <width>110</width>
            <height>28</height>
           </rect>
+         </property>
+         <property name="displayFormat">
+          <string>dd-MM-yyyy</string>
          </property>
         </widget>
         <widget class="QTableWidget" name="tblPrescription">
@@ -833,6 +839,9 @@ QPushButton#btnComplete:hover {
          </property>
          <attribute name="horizontalHeaderDefaultSectionSize">
           <number>80</number>
+         </attribute>
+         <attribute name="horizontalHeaderStretchLastSection">
+          <bool>true</bool>
          </attribute>
          <column>
           <property name="text">
@@ -1132,9 +1141,6 @@ QPushButton#btnCloseRecord:hover {
        </property>
       </widget>
       <widget class="QDateEdit" name="dateFilter">
-         <property name="displayFormat">
-          <string>dd-MM-yyyy</string>
-         </property>
        <property name="geometry">
         <rect>
          <x>440</x>
@@ -1142,6 +1148,9 @@ QPushButton#btnCloseRecord:hover {
          <width>100</width>
          <height>28</height>
         </rect>
+       </property>
+       <property name="displayFormat">
+        <string>dd-MM-yyyy</string>
        </property>
       </widget>
       <widget class="QPushButton" name="btnSearch_5">
@@ -1181,6 +1190,12 @@ QPushButton#btnCloseRecord:hover {
        </property>
        <attribute name="horizontalHeaderDefaultSectionSize">
         <number>110</number>
+       </attribute>
+       <attribute name="horizontalHeaderStretchLastSection">
+        <bool>true</bool>
+       </attribute>
+       <attribute name="verticalHeaderVisible">
+        <bool>false</bool>
        </attribute>
        <column>
         <property name="text">
@@ -1336,9 +1351,6 @@ QPushButton#btnCloseRecord:hover {
         </property>
        </widget>
        <widget class="QDateEdit" name="dateEdit">
-         <property name="displayFormat">
-          <string>dd-MM-yyyy</string>
-         </property>
         <property name="geometry">
          <rect>
           <x>110</x>
@@ -1349,6 +1361,9 @@ QPushButton#btnCloseRecord:hover {
         </property>
         <property name="readOnly">
          <bool>true</bool>
+        </property>
+        <property name="displayFormat">
+         <string>dd-MM-yyyy</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_21">
@@ -1398,6 +1413,12 @@ QPushButton#btnCloseRecord:hover {
         </property>
         <attribute name="horizontalHeaderDefaultSectionSize">
          <number>110</number>
+        </attribute>
+        <attribute name="horizontalHeaderStretchLastSection">
+         <bool>true</bool>
+        </attribute>
+        <attribute name="verticalHeaderVisible">
+         <bool>false</bool>
         </attribute>
         <column>
          <property name="text">
@@ -1560,7 +1581,7 @@ QPushButton:hover {
         </rect>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="tab_6">
         <attribute name="title">
@@ -1746,6 +1767,12 @@ color: rgb(148, 163, 184);</string>
          <attribute name="horizontalHeaderDefaultSectionSize">
           <number>200</number>
          </attribute>
+         <attribute name="horizontalHeaderStretchLastSection">
+          <bool>true</bool>
+         </attribute>
+         <attribute name="verticalHeaderVisible">
+          <bool>false</bool>
+         </attribute>
          <column>
           <property name="text">
            <string>Permission</string>
@@ -1776,9 +1803,6 @@ color: rgb(148, 163, 184);</string>
          </property>
         </widget>
         <widget class="QDateEdit" name="dateEdit_2">
-         <property name="displayFormat">
-          <string>dd-MM-yyyy</string>
-         </property>
          <property name="geometry">
           <rect>
            <x>30</x>
@@ -1786,6 +1810,9 @@ color: rgb(148, 163, 184);</string>
            <width>120</width>
            <height>28</height>
           </rect>
+         </property>
+         <property name="displayFormat">
+          <string>dd-MM-yyyy</string>
          </property>
         </widget>
         <widget class="QLabel" name="label_32">
@@ -1802,9 +1829,6 @@ color: rgb(148, 163, 184);</string>
          </property>
         </widget>
         <widget class="QDateEdit" name="dateEdit_3">
-         <property name="displayFormat">
-          <string>dd-MM-yyyy</string>
-         </property>
          <property name="geometry">
           <rect>
            <x>30</x>
@@ -1812,6 +1836,9 @@ color: rgb(148, 163, 184);</string>
            <width>120</width>
            <height>28</height>
           </rect>
+         </property>
+         <property name="displayFormat">
+          <string>dd-MM-yyyy</string>
          </property>
         </widget>
         <widget class="QPushButton" name="btnSearchActivity">
@@ -1838,6 +1865,12 @@ color: rgb(148, 163, 184);</string>
          </property>
          <attribute name="horizontalHeaderDefaultSectionSize">
           <number>129</number>
+         </attribute>
+         <attribute name="horizontalHeaderStretchLastSection">
+          <bool>true</bool>
+         </attribute>
+         <attribute name="verticalHeaderVisible">
+          <bool>false</bool>
          </attribute>
          <column>
           <property name="text">

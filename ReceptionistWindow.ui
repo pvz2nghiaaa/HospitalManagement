@@ -257,7 +257,7 @@ QPushButton:hover {
      <enum>QFrame::Shape::NoFrame</enum>
     </property>
     <property name="currentIndex">
-     <number>5</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="pagePatient">
      <widget class="QFrame" name="frameDashboard_2">
@@ -1223,6 +1223,12 @@ QPushButton#btnSearch_10:hover, QPushButton#btnSearch_11:hover, QPushButton#btnS
        <attribute name="horizontalHeaderDefaultSectionSize">
         <number>80</number>
        </attribute>
+       <attribute name="horizontalHeaderStretchLastSection">
+        <bool>true</bool>
+       </attribute>
+       <attribute name="verticalHeaderVisible">
+        <bool>false</bool>
+       </attribute>
        <column>
         <property name="text">
          <string>Invoice ID</string>
@@ -1362,6 +1368,12 @@ QPushButton#btnSearch_10:hover, QPushButton#btnSearch_11:hover, QPushButton#btnS
           <height>240</height>
          </rect>
         </property>
+        <attribute name="horizontalHeaderStretchLastSection">
+         <bool>true</bool>
+        </attribute>
+        <attribute name="verticalHeaderVisible">
+         <bool>false</bool>
+        </attribute>
         <column>
          <property name="text">
           <string>Drug</string>
@@ -1700,6 +1712,12 @@ QPushButton#btnSearch_14:hover, QPushButton#btnSearch_15:hover {
        <attribute name="horizontalHeaderDefaultSectionSize">
         <number>129</number>
        </attribute>
+       <attribute name="horizontalHeaderStretchLastSection">
+        <bool>true</bool>
+       </attribute>
+       <attribute name="verticalHeaderVisible">
+        <bool>false</bool>
+       </attribute>
        <column>
         <property name="text">
          <string>Drug ID</string>
@@ -1887,7 +1905,7 @@ QPushButton:hover {
         </rect>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab_6">
         <attribute name="title">
@@ -2091,6 +2109,12 @@ color: rgb(148, 163, 184);</string>
          <attribute name="horizontalHeaderDefaultSectionSize">
           <number>200</number>
          </attribute>
+         <attribute name="horizontalHeaderStretchLastSection">
+          <bool>true</bool>
+         </attribute>
+         <attribute name="verticalHeaderVisible">
+          <bool>false</bool>
+         </attribute>
          <column>
           <property name="text">
            <string>Permission</string>
@@ -2183,6 +2207,12 @@ color: rgb(148, 163, 184);</string>
          </property>
          <attribute name="horizontalHeaderDefaultSectionSize">
           <number>129</number>
+         </attribute>
+         <attribute name="horizontalHeaderStretchLastSection">
+          <bool>true</bool>
+         </attribute>
+         <attribute name="verticalHeaderVisible">
+          <bool>false</bool>
          </attribute>
          <column>
           <property name="text">
@@ -2357,6 +2387,12 @@ QPushButton:pressed {
          <height>350</height>
         </rect>
        </property>
+       <attribute name="horizontalHeaderStretchLastSection">
+        <bool>true</bool>
+       </attribute>
+       <attribute name="verticalHeaderVisible">
+        <bool>false</bool>
+       </attribute>
        <column>
         <property name="text">
          <string>User ID</string>
@@ -3302,6 +3338,12 @@ QTableCornerButton::section {
       </property>
       <attribute name="horizontalHeaderDefaultSectionSize">
        <number>114</number>
+      </attribute>
+      <attribute name="horizontalHeaderStretchLastSection">
+       <bool>true</bool>
+      </attribute>
+      <attribute name="verticalHeaderVisible">
+       <bool>false</bool>
       </attribute>
       <column>
        <property name="text">

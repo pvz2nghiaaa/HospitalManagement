@@ -393,6 +393,9 @@ QPushButton:hover {
          <attribute name="horizontalHeaderStretchLastSection">
           <bool>true</bool>
          </attribute>
+         <attribute name="verticalHeaderVisible">
+          <bool>false</bool>
+         </attribute>
          <column>
           <property name="text">
            <string>Time</string>
@@ -1964,10 +1967,10 @@ QPushButton:hover {
           <height>380</height>
          </rect>
         </property>
-                <property name="title">
+        <property name="title">
          <string>Summary Activity Chart</string>
         </property>
-        <widget class="ActivityChartWidget" name="chartWidget">
+        <widget class="ActivityChartWidget" name="chartWidget" native="true">
          <property name="geometry">
           <rect>
            <x>15</x>
@@ -3298,8 +3301,6 @@ QPushButton:hover {
    <zorder>bgWidget</zorder>
   </widget>
  </widget>
- <resources/>
- <connections/>
  <customwidgets>
   <customwidget>
    <class>ActivityChartWidget</class>
@@ -3308,4 +3309,6 @@ QPushButton:hover {
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <resources/>
+ <connections/>
 </ui>
