@@ -1,5 +1,6 @@
 #include "doctor.h"
 #include <QDebug>
+#include <QDate>
 
 Doctor::Doctor(int nID, QString username, QString password, QString fullName, QString phone, bool isActive)
     : User(nID, username, password, fullName, phone, isActive, "Doctor")
@@ -27,11 +28,18 @@ QList<std::pair<int, QString>> Doctor::getAvailableDoctors()
 {
     QList<std::pair<int, QString>> doctors;
     QSqlQuery query;
-    query.prepare("SELECT UserID, FullName FROM User WHERE (Role = 'Doctor' OR Role = 'doctor') AND IsActive = 1");
+    query.prepare("SELECT User.UserID, User.FullName FROM User "
+                  "INNER JOIN AttendanceLogs ON User.UserID = AttendanceLogs.EmployeeID "
+                  "WHERE (User.Role = 'Doctor' OR User.Role = 'doctor') "
+                  "AND User.IsActive = 1 "
+                  "AND AttendanceLogs.Date = :today "
+                  "AND AttendanceLogs.IsPresent = 1");
+    query.bindValue(":today", QDate::currentDate().toString("dd-MM-yyyy"));
+
     if (query.exec()) {
         while (query.next()) {
-            int id = query.value("UserID").toInt();
-            QString name = query.value("FullName").toString();
+            int id = query.value(0).toInt();
+            QString name = query.value(1).toString();
             doctors.append({id, name});
         }
     } else {
