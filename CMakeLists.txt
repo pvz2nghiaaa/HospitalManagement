@@ -9,9 +9,21 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Sql)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Sql)
+find_package(
+    QT NAMES Qt6 Qt5
+    REQUIRED COMPONENTS
+    Widgets
+    Sql
+    PrintSupport
+)
 
+find_package(
+    Qt${QT_VERSION_MAJOR}
+    REQUIRED COMPONENTS
+    Widgets
+    Sql
+    PrintSupport
+)
 set(PROJECT_SOURCES
         main.cpp
         loginwindow.h
@@ -90,7 +102,13 @@ else()
     endif()
 endif()
 
-target_link_libraries(HospitalManagement PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt6::Sql)
+target_link_libraries(
+    HospitalManagement
+    PRIVATE
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Sql
+    Qt${QT_VERSION_MAJOR}::PrintSupport
+)
 target_include_directories(HospitalManagement PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

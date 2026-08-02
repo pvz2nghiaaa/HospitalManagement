@@ -35,6 +35,15 @@ private slots:
     void on_btnLogout_clicked();
 
     void on_btnPatientSearch_clicked();
+    //Invoice
+    void on_tableWidget_cellClicked(
+        int row,
+        int column
+    );
+
+    void on_btnSearch_12_clicked();
+
+    void on_btnSearch_13_clicked();
     // Drug Management
     void on_btnSearch_14_clicked();
     void on_btnSearch_15_clicked();
@@ -87,6 +96,14 @@ private:
     void GetDrugStockHistory();
     void refreshAttendanceTable();
     
+    //Invoice
+    void loadInvoiceDetails(
+        int invoiceID
+    );
+
+    void clearInvoiceDetails();
+
+    int getSelectedInvoiceID() const;
     // Drug overlay
     void showAddDrugFrame();
     void hideAddDrugFrame();
