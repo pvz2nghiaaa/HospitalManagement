@@ -17,12 +17,13 @@ QList<Patient> Doctor::SearchPatientBy(const QString& keyword) {
             p.ID = query.value("ID").toInt();
             p.FullName = query.value("FullName").toString();
             p.BirthDate = query.value("BirthDate").toString();
+            // p.Phone = query.value("PhoneNumber").toString();
             p.Sex = query.value("Sex").toString();
             p.Address = query.value("Address").toString();
             results.append(p);
         }
     } else {
-        qDebug() << query.lastError().text();
+        qDebug() << "Search Error SQL:" << query.lastError().text();
     }
     return results;
 }
@@ -37,6 +38,7 @@ Patient Doctor::GetPatientDetails(int patientID) {
         p.ID = query.value("ID").toInt();
         p.FullName = query.value("FullName").toString();
         p.BirthDate = query.value("BirthDate").toString();
+        // p.Phone = query.value("Phone").toString();
         p.Sex = query.value("Sex").toString();
         p.Address = query.value("Address").toString();
     }
@@ -44,8 +46,11 @@ Patient Doctor::GetPatientDetails(int patientID) {
 }
 
 bool Doctor::UpdatePatientInfo(int id, const QString& fullName, const QString& birthDate, const QString& sex, const QString& address) {
-    if (!User::GetActiveUser().hasPermission(Permission::editPatient)) return false;
 
+    if (!User::GetActiveUser().hasPermission(Permission::editPatient)) {
+        qDebug() << "No permission to editPatient!";
+        return false;
+    }
     QSqlQuery query;
     query.prepare("UPDATE Patients SET FullName = :name, BirthDate = :dob, Sex = :sex, Address = :addr WHERE ID = :id");
     query.bindValue(":name", fullName);
@@ -54,5 +59,10 @@ bool Doctor::UpdatePatientInfo(int id, const QString& fullName, const QString& b
     query.bindValue(":addr", address);
     query.bindValue(":id", id);
 
-    return query.exec();
+    if (query.exec()) {
+        return true;
+    } else {
+        qDebug() << "Update Error SQL:" << query.lastError().text();
+        return false;
+    }
 }

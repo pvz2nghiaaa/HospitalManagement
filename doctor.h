@@ -13,6 +13,8 @@
 
 class Doctor : public User{
 public:
+    static int GetDrugIdByName(const QString& drugName);
+
     Doctor(int nID, QString username, QString password, QString fullName, QString phone, bool isActive);
     bool prescribeMedicine(int patientId, QString medicineName);
 

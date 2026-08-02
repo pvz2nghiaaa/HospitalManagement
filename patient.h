@@ -11,7 +11,11 @@ public:
     QString BirthDate;
     QString Sex;
     QString Address;
+<<<<<<< HEAD
     QString Phone;
+=======
+    // QString Phone;
+>>>>>>> Doctor_clinical
 
     static bool initTable() {
         QSqlQuery q;
@@ -29,4 +33,8 @@ public:
         qDebug() << "Failed to get total patients from Patients";
         return 0;
     }
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> Doctor_clinical

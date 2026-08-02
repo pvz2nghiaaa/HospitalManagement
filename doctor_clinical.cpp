@@ -4,58 +4,185 @@
 #include <QSqlError>
 #include <QVariant>
 
+int Doctor::GetDrugIdByName(const QString& drugName) {
+    if (!QSqlDatabase::database().isOpen()) return -1;
+
+    QSqlQuery query;
+    query.prepare("SELECT DrugID FROM Drugs WHERE Name = :name");
+    query.bindValue(":name", drugName);
+
+    if (query.exec() && query.next()) {
+        return query.value(0).toInt();
+    }
+    return -1;
+}
+
 QList<QString> Doctor::GetDiseasesList() {
     QList<QString> diseases;
+    QSqlQuery query("SELECT ConditionName FROM Diseases");
 
-
-
+    while (query.next()) {
+        diseases.append(query.value(0).toString());
+    }
     return diseases;
 }
-
 bool Doctor::AddNewDisease(const QString& conditionName, const QString& icdCode) {
+    QSqlQuery query;
+    query.prepare("INSERT INTO Diseases (ConditionName, ICDCode) VALUES (?, ?)");
+    query.addBindValue(conditionName);
+    query.addBindValue(icdCode);
 
-
-
-    return false;
+    if (query.exec()) {
+        qDebug() << "Added new disease successfully:" << conditionName;
+        return true;
+    } else {
+        qDebug() << "Error AddNewDisease:" << query.lastError().text();
+        return false;
+    }
 }
 
-bool Doctor::SaveDiagnosis(int recordId, const QString& conditionName, const QString& icdCode, const QString& severity, const QString& clinicalNote, const QString& dateDiagnosed) {
+bool Doctor::SaveDiagnosis(int diagnosisID, const QString& conditionName, const QString& icdCode, const QString& severity, const QString& doctorID, const QString& recordID) {
 
+    QSqlQuery query;
+    query.prepare("INSERT INTO Diagnoses (DiagnosisID, ConditionName, ICDCode, Severity, DoctorID, RecordID) "
+                  "VALUES (?, ?, ?, ?, ?, ?)");
 
+    query.addBindValue(diagnosisID);
+    query.addBindValue(conditionName);
+    query.addBindValue(icdCode);
+    query.addBindValue(severity);
+    query.addBindValue(doctorID);
+    query.addBindValue(recordID);
 
-    return false;
+    if (query.exec()) {
+        qDebug() << "Saved diagnosis successfully for RecordID:" << recordID;
+        return true;
+    }
+    else
+    {
+        qDebug() << "=== LỖI DATABASE KHI LƯU CHẨN ĐOÁN ===";
+        qDebug() << query.lastError().text();
+        qDebug() << "Câu query đang chạy:" << query.lastQuery();
+        return false;
+    }
 }
+bool Doctor::MarkRecordComplete(int patientId) {
+    if (!QSqlDatabase::database().isOpen()) return false;
+    QSqlQuery checkQuery;
+    checkQuery.prepare("SELECT COUNT(*) FROM MedicalRecords WHERE PatientID = ?");
+    checkQuery.addBindValue(patientId);
+    int count = 0;
+    if (checkQuery.exec() && checkQuery.next())
+    {
+        count = checkQuery.value(0).toInt();
+    }
+    QSqlQuery query;
+    if (count > 0)
+    {
+        query.prepare("UPDATE MedicalRecords SET IsComplete = 1 WHERE PatientID = ?");
+    }
+    else
+    {
+        query.prepare("INSERT INTO MedicalRecords (PatientID, IsComplete) VALUES (?, 1)");
+    }
+    query.addBindValue(patientId);
 
-bool Doctor::MarkRecordComplete(int recordId) {
+    if (!query.exec())
+    {
+        qWarning() << "[DB UPDATE ERROR]:" << query.lastError().text();
+        return false;
+    }
 
-
-    return false;
+    qDebug() << "Successfully completed record for PatientID:" << patientId;
+    return true;
 }
-
-
 QList<QString> Doctor::GetDrugsList() {
     QList<QString> drugs;
 
-
+    // qDebug() << "ok";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qWarning() << "[Doctor::GetDrugsList] ERROR: Database not connected!";
+        return drugs;
+    }
+    QSqlQuery query;
+    QString sql = "SELECT Name FROM Drugs ORDER BY Name ASC;";
+    if (!query.exec(sql))
+    {
+        qWarning() << "[Doctor::GetDrugsList] DB QUERY ERROR:" << query.lastError().text();
+        return drugs;
+    }
+    while (query.next())
+    {
+        drugs.append(query.value("Name").toString());
+        // qDebug() << "ok2";
+    }
 
     return drugs;
 }
 
-bool Doctor::AddPrescriptionItem(int recordId, int drugId, int quantity, const QString& instruction) {
+// bool Doctor::AddPrescriptionItem(int recordId, int drugId, int quantity, const QString& instruction) {
+//     QSqlQuery query;
 
+//     query.prepare("INSERT INTO Prescriptions (DiagnosisID, DrugID, Quantity, Note) "
+//                   "VALUES (:diagnosisId, :drugId, :quantity, :note)");
 
-    return false;
-}
+//     query.bindValue(":diagnosisId", recordId);
+//     query.bindValue(":drugId", drugId);
+//     query.bindValue(":quantity", quantity);
+//     query.bindValue(":note", instruction);
 
-bool Doctor::RemovePrescriptionItem(int prescriptionItemId) {
+//     if (!query.exec()) {
+//         qDebug() << "Failed AddPrescriptionItem:" << query.lastError().text();
+//         return false;
+//     }
+//     return true;
+// }
 
+// bool Doctor::RemovePrescriptionItem(int prescriptionItemId) {
+//     QSqlQuery query;
+//     query.prepare("DELETE FROM Prescriptions WHERE DetailID = :id");
+//     query.bindValue(":id", prescriptionItemId);
 
-
-    return false;
-}
-
+//     if (!query.exec()) {
+//         qDebug() << "Failed RemovePrescriptionItem:" << query.lastError().text();
+//         return false;
+//     }
+//     return true;
+// }
 bool Doctor::SavePrescription(int recordId, const QString& dateIssued, const QList<Prescription>& items) {
+    QSqlQuery clearQuery;
+    clearQuery.prepare("DELETE FROM Prescriptions WHERE DiagnosisID = :diagId");
+    clearQuery.bindValue(":diagId", recordId);
+    clearQuery.exec();
 
+    QSqlDatabase::database().transaction();
 
-    return false;
+    for (const Prescription& p : items) {
+        int currentDiagID = (p.getDiagnosisID() != -1) ? p.getDiagnosisID() : recordId;
+
+        QList<Drug> drugs = p.getDrugs();
+        QList<int> quantities = p.getQuantities();
+        QList<QString> notes = p.getNotes();
+
+        for (int i = 0; i < drugs.size(); ++i) {
+            QSqlQuery query;
+            query.prepare("INSERT INTO Prescriptions (DiagnosisID, DrugID, Quantity, Note) "
+                          "VALUES (:diagnosisId, :drugId, :quantity, :note)");
+
+            query.bindValue(":diagnosisId", currentDiagID);
+            query.bindValue(":drugId", drugs[i].getDrugID());
+            query.bindValue(":quantity", quantities[i]);
+            query.bindValue(":note", notes[i]);
+
+            if (!query.exec()) {
+                qDebug() << "Failed SavePrescription:" << query.lastError().text();
+                QSqlDatabase::database().rollback();
+                return false;
+            }
+        }
+    }
+
+    QSqlDatabase::database().commit();
+    return true;
 }
