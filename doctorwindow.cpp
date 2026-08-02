@@ -1,13 +1,23 @@
 #include "doctorwindow.h"
 #include "ui_DoctorWindow.h"
 #include "user.h"
-#include <QMessageBox>
-#include <QTableWidgetItem>
-#include <QDate>
-#include <QInputDialog>
-#include <QTableWidget>
 #include "loginwindow.h"
 #include "doctor.h"
+
+#include <QDate>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QFormLayout>
+#include <QInputDialog>
+#include <QLineEdit>
+#include <QMessageBox>
+#include <QSpinBox>
+#include <QTableWidget>
+#include <QTableWidgetItem>
+#include <QCompleter>
+#include <QComboBox>
+
+
 DoctorWindow::DoctorWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::DoctorWindow)
@@ -15,6 +25,10 @@ DoctorWindow::DoctorWindow(QWidget *parent)
 
 
     ui->setupUi(this);
+
+    ui->dateIssued->setDisplayFormat("dd-MM-yyyy");
+    ui->dateIssued->setDate(QDate::currentDate());
+
     ui->lblAdmin->setText("Dr. " + User::GetActiveUser().GetFullName() + " (Online)");
     navigateToPage(0, ui->btnDashboard);
 
@@ -83,7 +97,7 @@ void DoctorWindow::on_btnSearch_4_clicked() {
         const Patient& p = currentPatientList[i];
         ui->tblPatient->setItem(i, 0, new QTableWidgetItem(QString::number(p.ID)));
         ui->tblPatient->setItem(i, 1, new QTableWidgetItem(p.FullName));
-        ui->tblPatient->setItem(i, 2, new QTableWidgetItem(p.Phone));
+        // ui->tblPatient->setItem(i, 2, new QTableWidgetItem(p.Phone));
         ui->tblPatient->setItem(i, 3, new QTableWidgetItem(p.BirthDate));
         ui->tblPatient->setItem(i, 4, new QTableWidgetItem(p.Sex));
         ui->tblPatient->setItem(i, 5, new QTableWidgetItem(p.Address));
@@ -205,3 +219,134 @@ void DoctorWindow::on_btnComplete_clicked()
     }
 }
 
+void DoctorWindow::on_btnRemoveDrug_clicked()
+{
+    int currentRow = ui->tblPrescription->currentRow();
+
+    if (currentRow < 0) {
+        QMessageBox::warning(this, "Warning", "Please select a drug from the table to remove!");
+        return;
+    }
+
+    ui->tblPrescription->removeRow(currentRow);
+}
+
+void DoctorWindow::on_btnAddDrug_clicked()
+{
+    if (currentRecordId == -1) {
+        QMessageBox::warning(this, "Warning", "Please select a medical record first!");
+        return;
+    }
+
+    QDialog dialog(this);
+    dialog.setWindowTitle("Add New Drug");
+    dialog.setMinimumWidth(350);
+
+    QFormLayout layout(&dialog);
+
+    // 1. TẠO COMBOBOX VÀ NẠP DANH SÁCH TÊN THUỐC
+    QComboBox cbDrug(&dialog);
+    cbDrug.setEditable(true); // Biến ComboBox thành thanh gõ chữ được
+    cbDrug.setInsertPolicy(QComboBox::NoInsert);
+
+    QList<QString> drugList = Doctor::GetDrugsList();
+    cbDrug.addItems(drugList);
+
+    // Gắn tính năng Search (QCompleter)
+    QCompleter* completer = new QCompleter(QStringList(drugList), &dialog);
+    completer->setCompletionMode(QCompleter::PopupCompletion);
+    completer->setCaseSensitivity(Qt::CaseInsensitive); // Gõ chữ hoa/thường đều tìm được
+    completer->setFilterMode(Qt::MatchContains); // Gõ từ ở giữa (VD: "mox") vẫn ra "Amoxicillin"
+    cbDrug.setCompleter(completer);
+
+    // 2. TẠO CÁC Ô NHẬP SỐ LƯỢNG VÀ HƯỚNG DẪN
+    QSpinBox spinQuantity(&dialog);
+    spinQuantity.setRange(1, 999);
+    spinQuantity.setValue(1);
+
+    QLineEdit txtInstruction(&dialog);
+    txtInstruction.setPlaceholderText("e.g. Take 2 times a day");
+
+    layout.addRow("Search Drug:", &cbDrug);
+    layout.addRow("Quantity:", &spinQuantity);
+    layout.addRow("Instruction:", &txtInstruction);
+
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, &dialog);
+    layout.addRow(&buttonBox);
+
+    connect(&buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+    connect(&buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+
+
+    if (dialog.exec() == QDialog::Accepted) {
+        QString selectedDrugName = cbDrug.currentText();
+
+        // Gọi hàm phụ để lấy ID từ Tên Thuốc
+        int drugId = Doctor::GetDrugIdByName(selectedDrugName);
+
+        if (drugId <= 0) {
+            QMessageBox::warning(this, "Warning", "Drug not found! Please select a valid drug from the list.");
+            return;
+        }
+
+        int quantity = spinQuantity.value();
+        QString instruction = txtInstruction.text();
+
+        // K lưu vào db
+        int row = ui->tblPrescription->rowCount();
+        ui->tblPrescription->insertRow(row);
+
+        ui->tblPrescription->setItem(row, 0, new QTableWidgetItem(QString::number(drugId)));
+        ui->tblPrescription->setItem(row, 1, new QTableWidgetItem(selectedDrugName));
+        ui->tblPrescription->setItem(row, 3, new QTableWidgetItem(QString::number(quantity)));
+        ui->tblPrescription->setItem(row, 5, new QTableWidgetItem(instruction));
+    }
+}
+
+void DoctorWindow::on_btnSavePrescription_clicked()
+{
+    if (currentRecordId == -1) {
+        QMessageBox::warning(this, "Warning", "Please select a medical record before saving the prescription!");
+        return;
+    }
+
+    QString dateIssued = ui->dateIssued->date().toString("dd-MM-yyyy");
+
+    QList<Drug> drugsList;
+    QList<int> quantitiesList;
+    QList<QString> notesList;
+
+    int rowCount = ui->tblPrescription->rowCount();
+    for (int i = 0; i < rowCount; ++i) {
+        if (!ui->tblPrescription->item(i, 0)) continue;
+
+        int drugId = ui->tblPrescription->item(i, 0)->text().toInt();
+
+        if (drugId <= 0) continue;
+
+        int quantity = ui->tblPrescription->item(i, 3) ? ui->tblPrescription->item(i, 3)->text().toInt() : 1;
+        QString note = ui->tblPrescription->item(i, 5) ? ui->tblPrescription->item(i, 5)->text() : "";
+
+        Drug d;
+        d.setDrugID(drugId);
+
+        drugsList.append(d);
+        quantitiesList.append(quantity);
+        notesList.append(note);
+    }
+
+    Prescription finalPrescription;
+    finalPrescription.setDiagnosisID(currentRecordId);
+    finalPrescription.setDrugs(drugsList);
+    finalPrescription.setQuantities(quantitiesList);
+    finalPrescription.setNotes(notesList);
+
+    QList<Prescription> itemsToSave;
+    itemsToSave.append(finalPrescription);
+
+    if (Doctor::SavePrescription(currentRecordId, dateIssued, itemsToSave)) {
+        QMessageBox::information(this, "Success", "Prescription saved successfully!");
+    } else {
+        QMessageBox::critical(this, "Error", "An error occurred while saving the prescription.");
+    }
+}

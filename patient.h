@@ -11,7 +11,7 @@ public:
     QString BirthDate;
     QString Sex;
     QString Address;
-    QString Phone;
+    // QString Phone;
 
     static bool initTable() {
         QSqlQuery q;

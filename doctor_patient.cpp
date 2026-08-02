@@ -17,7 +17,7 @@ QList<Patient> Doctor::SearchPatientBy(const QString& keyword) {
             p.ID = query.value("ID").toInt();
             p.FullName = query.value("FullName").toString();
             p.BirthDate = query.value("BirthDate").toString();
-            p.Phone = query.value("Phone").toString();
+            // p.Phone = query.value("PhoneNumber").toString();
             p.Sex = query.value("Sex").toString();
             p.Address = query.value("Address").toString();
             results.append(p);
@@ -38,7 +38,7 @@ Patient Doctor::GetPatientDetails(int patientID) {
         p.ID = query.value("ID").toInt();
         p.FullName = query.value("FullName").toString();
         p.BirthDate = query.value("BirthDate").toString();
-        p.Phone = query.value("Phone").toString();
+        // p.Phone = query.value("Phone").toString();
         p.Sex = query.value("Sex").toString();
         p.Address = query.value("Address").toString();
     }

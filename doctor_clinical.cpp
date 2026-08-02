@@ -4,6 +4,19 @@
 #include <QSqlError>
 #include <QVariant>
 
+int Doctor::GetDrugIdByName(const QString& drugName) {
+    if (!QSqlDatabase::database().isOpen()) return -1;
+
+    QSqlQuery query;
+    query.prepare("SELECT DrugID FROM Drugs WHERE Name = :name");
+    query.bindValue(":name", drugName);
+
+    if (query.exec() && query.next()) {
+        return query.value(0).toInt();
+    }
+    return -1;
+}
+
 QList<QString> Doctor::GetDiseasesList() {
     QList<QString> diseases;
     QSqlQuery query("SELECT ConditionName FROM Diseases");
@@ -86,13 +99,14 @@ bool Doctor::MarkRecordComplete(int patientId) {
 QList<QString> Doctor::GetDrugsList() {
     QList<QString> drugs;
 
+    // qDebug() << "ok";
     if (!QSqlDatabase::database().isOpen())
     {
         qWarning() << "[Doctor::GetDrugsList] ERROR: Database not connected!";
         return drugs;
     }
     QSqlQuery query;
-    QString sql = "SELECT drug_name FROM drugs ORDER BY drug_name ASC;";
+    QString sql = "SELECT Name FROM Drugs ORDER BY Name ASC;";
     if (!query.exec(sql))
     {
         qWarning() << "[Doctor::GetDrugsList] DB QUERY ERROR:" << query.lastError().text();
@@ -100,43 +114,48 @@ QList<QString> Doctor::GetDrugsList() {
     }
     while (query.next())
     {
-        drugs.append(query.value("drug_name").toString());
+        drugs.append(query.value("Name").toString());
+        // qDebug() << "ok2";
     }
 
     return drugs;
 }
 
-bool Doctor::AddPrescriptionItem(int recordId, int drugId, int quantity, const QString& instruction) {
-    QSqlQuery query;
+// bool Doctor::AddPrescriptionItem(int recordId, int drugId, int quantity, const QString& instruction) {
+//     QSqlQuery query;
 
-    query.prepare("INSERT INTO Prescriptions (DiagnosisID, DrugID, Quantity, Note) "
-                  "VALUES (:diagnosisId, :drugId, :quantity, :note)");
+//     query.prepare("INSERT INTO Prescriptions (DiagnosisID, DrugID, Quantity, Note) "
+//                   "VALUES (:diagnosisId, :drugId, :quantity, :note)");
 
-    query.bindValue(":diagnosisId", recordId);
-    query.bindValue(":drugId", drugId);
-    query.bindValue(":quantity", quantity);
-    query.bindValue(":note", instruction);
+//     query.bindValue(":diagnosisId", recordId);
+//     query.bindValue(":drugId", drugId);
+//     query.bindValue(":quantity", quantity);
+//     query.bindValue(":note", instruction);
 
-    if (!query.exec()) {
-        qDebug() << "Failed AddPrescriptionItem:" << query.lastError().text();
-        return false;
-    }
-    return true;
-}
+//     if (!query.exec()) {
+//         qDebug() << "Failed AddPrescriptionItem:" << query.lastError().text();
+//         return false;
+//     }
+//     return true;
+// }
 
-bool Doctor::RemovePrescriptionItem(int prescriptionItemId) {
-    QSqlQuery query;
-    query.prepare("DELETE FROM Prescriptions WHERE DetailID = :id");
-    query.bindValue(":id", prescriptionItemId);
+// bool Doctor::RemovePrescriptionItem(int prescriptionItemId) {
+//     QSqlQuery query;
+//     query.prepare("DELETE FROM Prescriptions WHERE DetailID = :id");
+//     query.bindValue(":id", prescriptionItemId);
 
-    if (!query.exec()) {
-        qDebug() << "Failed RemovePrescriptionItem:" << query.lastError().text();
-        return false;
-    }
-    return true;
-}
-
+//     if (!query.exec()) {
+//         qDebug() << "Failed RemovePrescriptionItem:" << query.lastError().text();
+//         return false;
+//     }
+//     return true;
+// }
 bool Doctor::SavePrescription(int recordId, const QString& dateIssued, const QList<Prescription>& items) {
+    QSqlQuery clearQuery;
+    clearQuery.prepare("DELETE FROM Prescriptions WHERE DiagnosisID = :diagId");
+    clearQuery.bindValue(":diagId", recordId);
+    clearQuery.exec();
+
     QSqlDatabase::database().transaction();
 
     for (const Prescription& p : items) {
@@ -148,7 +167,7 @@ bool Doctor::SavePrescription(int recordId, const QString& dateIssued, const QLi
 
         for (int i = 0; i < drugs.size(); ++i) {
             QSqlQuery query;
-            query.prepare("INSERT OR REPLACE INTO Prescriptions (DiagnosisID, DrugID, Quantity, Note) "
+            query.prepare("INSERT INTO Prescriptions (DiagnosisID, DrugID, Quantity, Note) "
                           "VALUES (:diagnosisId, :drugId, :quantity, :note)");
 
             query.bindValue(":diagnosisId", currentDiagID);

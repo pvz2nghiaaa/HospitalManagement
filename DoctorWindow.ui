@@ -433,7 +433,7 @@ QPushButton#btnComplete:hover {
         </rect>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="tab_3">
         <attribute name="title">
@@ -850,7 +850,7 @@ QPushButton#btnComplete:hover {
           </property>
          </column>
         </widget>
-        <widget class="QPushButton" name="pushButton_4">
+        <widget class="QPushButton" name="btnSavePrescription">
          <property name="geometry">
           <rect>
            <x>180</x>
@@ -868,7 +868,7 @@ QPushButton#btnComplete:hover {
           <rect>
            <x>220</x>
            <y>10</y>
-           <width>302</width>
+           <width>301</width>
            <height>39</height>
           </rect>
          </property>
@@ -877,21 +877,14 @@ QPushButton#btnComplete:hover {
            <number>0</number>
           </property>
           <item>
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="btnAddDrug">
             <property name="text">
              <string>➕ Add Drug</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_2">
-            <property name="text">
-             <string>✏️ Edit</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton_3">
+           <widget class="QPushButton" name="btnRemoveDrug">
             <property name="text">
              <string>🗑️ Remove</string>
             </property>

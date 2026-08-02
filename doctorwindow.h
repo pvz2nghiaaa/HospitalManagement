@@ -6,6 +6,8 @@
 #include <QList>
 #include "doctor.h"
 #include "patient.h"
+#include "prescription.h"
+#include "drug.h"
 
 namespace Ui {
 class DoctorWindow;
@@ -29,10 +31,12 @@ private slots:
     void on_tblPatient_cellClicked(int row, int column);
     void on_btnUpdatePatient_clicked();
     void on_btnNewDisease_clicked();
-
     void on_btnSaveDiagnosis_clicked();
-
     void on_btnComplete_clicked();
+
+    void on_btnAddDrug_clicked();
+    void on_btnRemoveDrug_clicked();
+    void on_btnSavePrescription_clicked();
 
 private:
     Ui::DoctorWindow *ui;
