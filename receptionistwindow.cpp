@@ -18,6 +18,11 @@
 #include "loginwindow.h"
 #include "patient.h"
 #include "attendancelog.h"
+#include "doctor.h"
+#include "medicalrecord.h"
+#include "diagnosis.h"
+#include <QDate>
+#include <QRandomGenerator>
 ReceptionistWindow::ReceptionistWindow(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::ReceptionistWindow)
@@ -95,6 +100,12 @@ ReceptionistWindow::ReceptionistWindow(QWidget* parent)
         QAbstractItemView::SelectRows
     );
 
+    // Available Doctors Table setup
+    ui->tblAvaiDoctor->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tblAvaiDoctor->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tblAvaiDoctor->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tblAvaiDoctor->horizontalHeader()->setStretchLastSection(true);
+    ui->tblAvaiDoctor->verticalHeader()->setVisible(false);
 }
 
 ReceptionistWindow::~ReceptionistWindow()
@@ -111,6 +122,8 @@ void ReceptionistWindow::on_btnPatient_clicked()
 void ReceptionistWindow::on_btnRecord_clicked()
 {
     navigateToPage(1, ui->btnRecord);
+    ui->dateEdit->setDate(QDate::currentDate());
+    loadAvailableDoctorsToTable();
 }
 
 
@@ -1157,4 +1170,140 @@ void ReceptionistWindow::loadMyProfileInfo()
     ui->lineEdit_5->setReadOnly(true);
     ui->lineEdit_6->setReadOnly(true);
 }
+
+// FrameMedicalRecord UI Implementation
+void ReceptionistWindow::loadAvailableDoctorsToTable()
+{
+    QList<std::pair<int, QString>> doctors = Doctor::getAvailableDoctors();
+    ui->tblAvaiDoctor->setRowCount(0);
+    for (int i = 0; i < doctors.size(); i++) {
+        ui->tblAvaiDoctor->insertRow(i);
+        ui->tblAvaiDoctor->setItem(i, 0, new QTableWidgetItem(QString::number(doctors[i].first)));
+        ui->tblAvaiDoctor->setItem(i, 1, new QTableWidgetItem(doctors[i].second));
+    }
+}
+
+void ReceptionistWindow::on_txtRecordID_textChanged(const QString &text)
+{
+    bool ok = false;
+    int patientId = text.trimmed().toInt(&ok);
+    if (!ok || patientId <= 0) {
+        ui->txtRecordID_2->clear();
+        ui->txtRecordID_5->clear();
+        return;
+    }
+
+    Patient p;
+    if (Patient::getPatientById(patientId, p)) {
+        ui->txtRecordID_2->setText(p.FullName);
+        ui->txtRecordID_5->setText(p.Phone);
+
+        int sexIndex = ui->comboBox->findText(p.Sex, Qt::MatchExactly);
+        if (sexIndex >= 0) {
+            ui->comboBox->setCurrentIndex(sexIndex);
+        } else {
+            ui->comboBox->setCurrentText(p.Sex);
+        }
+    } else {
+        ui->txtRecordID_2->clear();
+        ui->txtRecordID_5->clear();
+    }
+}
+
+void ReceptionistWindow::on_tblAvaiDoctor_cellClicked(int row, int column)
+{
+    Q_UNUSED(column);
+    if (row < 0 || row >= ui->tblAvaiDoctor->rowCount()) return;
+
+    QTableWidgetItem *idItem = ui->tblAvaiDoctor->item(row, 0);
+    QTableWidgetItem *nameItem = ui->tblAvaiDoctor->item(row, 1);
+
+    if (idItem && nameItem) {
+        ui->txtRecordID_4->setText(idItem->text());
+        ui->txtRecordID_3->setText(nameItem->text());
+    }
+}
+
+void ReceptionistWindow::on_btnCreateRec_clicked()
+{
+    bool okPat = false;
+    int patientId = ui->txtRecordID->text().trimmed().toInt(&okPat);
+    Patient patient;
+    if (!okPat || !Patient::getPatientById(patientId, patient)) {
+        QMessageBox::warning(this, "Validation Error", "Please enter a valid existing Patient ID.");
+        return;
+    }
+
+    bool okDoc = false;
+    int doctorId = ui->txtRecordID_4->text().trimmed().toInt(&okDoc);
+    if (!okDoc || !Doctor::isDoctorAvailable(doctorId)) {
+        QMessageBox::warning(this, "Validation Error", "Please select an assigned doctor who is currently available.");
+        return;
+    }
+
+    QString recordDate = ui->dateEdit->date().toString("yyyy-MM-dd");
+    int recordId = MedicalRecord::createRecord(patientId, recordDate);
+    if (recordId <= 0) {
+        QMessageBox::critical(this, "Database Error", "Failed to create medical record.");
+        return;
+    }
+
+    bool diagCreated = Diagnosis::createDiagnosis(doctorId, recordId, patient.FullName);
+    if (!diagCreated) {
+        QMessageBox::critical(this, "Database Error", "Medical record created, but failed to create initial diagnosis.");
+        return;
+    }
+
+    QMessageBox::information(this, "Success", QString("Medical Record #%1 created successfully with Diagnosis for patient '%2'!")
+                                                  .arg(recordId).arg(patient.FullName));
+}
+
+void ReceptionistWindow::on_btnAutoCreateRec_clicked()
+{
+    bool okPat = false;
+    int patientId = ui->txtRecordID->text().trimmed().toInt(&okPat);
+    Patient patient;
+    if (!okPat || !Patient::getPatientById(patientId, patient)) {
+        QMessageBox::warning(this, "Validation Error", "Please enter a valid existing Patient ID before auto creating a record.");
+        return;
+    }
+
+    QList<std::pair<int, QString>> availableDoctors = Doctor::getAvailableDoctors();
+    if (availableDoctors.isEmpty()) {
+        QMessageBox::warning(this, "Assignment Error", "No available doctors found in the system.");
+        return;
+    }
+
+    int randomIndex = QRandomGenerator::global()->bounded(availableDoctors.size());
+    auto selectedDoctor = availableDoctors[randomIndex];
+
+    ui->txtRecordID_4->setText(QString::number(selectedDoctor.first));
+    ui->txtRecordID_3->setText(selectedDoctor.second);
+
+    QString recordDate = ui->dateEdit->date().toString("yyyy-MM-dd");
+    int recordId = MedicalRecord::createRecord(patientId, recordDate);
+    if (recordId <= 0) {
+        QMessageBox::critical(this, "Database Error", "Failed to create medical record.");
+        return;
+    }
+
+    bool diagCreated = Diagnosis::createDiagnosis(selectedDoctor.first, recordId, patient.FullName);
+    if (!diagCreated) {
+        QMessageBox::critical(this, "Database Error", "Medical record created, but failed to create initial diagnosis.");
+        return;
+    }
+
+    QMessageBox::information(this, "Success", QString("Auto created Medical Record #%1! Assigned to Dr. %2 for patient '%3'.")
+                                                  .arg(recordId).arg(selectedDoctor.second).arg(patient.FullName));
+}
+
+void ReceptionistWindow::on_btnClear_clicked()
+{
+    ui->txtRecordID->clear();
+    ui->txtRecordID_2->clear();
+    ui->txtRecordID_3->clear();
+    ui->txtRecordID_4->clear();
+    ui->txtRecordID_5->clear();
+}
+
 

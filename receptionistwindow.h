@@ -73,6 +73,13 @@ private slots:
 
     void on_btnSaveEditPat_clicked();
 
+    // FrameMedicalRecord features
+    void on_txtRecordID_textChanged(const QString &text);
+    void on_tblAvaiDoctor_cellClicked(int row, int column);
+    void on_btnCreateRec_clicked();
+    void on_btnAutoCreateRec_clicked();
+    void on_btnClear_clicked();
+
 private:
     Ui::ReceptionistWindow* ui;
     void navigateToPage(int pageIndex, QPushButton* activeBtn);
@@ -83,6 +90,7 @@ private:
     // Drug overlay
     void showAddDrugFrame();
     void hideAddDrugFrame();
+    void loadAvailableDoctorsToTable();
 
     void showEditDrugFrame();
     void hideEditDrugFrame();
