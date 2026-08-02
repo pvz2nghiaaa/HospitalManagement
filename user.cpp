@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QDate>
 #include "permission.h"
+#include "attendancelog.h"
 
 User::User() {}
 
@@ -54,29 +55,19 @@ bool User::login(QString nUsername, QString nPassword) {
         if (GetActiveUser().GetIsActive() &&
             GetActiveUser().UpdatePermissionFromDatabase())
         {
-            QSqlQuery logQuery;
+            QString todayStr = QDate::currentDate().toString("dd-MM-yyyy");
+            int userId = GetActiveUser().GetID();
 
-            logQuery.prepare(
-                "INSERT INTO AttendanceLogs "
-                "(Date, IsPresent, EmployeeID) "
-                "VALUES (:date, :isPresent, :employeeID)"
-            );
-
-            logQuery.bindValue(
-                ":date",
-                QDate::currentDate().toString("yyyy-MM-dd")
-            );
-
-            logQuery.bindValue(":isPresent", 1);
-            logQuery.bindValue(
-                ":employeeID",
-                GetActiveUser().GetID()
-            );
-
-            if (!logQuery.exec())
-            {
-                qDebug() << "Failed to save login log:"
-                    << logQuery.lastError().text();
+            // Check if today's log already exists (in standard dd-MM-yyyy format)
+            AttendanceLog* existingLog = AttendanceLog::GetLogByEmployeeAndDate(userId, todayStr);
+            if (!existingLog) {
+                // Save check-in log for today
+                AttendanceLog log(-1, todayStr, 1, userId);
+                if (!log.save()) {
+                    qDebug() << "Failed to save login log inside User::login";
+                }
+            } else {
+                delete existingLog;
             }
 
             return true;
@@ -89,29 +80,18 @@ bool User::login(QString nUsername, QString nPassword) {
 
 void User::logout(){
     int currentUserID = GetActiveUser().GetID();
-
-    if (currentUserID > 0)
+    if (currentUserID != -1)
     {
-        QSqlQuery logQuery;
+        QString todayStr = QDate::currentDate().toString("dd-MM-yyyy");
+        AttendanceLog* existingLog = AttendanceLog::GetLogByEmployeeAndDate(currentUserID, todayStr);
+        int logId = existingLog ? existingLog->getId() : -1;
+        if (existingLog) {
+            delete existingLog;
+        }
 
-        logQuery.prepare(
-            "INSERT INTO AttendanceLogs "
-            "(Date, IsPresent, EmployeeID) "
-            "VALUES (:date, :isPresent, :employeeID)"
-        );
-
-        logQuery.bindValue(
-            ":date",
-            QDate::currentDate().toString("yyyy-MM-dd")
-        );
-
-        logQuery.bindValue(":isPresent", 0);
-        logQuery.bindValue(":employeeID", currentUserID);
-
-        if (!logQuery.exec())
-        {
-            qDebug() << "Failed to save logout log:"
-                << logQuery.lastError().text();
+        AttendanceLog log(logId, todayStr, 0, currentUserID);
+        if (!log.save()) {
+            qDebug() << "Failed to save logout log inside User::logout";
         }
     }
 

@@ -59,8 +59,8 @@ ReceptionistWindow::ReceptionistWindow(QWidget* parent)
 
 
     //My profile
-    ui->dateFromProfile->setDisplayFormat("dd/MM/yyyy");
-    ui->dateToProfile->setDisplayFormat("dd/MM/yyyy");
+    ui->dateFromProfile->setDisplayFormat("dd-MM-yyyy");
+    ui->dateToProfile->setDisplayFormat("dd-MM-yyyy");
 
     ui->dateFromProfile->setCalendarPopup(true);
     ui->dateToProfile->setCalendarPopup(true);
@@ -1067,10 +1067,10 @@ void ReceptionistWindow::loadMyPermissions()
 void ReceptionistWindow::loadMyActivityLogs()
 {
     QString dateFrom =
-        ui->dateFromProfile->date().toString("yyyy-MM-dd");
+        ui->dateFromProfile->date().toString("dd-MM-yyyy");
 
     QString dateTo =
-        ui->dateToProfile->date().toString("yyyy-MM-dd");
+        ui->dateToProfile->date().toString("dd-MM-yyyy");
 
     QList<AttendanceLog> logs =
         Receptionist::SearchMyActivityLogs(dateFrom, dateTo);

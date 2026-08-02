@@ -122,7 +122,7 @@ QList<AttendanceLog> AttendanceLog::GetRecentLogs(){
         return list;
 
     QSqlQuery query;
-    query.prepare("SELECT LogID, Date, IsPresent, EmployeeID FROM AttendanceLogs");
+    query.prepare("SELECT LogID, Date, IsPresent, EmployeeID FROM AttendanceLogs ORDER BY LogID DESC");
 
     if (query.exec()) {
         int maxLogs = 10;
