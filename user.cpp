@@ -1,5 +1,6 @@
 #include "user.h"
 #include <QDebug>
+#include <QDate>
 #include "permission.h"
 
 User::User() {}
@@ -50,8 +51,36 @@ bool User::login(QString nUsername, QString nPassword) {
             .SetPhoneNumber(query.value("PhoneNumber").toString())
             .SetIsActive(query.value("IsActive").toBool())
             .SetRole(query.value("Role").toString());
-        if (GetActiveUser().GetIsActive() && GetActiveUser().UpdatePermissionFromDatabase())
+        if (GetActiveUser().GetIsActive() &&
+            GetActiveUser().UpdatePermissionFromDatabase())
+        {
+            QSqlQuery logQuery;
+
+            logQuery.prepare(
+                "INSERT INTO AttendanceLogs "
+                "(Date, IsPresent, EmployeeID) "
+                "VALUES (:date, :isPresent, :employeeID)"
+            );
+
+            logQuery.bindValue(
+                ":date",
+                QDate::currentDate().toString("yyyy-MM-dd")
+            );
+
+            logQuery.bindValue(":isPresent", 1);
+            logQuery.bindValue(
+                ":employeeID",
+                GetActiveUser().GetID()
+            );
+
+            if (!logQuery.exec())
+            {
+                qDebug() << "Failed to save login log:"
+                    << logQuery.lastError().text();
+            }
+
             return true;
+        }
         logout();
         return false;
     }
@@ -59,11 +88,40 @@ bool User::login(QString nUsername, QString nPassword) {
 }
 
 void User::logout(){
-    GetActiveUser().SetID(-1)
+    int currentUserID = GetActiveUser().GetID();
+
+    if (currentUserID > 0)
+    {
+        QSqlQuery logQuery;
+
+        logQuery.prepare(
+            "INSERT INTO AttendanceLogs "
+            "(Date, IsPresent, EmployeeID) "
+            "VALUES (:date, :isPresent, :employeeID)"
+        );
+
+        logQuery.bindValue(
+            ":date",
+            QDate::currentDate().toString("yyyy-MM-dd")
+        );
+
+        logQuery.bindValue(":isPresent", 0);
+        logQuery.bindValue(":employeeID", currentUserID);
+
+        if (!logQuery.exec())
+        {
+            qDebug() << "Failed to save logout log:"
+                << logQuery.lastError().text();
+        }
+    }
+
+    GetActiveUser()
+        .SetID(-1)
         .SetUsername("")
         .SetEncryptedPassword("")
         .SetFullName("")
         .SetPhoneNumber("")
+        .SetRole("")
         .SetIsActive(false);
 }
 
