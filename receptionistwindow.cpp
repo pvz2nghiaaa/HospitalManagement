@@ -1,5 +1,6 @@
 #include "receptionistwindow.h"
 #include "billingmanager.h"
+#include "invoice.h"
 #include "receptionist.h"
 #include "permission.h"
 #include "attendancelog.h"
@@ -37,6 +38,9 @@ ReceptionistWindow::ReceptionistWindow(QWidget* parent)
     ui->cardEditDrug->hide();
     ui->cardDrugHistory->hide();
     ui->overlayEditPatientFrame->hide();
+    ui->overlayInvoiceFrame->hide();
+
+    connect(this, &ReceptionistWindow::queryFailed, this, &ReceptionistWindow::handleQueryFailed);
 
     ui->lblAdmin->setText("Rect. " + User::GetActiveUser().GetFullName()+ " (Online)");
     navigateToPage(0, ui->btnPatient);
@@ -85,6 +89,7 @@ ReceptionistWindow::ReceptionistWindow(QWidget* parent)
     ui->txtRecordID_9->setReadOnly(true);
 
     clearInvoiceDetails();
+    loadInvoicesToTable();
 
 
     // Drug Management
@@ -1395,8 +1400,98 @@ void ReceptionistWindow::clearInvoiceDetails()
     ui->tableWidget_2->setRowCount(0);
 }
 
+void ReceptionistWindow::handleQueryFailed(const QString& errorMessage)
+{
+    QMessageBox::critical(this, "Query Error", errorMessage);
+}
+
+void ReceptionistWindow::showOverlayInvoiceFrame()
+{
+    setBackgroundActiveState(false);
+    ui->overlayInvoiceFrame->setGeometry(0, 0, this->width(), this->height());
+    int cardX = (this->width() - ui->cardCreateInvoice->width()) / 2;
+    int cardY = (this->height() - ui->cardCreateInvoice->height()) / 2;
+    ui->cardCreateInvoice->move(cardX, cardY);
+
+    ui->overlayInvoiceFrame->show();
+    ui->overlayInvoiceFrame->raise();
+}
+
+void ReceptionistWindow::hideOverlayInvoiceFrame()
+{
+    ui->overlayInvoiceFrame->hide();
+    setBackgroundActiveState(true);
+}
+
+void ReceptionistWindow::loadInvoicesToTable()
+{
+    ui->tableWidget->setRowCount(0);
+
+    QString keyword = ui->txtSearch_7->text().trimmed();
+    QString status = ui->comboBox_2->currentText();
+
+    QString errorMsg;
+    QList<InvoiceSummary> invoices = BillingManager::SearchInvoices(keyword, status, &errorMsg);
+
+    if (!errorMsg.isEmpty()) {
+        emit queryFailed(errorMsg);
+        return;
+    }
+
+    for (int i = 0; i < invoices.size(); ++i) {
+        ui->tableWidget->insertRow(i);
+        ui->tableWidget->setItem(i, 0, new QTableWidgetItem(QString::number(invoices[i].invoiceID)));
+        ui->tableWidget->setItem(i, 1, new QTableWidgetItem(invoices[i].patientName));
+    }
+}
+
+void ReceptionistWindow::on_btnSearch_10_clicked()
+{
+    loadInvoicesToTable();
+}
+
+void ReceptionistWindow::on_btnSearch_11_clicked()
+{
+    ui->txtCreateInvoiceRecordID->clear();
+    showOverlayInvoiceFrame();
+}
+
+void ReceptionistWindow::on_btnCancelCreateInvoice_clicked()
+{
+    hideOverlayInvoiceFrame();
+}
+
+void ReceptionistWindow::on_btnSaveCreateInvoice_clicked()
+{
+    QString recText = ui->txtCreateInvoiceRecordID->text().trimmed();
+    if (recText.isEmpty()) {
+        emit queryFailed("Please enter a valid Medical Record ID.");
+        return;
+    }
+
+    bool ok = false;
+    int recordID = recText.toInt(&ok);
+    if (!ok || recordID <= 0) {
+        emit queryFailed("Medical Record ID must be a positive integer.");
+        return;
+    }
+
+    QString errorMsg;
+    Invoice* inv = BillingManager::CreateInvoiceByRecordID(recordID, &errorMsg);
+
+    if (inv != nullptr) {
+        QMessageBox::information(this, "Success", QString("Invoice #%1 created successfully!").arg(inv->getInvoiceID()));
+        hideOverlayInvoiceFrame();
+        loadInvoicesToTable();
+    } else {
+        emit queryFailed(errorMsg.isEmpty() ? "Failed to create invoice." : errorMsg);
+    }
+    delete inv;
+}
+
 void ReceptionistWindow::loadInvoiceDetails(
-    int invoiceID)
+    int invoiceID
+)
 {
     InvoiceDetails details =
         BillingManager::GetInvoiceDetails(
@@ -1405,12 +1500,7 @@ void ReceptionistWindow::loadInvoiceDetails(
 
     if (!details.found)
     {
-        QMessageBox::warning(
-            this,
-            "Invoice",
-            "Invoice details could not be found."
-        );
-
+        emit queryFailed("Invoice details could not be found.");
         clearInvoiceDetails();
         return;
     }
@@ -1616,7 +1706,7 @@ void ReceptionistWindow::on_tableWidget_cellClicked(
 
     if (!ok || invoiceID <= 0)
         return;
-
+    qDebug() << "Get invoice id: " << invoiceID;
     loadInvoiceDetails(invoiceID);
 }
 
@@ -1627,12 +1717,7 @@ void ReceptionistWindow::on_btnSearch_12_clicked()
 
     if (invoiceID <= 0)
     {
-        QMessageBox::warning(
-            this,
-            "Payment",
-            "Please select an invoice first."
-        );
-
+        emit queryFailed("Please select an invoice first.");
         return;
     }
 
@@ -1643,12 +1728,7 @@ void ReceptionistWindow::on_btnSearch_12_clicked()
 
     if (!details.found)
     {
-        QMessageBox::warning(
-            this,
-            "Payment",
-            "Invoice could not be found."
-        );
-
+        emit queryFailed("Invoice could not be found.");
         return;
     }
 
@@ -1659,7 +1739,6 @@ void ReceptionistWindow::on_btnSearch_12_clicked()
             "Payment",
             "This invoice is already paid."
         );
-
         return;
     }
 
@@ -1687,16 +1766,11 @@ void ReceptionistWindow::on_btnSearch_12_clicked()
         );
 
         loadInvoiceDetails(invoiceID);
-
-        // loadInvoices();
+        loadInvoicesToTable();
     }
     else
     {
-        QMessageBox::critical(
-            this,
-            "Payment",
-            "Failed to mark invoice as paid."
-        );
+        emit queryFailed("Failed to mark invoice as paid.");
     }
 }
 
@@ -1707,12 +1781,7 @@ void ReceptionistWindow::on_btnSearch_13_clicked()
 
     if (invoiceID <= 0)
     {
-        QMessageBox::warning(
-            this,
-            "Print Invoice",
-            "Please select an invoice first."
-        );
-
+        emit queryFailed("Please select an invoice first.");
         return;
     }
 
@@ -1728,4 +1797,6 @@ void ReceptionistWindow::on_btnSearch_13_clicked()
             "or failed.";
     }
 }
+
+
 

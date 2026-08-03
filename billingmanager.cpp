@@ -28,6 +28,82 @@ Invoice* BillingManager::CreateInvoice(int recordID, int patientID) {
     }
 }
 
+Invoice* BillingManager::CreateInvoiceByRecordID(int recordID, QString* errorMessage) {
+    if (recordID <= 0) {
+        if (errorMessage) *errorMessage = "Medical Record ID must be a positive integer.";
+        return nullptr;
+    }
+
+    QSqlQuery checkQuery;
+    checkQuery.prepare("SELECT PatientID FROM MedicalRecords WHERE RecordID = :recID");
+    checkQuery.bindValue(":recID", recordID);
+
+    if (!checkQuery.exec()) {
+        if (errorMessage) *errorMessage = "Database query failed: " + checkQuery.lastError().text();
+        return nullptr;
+    }
+
+    if (!checkQuery.next()) {
+        if (errorMessage) *errorMessage = QString("Medical Record ID %1 does not exist.").arg(recordID);
+        return nullptr;
+    }
+
+    int patientID = checkQuery.value(0).toInt();
+
+    Invoice* inv = CreateInvoice(recordID, patientID);
+    if (!inv && errorMessage) {
+        *errorMessage = "Failed to create invoice in database.";
+    }
+    return inv;
+}
+
+QList<InvoiceSummary> BillingManager::SearchInvoices(const QString& keyword, const QString& status, QString* errorMessage) {
+    QList<InvoiceSummary> result;
+
+    QString queryStr = "SELECT i.InvoiceID, p.FullName FROM Invoices i "
+                       "JOIN MedicalRecords m ON i.RecordID = m.RecordID "
+                       "JOIN Patients p ON m.PatientID = p.ID";
+
+    QStringList conditions;
+
+    if (!keyword.isEmpty()) {
+        bool isNumber = false;
+        int idVal = keyword.toInt(&isNumber);
+        if (isNumber) {
+            conditions.append(QString("(i.InvoiceID = %1 OR p.FullName LIKE '%%2%')").arg(idVal).arg(keyword));
+        } else {
+            conditions.append(QString("p.FullName LIKE '%%1%'").arg(keyword));
+        }
+    }
+
+    if (status == "Paid") {
+        conditions.append("i.IsPaid = 1");
+    } else if (status == "Unpaid") {
+        conditions.append("i.IsPaid = 0");
+    }
+
+    if (!conditions.isEmpty()) {
+        queryStr += " WHERE " + conditions.join(" AND ");
+    }
+
+    queryStr += " ORDER BY i.InvoiceID DESC";
+
+    QSqlQuery query;
+    if (!query.exec(queryStr)) {
+        if (errorMessage) *errorMessage = "Failed to query invoices: " + query.lastError().text();
+        return result;
+    }
+
+    while (query.next()) {
+        InvoiceSummary item;
+        item.invoiceID = query.value(0).toInt();
+        item.patientName = query.value(1).toString();
+        result.append(item);
+    }
+
+    return result;
+}
+
 QList<int> BillingManager::SearchInvoiceByPatient(int patientID) {
     QList<int> invoiceList;
     QSqlQuery query;
@@ -69,7 +145,7 @@ InvoiceDetails BillingManager::GetInvoiceDetails(
         "p.FullName AS PatientName "
         "FROM Invoices i "
         "LEFT JOIN Patients p "
-        "ON i.PatientID = p.PatientID "
+        "ON i.PatientID = p.ID "
         "WHERE i.InvoiceID = :invoiceID"
     );
 
