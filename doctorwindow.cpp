@@ -16,7 +16,7 @@
 #include <QTableWidgetItem>
 #include <QCompleter>
 #include <QComboBox>
-
+#include <QFileDialog>
 
 DoctorWindow::DoctorWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -228,6 +228,7 @@ void DoctorWindow::on_btnPrintRecord_clicked()
 
     QMessageBox::information(this, "Success", "PDF exported successfully at:\n" + filePath);
 }
+
 void DoctorWindow::on_btnCloseRecord_clicked()
 {
     ui->txtRecordID->clear();
@@ -240,8 +241,9 @@ void DoctorWindow::on_btnCloseRecord_clicked()
 
     ui->tblMedicalRecords->clearSelection();
     ui->tblMedicalRecords->setCurrentItem(nullptr);
+}
 
-}void DoctorWindow::on_btnSearch_4_clicked() {
+void DoctorWindow::on_btnSearch_4_clicked() {
     QString keyword = ui->txtSearch_4->text();
     currentPatientList = Doctor::SearchPatientBy(keyword);
 
@@ -295,6 +297,7 @@ void DoctorWindow::on_btnUpdatePatient_clicked() {
         QMessageBox::warning(this, "Error", "Update failed! Check permissions or connection.");
     }
 }
+
 void DoctorWindow::on_btnSearchActivity_clicked()
 {
     QString dateFrom = ui->dateEdit_2->date().toString("yyyy-MM-dd");
@@ -329,6 +332,8 @@ void DoctorWindow::on_btnSearchActivity_clicked()
         ui->tblMyActivity->setItem(i, 1, itemTime);
         ui->tblMyActivity->setItem(i, 2, itemAction);
         ui->tblMyActivity->setItem(i, 3, itemDesc);
+    }
+}
 
 void DoctorWindow::on_btnNewDisease_clicked()
 {
@@ -348,7 +353,6 @@ void DoctorWindow::on_btnNewDisease_clicked()
         QMessageBox::warning(this, "Error", "Can not add new disease. Check again!!");
 }
 
-
 void DoctorWindow::on_btnSaveDiagnosis_clicked()
 {
     if (currentRecordId <= 0) {
@@ -366,7 +370,7 @@ void DoctorWindow::on_btnSaveDiagnosis_clicked()
         QMessageBox::warning(this, "Insufficient information", "Please select the disease name and ensure you have the ICD code!");
         return;
     }
-        bool isSuccess = Doctor::SaveDiagnosis(currentRecordId, conditionName, icdCode, severity, clinicalNote, dateDiagnosed);
+    bool isSuccess = Doctor::SaveDiagnosis(currentRecordId, conditionName, icdCode, severity, clinicalNote, dateDiagnosed);
 
     if (isSuccess) {
         QMessageBox::information(this, "Success", "Diagnosis successfully saved!");
@@ -375,7 +379,6 @@ void DoctorWindow::on_btnSaveDiagnosis_clicked()
         QMessageBox::critical(this, "Database error", "Diagnosis saving failed! Please check the system again.");
     }
 }
-
 
 void DoctorWindow::loadProfileData()
 {
@@ -387,7 +390,6 @@ void DoctorWindow::loadProfileData()
     ui->lineEdit_6->setText(myProfile.GetPhoneNumber());
     ui->lineEdit_7->setText(myProfile.GetRole());
 
-
     QList<Permission> myPerms = Doctor::GetMyPermissions();
     ui->tblMyPermissions->setRowCount(0);
     ui->tblMyPermissions->setRowCount(myPerms.size());
@@ -395,46 +397,46 @@ void DoctorWindow::loadProfileData()
     QString permissionsText = "";
 
     for (int i = 0; i < myPerms.size(); ++i) {
-        int pType = myPerms[i].toUnderlying(); 
-        
+        int pType = myPerms[i].toUnderlying();
+
         QString pName = "Unknown Permission";
         switch (pType) {
-            case Permission::createRecord:
-                pName = "Create Medical Record"; 
-                break;
-            case Permission::viewRecord:
-                pName = "View Medical Record"; 
-                break;
-            case Permission::editRecord:
-                pName = "Edit Medical Record"; 
-                break;
-            case Permission::manageDrugs:
-                pName = "Manage Drugs";
-                break;
-            case Permission::viewLog:
-                pName = "View Logs"; 
-                break;
-            case Permission::addLog:
-                pName = "Add Logs";
-                break;
-            case Permission::changePermission:
-                pName = "Change Permissions"; 
-                break;
-            case Permission::manageUsers:
-                pName = "Manage Users"; 
-                break;
-            case Permission::createPatient:
-                pName = "Create Patient"; 
-                break;
-            case Permission::editPatient:
-                pName = "Edit Patient"; 
-                break;
-            case Permission::createInvoice:
-                pName = "Create Invoice"; 
-                break;
-            case Permission::viewInvoice:
-                pName = "View Invoice"; 
-                break;
+        case Permission::createRecord:
+            pName = "Create Medical Record";
+            break;
+        case Permission::viewRecord:
+            pName = "View Medical Record";
+            break;
+        case Permission::editRecord:
+            pName = "Edit Medical Record";
+            break;
+        case Permission::manageDrugs:
+            pName = "Manage Drugs";
+            break;
+        case Permission::viewLog:
+            pName = "View Logs";
+            break;
+        case Permission::addLog:
+            pName = "Add Logs";
+            break;
+        case Permission::changePermission:
+            pName = "Change Permissions";
+            break;
+        case Permission::manageUsers:
+            pName = "Manage Users";
+            break;
+        case Permission::createPatient:
+            pName = "Create Patient";
+            break;
+        case Permission::editPatient:
+            pName = "Edit Patient";
+            break;
+        case Permission::createInvoice:
+            pName = "Create Invoice";
+            break;
+        case Permission::viewInvoice:
+            pName = "View Invoice";
+            break;
         }
 
         permissionsText += "- " + pName + "\n";
@@ -445,8 +447,8 @@ void DoctorWindow::loadProfileData()
         ui->tblMyPermissions->setItem(i, 0, itemPerm);
         ui->tblMyPermissions->setItem(i, 1, itemStatus);
     }
-
 }
+
 void DoctorWindow::on_btnComplete_clicked()
 {
     if (currentRecordId <= 0)
@@ -456,8 +458,8 @@ void DoctorWindow::on_btnComplete_clicked()
     }
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(this, "Confirmation",
-    "Are you sure you want to mark this record as complete? Once completed, it cannot be edited.",
-    QMessageBox::Yes | QMessageBox::No);
+                                  "Are you sure you want to mark this record as complete? Once completed, it cannot be edited.",
+                                  QMessageBox::Yes | QMessageBox::No);
     if (reply == QMessageBox::No)
     {
         return;
@@ -510,7 +512,7 @@ void DoctorWindow::on_btnAddDrug_clicked()
     QList<QString> drugList = Doctor::GetDrugsList();
     cbDrug.addItems(drugList);
 
-    // Gắn tính năng Search (QCompleter)
+    // Gắn tính năng Search (QCompleter) - CẬP NHẬT ÉP KIỂU QStringList
     QCompleter* completer = new QCompleter(QStringList(drugList), &dialog);
     completer->setCompletionMode(QCompleter::PopupCompletion);
     completer->setCaseSensitivity(Qt::CaseInsensitive); // Gõ chữ hoa/thường đều tìm được
@@ -535,7 +537,6 @@ void DoctorWindow::on_btnAddDrug_clicked()
     connect(&buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
     connect(&buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
 
-
     if (dialog.exec() == QDialog::Accepted) {
         QString selectedDrugName = cbDrug.currentText();
 
@@ -550,7 +551,7 @@ void DoctorWindow::on_btnAddDrug_clicked()
         int quantity = spinQuantity.value();
         QString instruction = txtInstruction.text();
 
-        // K lưu vào db
+        // Không lưu vào db ngay mà lưu tạm trên UI
         int row = ui->tblPrescription->rowCount();
         ui->tblPrescription->insertRow(row);
 

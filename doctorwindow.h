@@ -33,15 +33,12 @@ private slots:
     void on_tblMedicalRecords_cellClicked(int row, int column);
     void on_btnPrintRecord_clicked();
     void on_btnCloseRecord_clicked();
-    
+
     void on_btnSearch_4_clicked();
     void on_tblPatient_cellClicked(int row, int column);
     void on_btnUpdatePatient_clicked();
 
     void on_btnSearchActivity_clicked();
-    void on_btnSearch_4_clicked();
-    void on_tblPatient_cellClicked(int row, int column);
-    void on_btnUpdatePatient_clicked();
     void on_btnNewDisease_clicked();
     void on_btnSaveDiagnosis_clicked();
     void on_btnComplete_clicked();
@@ -49,7 +46,6 @@ private slots:
     void on_btnAddDrug_clicked();
     void on_btnRemoveDrug_clicked();
     void on_btnSavePrescription_clicked();
-
 private:
     Ui::DoctorWindow *ui;
     void navigateToPage(int pageIndex, QPushButton* activeBtn);

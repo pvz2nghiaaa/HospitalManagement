@@ -25,22 +25,14 @@
 
 bool setupDatabase() {
     // test
-<<<<<<< HEAD
-    QString dbName = "database.db";
-=======
     /*QString dbName = "database.db";
->>>>>>> Doctor_clinical
     if (QFile::exists(dbName)) {
         if (QFile::remove(dbName)) {
             qDebug() << "=> Đã xoá file DB cũ để làm mới hoàn toàn!";
         } else {
             qDebug() << "=> Lỗi: Không thể xoá DB cũ (có thể đang bị phần mềm khác mở).";
         }
-<<<<<<< HEAD
-    }
-=======
     }*/
->>>>>>> Doctor_clinical
     //
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
@@ -73,20 +65,10 @@ bool setupDatabase() {
 }
 
 
-<<<<<<< HEAD
-void insertSampleData() {
-    QSqlQuery query;
-
-    // ==========================================
-    // 1. INSERT USERS (ADMIN, DOCTOR, RECEPTIONIST)
-    // ==========================================
-    // Insert Admin (Sẽ tự động nhận UserID = 1)
-=======
 
 void insertSampleData() {
     QSqlQuery query;
     // Insert Admin
->>>>>>> Doctor_clinical
     query.prepare("INSERT INTO User (Username, EncryptedPassword, FullName, PhoneNumber, Role, IsActive) "
                   "VALUES (:user, :pass, :name, :phone, :role, 1)");
     query.bindValue(":user", "admin");
@@ -108,16 +90,11 @@ void insertSampleData() {
         }
     }
 
-<<<<<<< HEAD
-    // Insert Doctor (Sẽ tự động nhận UserID = 2)
-=======
     // Insert Doctor
->>>>>>> Doctor_clinical
     query.prepare("INSERT INTO User (Username, EncryptedPassword, FullName, PhoneNumber, Role, IsActive) "
                   "VALUES (:user, :pass, :name, :phone, :role, 1)");
     query.bindValue(":user", "doctor");
     query.bindValue(":pass", "doctor");
-<<<<<<< HEAD
     query.bindValue(":name", "Dr. John Doe");
     query.bindValue(":phone", "987654321");
     query.bindValue(":role", "Doctor");
@@ -127,16 +104,6 @@ void insertSampleData() {
         // Cấp quyền cho Doctor
         QList<Permission::Type> docPerms = {
             Permission::createRecord, Permission::viewRecord, Permission::editRecord, Permission::manageDrugs
-=======
-    query.bindValue(":name", "Dr. Le Xuan");
-    query.bindValue(":phone", "987654321");
-    query.bindValue(":role", "Doctor");
-    if (query.exec()) {
-        int doctorId = query.lastInsertId().toInt();
-        QList<Permission::Type> docPerms = {
-            Permission::createRecord, Permission::viewRecord, Permission::editRecord, Permission::manageDrugs,
-            Permission::editPatient
->>>>>>> Doctor_clinical
         };
         for (Permission::Type p : docPerms) {
             QSqlQuery permQuery;
@@ -145,7 +112,6 @@ void insertSampleData() {
             permQuery.bindValue(":ptype", static_cast<int>(p));
             permQuery.exec();
         }
-<<<<<<< HEAD
 
         // ---> BỔ SUNG: THÊM DỮ LIỆU ATTENDANCE LOG MẪU CHO BÁC SĨ NÀY <---
         QList<QString> sampleDates = {"2026-07-20", "2026-07-21", "2026-07-22", "2026-07-23", "2026-07-24", "2026-07-25"};
@@ -165,11 +131,6 @@ void insertSampleData() {
     }
 
     // Insert Receptionist (Sẽ tự động nhận UserID = 3)
-=======
-    }
-
-    // Insert Receptionist
->>>>>>> Doctor_clinical
     query.prepare("INSERT INTO User (Username, EncryptedPassword, FullName, PhoneNumber, Role, IsActive) "
                   "VALUES (:user, :pass, :name, :phone, :role, 1)");
     query.bindValue(":user", "receptionist");
@@ -190,7 +151,6 @@ void insertSampleData() {
             permQuery.exec();
         }
     }
-<<<<<<< HEAD
 
     if (!query.exec("INSERT INTO Patients (ID, FullName, Sex, BirthDate, Address) "
                     "VALUES (201, 'Nguyen Van A', 'Male', '1990-05-15', 'Q1, TP.HCM')")) {
@@ -267,9 +227,6 @@ void insertSampleData() {
     }
 
     qDebug() << "=> Sample users, permissions, and attendance logs inserted successfully!";
-=======
-    qDebug() << "=> Sample users and permissions inserted successfully!";
->>>>>>> Doctor_clinical
 }
 
 int main(int argc, char *argv[])

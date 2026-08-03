@@ -12,12 +12,9 @@ private:
     bool IsComplete;
     int PatientID;
 
-<<<<<<< HEAD
     QString doctorName;
     QString diagnosis;
 
-=======
->>>>>>> Doctor_clinical
 public:
     MedicalRecord();
     MedicalRecord(int nRecordID, QString nDate, bool nIsComplete, int nPatientID);
@@ -32,20 +29,14 @@ public:
     MedicalRecord& SetIsComplete(bool nIsComplete);
     MedicalRecord& SetPatientID(int nPatientID);
 
-<<<<<<< HEAD
     MedicalRecord& SetDoctorName(const QString& name);
     MedicalRecord& SetDiagnosis(const QString& diag);
-=======
->>>>>>> Doctor_clinical
     // Get methods
     int GetRecordID();
     QString GetDate();
     bool GetIsComplete();
     int GetPatientID();
-<<<<<<< HEAD
     QString GetDoctorName();
     QString GetDiagnosis();
 
-=======
->>>>>>> Doctor_clinical
 };
