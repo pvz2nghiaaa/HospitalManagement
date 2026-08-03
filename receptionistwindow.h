@@ -16,7 +16,12 @@ public:
     explicit ReceptionistWindow(QWidget* parent = nullptr);
     ~ReceptionistWindow();
 
+signals:
+    void queryFailed(const QString& errorMessage);
+
 private slots:
+    void handleQueryFailed(const QString& errorMessage);
+
     void on_btnPatient_clicked();
 
     void on_btnRecord_clicked();
@@ -41,9 +46,14 @@ private slots:
         int column
     );
 
+    void on_btnSearch_10_clicked();
+    void on_btnSearch_11_clicked();
     void on_btnSearch_12_clicked();
-
     void on_btnSearch_13_clicked();
+
+    void on_btnSaveCreateInvoice_clicked();
+    void on_btnCancelCreateInvoice_clicked();
+
     // Drug Management
     void on_btnSearch_14_clicked();
     void on_btnSearch_15_clicked();
@@ -97,6 +107,7 @@ private:
     void refreshAttendanceTable();
     
     //Invoice
+    void loadInvoicesToTable();
     void loadInvoiceDetails(
         int invoiceID
     );
@@ -104,6 +115,10 @@ private:
     void clearInvoiceDetails();
 
     int getSelectedInvoiceID() const;
+
+    void showOverlayInvoiceFrame();
+    void hideOverlayInvoiceFrame();
+
     // Drug overlay
     void showAddDrugFrame();
     void hideAddDrugFrame();
@@ -131,3 +146,5 @@ private:
 };
 
 #endif // RECEPTIONISTWINDOW_H
+
+

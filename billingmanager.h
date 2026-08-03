@@ -17,6 +17,12 @@ struct InvoiceItemDetails
     double amount;
 };
 
+struct InvoiceSummary
+{
+    int invoiceID = -1;
+    QString patientName;
+};
+
 // Toàn bộ dữ liệu chi tiết hóa đơn
 struct InvoiceDetails
 {
@@ -44,6 +50,17 @@ public:
     static Invoice* CreateInvoice(
         int recordID,
         int patientID
+    );
+
+    static Invoice* CreateInvoiceByRecordID(
+        int recordID,
+        QString* errorMessage = nullptr
+    );
+
+    static QList<InvoiceSummary> SearchInvoices(
+        const QString& keyword,
+        const QString& status,
+        QString* errorMessage = nullptr
     );
 
     static QList<int> SearchInvoiceByPatient(
