@@ -726,6 +726,8 @@ void ReceptionistWindow::showAddDrugFrame()
 
     ui->overlayDrugFrame->show();
     ui->cardAddDrug->show();
+    ui->overlayDrugFrame->raise();
+    ui->cardAddDrug->raise();
 
     ui->txtAddDrugName->setFocus();
 }
@@ -851,6 +853,8 @@ void ReceptionistWindow::showDrugHistoryFrame()
 
     ui->overlayDrugFrame->show();
     ui->cardDrugHistory->show();
+    ui->overlayDrugFrame->raise();
+    ui->cardDrugHistory->raise();
 }
 
 void ReceptionistWindow::on_pushButton_clicked()
