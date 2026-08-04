@@ -46,6 +46,8 @@ DoctorWindow::DoctorWindow(QWidget *parent)
     ui->dateEdit_2->setDate(QDate::currentDate().addDays(-30));
     ui->dateEdit_3->setDate(QDate::currentDate());
 
+    ui->tblPatient->setSelectionBehavior(QAbstractItemView::SelectRows);
+
     loadProfileData();
     navigateToPage(0, ui->btnDashboard);
     on_btnSearch_4_clicked();
@@ -165,8 +167,18 @@ void DoctorWindow::on_btnSearch_5_clicked() // search medical record
         ui->tblMedicalRecords->setItem(i, 0, new QTableWidgetItem(QString::number(rec.GetRecordID())));
         ui->tblMedicalRecords->setItem(i, 1, new QTableWidgetItem(rec.GetPatientName()));
         ui->tblMedicalRecords->setItem(i, 2, new QTableWidgetItem(rec.GetDate()));
-        ui->tblMedicalRecords->setItem(i, 3, new QTableWidgetItem(rec.GetDoctorName()));
-        ui->tblMedicalRecords->setItem(i, 4, new QTableWidgetItem(rec.GetDiagnosis()));
+
+        QList<QString> doctorsList;
+        QList<QString> diagnosesList;
+
+        Doctor::GetAllDiagnosesForRecord(rec, doctorsList, diagnosesList);
+
+        QString doctorsText = doctorsList.join("\n");
+        QString diagnosesText = diagnosesList.join("\n");
+        ui->tblMedicalRecords->setItem(i, 3, new QTableWidgetItem(doctorsText));
+        ui->tblMedicalRecords->setItem(i, 4, new QTableWidgetItem(diagnosesText));
+
+        ui->tblMedicalRecords->resizeRowToContents(i);
 
         QString statusText = rec.GetIsComplete() ? "Completed" : "Pending";
         ui->tblMedicalRecords->setItem(i, 5, new QTableWidgetItem(statusText));
@@ -196,16 +208,21 @@ void DoctorWindow::on_tblMedicalRecords_cellClicked(int row, int column)
 
     ui->txtRecordID->setText(QString::number(rec.GetPatientID()));
 
-    QDate visitDate = QDate::fromString(rec.GetDate(), "dd-MM-yyyy");
+    QDate visitDate = QDate::fromString(rec.GetDate(), "yyyy-MM-dd");
     ui->dateEdit->setDate(visitDate);
+    ui->dateEdit->setDisplayFormat("dd-MM-yyyy");
 
-    QString patientName, doctorName, diagnosis, doctorId;
-    Doctor::GetRecordExtraInfo(recordId, patientName, doctorName, doctorId, diagnosis);
+    QString patientName;
+    QList<QString> doctorsList;
+    QList<QString> doctorIdsList;
+    QList<QString> diagnosesList;
+
+    Doctor::GetRecordExtraInfo(recordId, patientName, doctorsList, doctorIdsList, diagnosesList);
 
     ui->txtRecordID_2->setText(patientName);
-    ui->txtRecordID_3->setText(doctorName);
-    ui->txtRecordID_4->setText(doctorId);
-    ui->txtRecordID_5->setText(diagnosis);
+    ui->txtRecordID_3->setText(doctorsList.join("\n"));
+    ui->txtRecordID_4->setText(doctorIdsList.join(", "));
+    ui->txtRecordID_5->setText(diagnosesList.join("\n"));
 
     QList<Prescription> rxList = Doctor::GetRecordPrescriptions(recordId);
     ui->tblRecordPrescription->setRowCount(0);
@@ -228,7 +245,6 @@ void DoctorWindow::on_tblMedicalRecords_cellClicked(int row, int column)
         }
     }
 }
-
 void DoctorWindow::on_btnPrintRecord_clicked()
 {
     int row = ui->tblMedicalRecords->currentRow();

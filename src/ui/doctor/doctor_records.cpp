@@ -1,18 +1,9 @@
 #include "doctor.h"
 #include <QSqlQuery>
 #include <QVariant>
-
 QList<MedicalRecord> Doctor::SearchRecordsBy(const QString& keyword, const QString& status, const QString& date) {
     QList<MedicalRecord> records;
     QSqlQuery query;
-
-    // QString sql = "SELECT m.RecordID, m.Date, m.IsComplete, m.PatientID, p.FullName AS PatientName, "
-    //               "u.FullName AS DoctorName, d.ConditionName "
-    //               "FROM MedicalRecords m "
-    //               "JOIN Patients p ON m.PatientID = p.ID "
-    //               "LEFT JOIN Diagnoses d ON m.RecordID = d.RecordID "
-    //               "LEFT JOIN User u ON d.DoctorID = u.UserID "
-    //               "WHERE 1=1 ";
 
     bool isNumeric = false;
     int idKeyword = 0;
@@ -20,8 +11,7 @@ QList<MedicalRecord> Doctor::SearchRecordsBy(const QString& keyword, const QStri
         idKeyword = keyword.toInt(&isNumeric);
     }
 
-    QString sql = "SELECT m.RecordID, m.Date, m.IsComplete, m.PatientID, p.FullName AS PatientName, "
-                  "u.FullName AS DoctorName, d.ConditionName";
+    QString sql = "SELECT m.RecordID, m.Date, m.IsComplete, m.PatientID, p.FullName AS PatientName";
 
     if (!keyword.isEmpty() && !isNumeric) {
         sql += ", CASE "
@@ -35,9 +25,10 @@ QList<MedicalRecord> Doctor::SearchRecordsBy(const QString& keyword, const QStri
 
     sql += "FROM MedicalRecords m "
            "JOIN Patients p ON m.PatientID = p.ID "
-           "LEFT JOIN Diagnoses d ON m.RecordID = d.RecordID "
-           "LEFT JOIN User u ON d.DoctorID = u.UserID "
+           "JOIN Diagnoses d ON m.RecordID = d.RecordID "
            "WHERE 1=1 ";
+
+    sql += "AND d.DoctorID = :current_doctor_id ";
 
     if (!keyword.isEmpty()) {
         if (isNumeric) {
@@ -53,6 +44,7 @@ QList<MedicalRecord> Doctor::SearchRecordsBy(const QString& keyword, const QStri
     if (!date.isEmpty()) {
         sql += "AND m.Date = :date ";
     }
+    sql += "GROUP BY m.RecordID ";
 
     if (!keyword.isEmpty() && !isNumeric) {
         sql += "ORDER BY Score ASC, PatientName COLLATE NOCASE ASC, m.Date DESC";
@@ -61,6 +53,8 @@ QList<MedicalRecord> Doctor::SearchRecordsBy(const QString& keyword, const QStri
     }
 
     query.prepare(sql);
+
+    query.bindValue(":current_doctor_id", User::GetActiveUser().GetID());
 
     if (!keyword.isEmpty()) {
         if (isNumeric) {
@@ -85,18 +79,11 @@ QList<MedicalRecord> Doctor::SearchRecordsBy(const QString& keyword, const QStri
     if (query.exec()) {
         while (query.next()) {
             MedicalRecord rec;
-
             rec.SetRecordID(query.value("RecordID").toInt())
                 .SetDate(query.value("Date").toString())
                 .SetIsComplete(query.value("IsComplete").toBool())
                 .SetPatientID(query.value("PatientID").toInt())
                 .SetPatientName(query.value("PatientName").toString());
-
-            QString dName = query.value("DoctorName").toString();
-            if (!dName.isEmpty()) dName = "Dr. " + dName;
-
-            rec.SetDoctorName(dName)
-                .SetDiagnosis(query.value("ConditionName").toString());
 
             records.append(rec);
         }
@@ -106,7 +93,6 @@ QList<MedicalRecord> Doctor::SearchRecordsBy(const QString& keyword, const QStri
 
     return records;
 }
-
 MedicalRecord Doctor::GetRecordDetails(int recordId) {
     MedicalRecord record;
     QSqlQuery query;
@@ -178,11 +164,11 @@ QList<Prescription> Doctor::GetRecordPrescriptions(int recordId) {
 
     return items;
 }
-
-void Doctor::GetRecordExtraInfo(int recordId, QString& patientName, QString& doctorName, QString& doctorId, QString& diagnosis) {
+void Doctor::GetRecordExtraInfo(int recordId, QString& patientName, QList<QString>& doctorNames, QList<QString>& doctorIds, QList<QString>& diagnoses) {
     patientName = "Unknown";
-    doctorName = "Unknown";
-    diagnosis = "N/A";
+    doctorNames.clear();
+    doctorIds.clear();
+    diagnoses.clear();
 
     QSqlQuery q;
     q.prepare("SELECT p.FullName AS PatientName, u.FullName AS DoctorName, d.ConditionName, d.DoctorID "
@@ -193,11 +179,26 @@ void Doctor::GetRecordExtraInfo(int recordId, QString& patientName, QString& doc
               "WHERE m.RecordID = :recId");
     q.bindValue(":recId", recordId);
 
-    if (q.exec() && q.next()) {
-        patientName = q.value("PatientName").toString();
-        doctorName = q.value("DoctorName").toString();
-        diagnosis = q.value("ConditionName").toString();
-        doctorId = q.value("DoctorID").toString();
+    if (q.exec()) {
+        bool isFirstRow = true;
+        while (q.next()) {
+            if (isFirstRow) {
+                patientName = q.value("PatientName").toString();
+                isFirstRow = false;
+            }
+
+            QString dName = q.value("DoctorName").toString();
+            QString condName = q.value("ConditionName").toString();
+            QString dId = q.value("DoctorID").toString();
+
+            if (!dName.isEmpty()) doctorNames.append("Dr. " + dName);
+            else doctorNames.append("Unknown");
+
+            if (!condName.isEmpty()) diagnoses.append(condName);
+            else diagnoses.append("None");
+
+            if (!dId.isEmpty()) doctorIds.append(dId);
+        }
     } else {
         qDebug() << "GetRecordExtraInfo error:" << q.lastError().text();
     }
@@ -383,4 +384,35 @@ void Doctor::PrintRecord(int recordId, const QString& filePath) {
 
     painter.end();
     qDebug() << "Successfully generated PDF at:" << filePath;
+}
+
+void Doctor::GetAllDiagnosesForRecord(const MedicalRecord& rec, QList<QString>& outDoctors, QList<QString>& outDiagnoses) {
+    QSqlQuery query;
+    query.prepare("SELECT u.FullName AS DoctorName, d.ConditionName "
+                  "FROM Diagnoses d "
+                  "LEFT JOIN User u ON d.DoctorID = u.UserID "
+                  "WHERE d.RecordID = :record_id");
+    query.bindValue(":record_id", rec.GetRecordID());
+    
+    outDoctors.clear(); 
+    outDiagnoses.clear();
+    
+    if (query.exec()) {
+        while (query.next()) {
+            QString dName = query.value("DoctorName").toString();
+            QString condName = query.value("ConditionName").toString();
+            
+            if (!dName.isEmpty()) {
+                outDoctors.append("Dr. " + dName);
+            } else {
+                 outDoctors.append("Unknown");
+            }
+            
+            if (!condName.isEmpty()) {
+                outDiagnoses.append(condName);
+            } else {
+                outDiagnoses.append("None");
+            }
+        }
+    }
 }

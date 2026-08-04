@@ -6,7 +6,7 @@
 #include <QFileInfo>
 #include <QDate>
 #include <QFile>
-
+#include <QDir>
 #include "user.h"
 #include "permission.h"
 #include "attendancelog.h"
@@ -37,9 +37,10 @@ bool setupDatabase() {
     //
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    
-    // Set database path exactly to the resources folder relative to build folder
-    QString dbPath = QCoreApplication::applicationDirPath() + "/../../resources/database.db";
+
+    QString dbPath = QCoreApplication::applicationDirPath() + "/resources/database.db";
+
+    QDir().mkpath(QCoreApplication::applicationDirPath() + "/resources");
     db.setDatabaseName(dbPath);
 
     if (!db.open()) {
@@ -50,7 +51,6 @@ bool setupDatabase() {
 
     qDebug() << "Database Is Connected";
     qDebug() << "VI TRI FILE DB THUC TE:" << QFileInfo(db.databaseName()).absoluteFilePath();
-
     User::initTable();
     Permission::initTable();
     AttendanceLog::initTable();

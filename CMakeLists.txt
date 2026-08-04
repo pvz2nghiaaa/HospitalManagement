@@ -92,7 +92,6 @@ set(PROJECT_SOURCES
     # Resources & Assets
     resources/asset/img.qrc
 )
-
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(HospitalManagement
         MANUAL_FINALIZATION
@@ -116,6 +115,12 @@ target_link_libraries(
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::Sql
     Qt${QT_VERSION_MAJOR}::PrintSupport
+)
+
+add_custom_command(TARGET HospitalManagement POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${CMAKE_CURRENT_SOURCE_DIR}/resources"
+    "$<TARGET_FILE_DIR:HospitalManagement>/resources"
 )
 
 # Tell the compiler to look in all source subfolders so that flat includes (e.g. #include "user.h") still resolve correctly.
