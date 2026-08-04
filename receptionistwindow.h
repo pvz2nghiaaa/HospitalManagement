@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QPushButton>
+#include "doctor.h"
 #include "attendancelog.h"
 namespace Ui {
     class ReceptionistWindow;
@@ -99,6 +100,8 @@ private slots:
     void on_btnAutoCreateRec_clicked();
     void on_btnClear_clicked();
 
+    void on_btnSearch_5_clicked();
+
 private:
     Ui::ReceptionistWindow* ui;
     void navigateToPage(int pageIndex, QPushButton* activeBtn);
@@ -122,7 +125,7 @@ private:
     // Drug overlay
     void showAddDrugFrame();
     void hideAddDrugFrame();
-    void loadAvailableDoctorsToTable();
+    void loadAvailableDoctorsToTable(QList<std::pair<int, QString>> doctors = Doctor::getAvailableDoctors());
 
     void showEditDrugFrame();
     void hideEditDrugFrame();

@@ -1225,9 +1225,8 @@ void ReceptionistWindow::loadMyProfileInfo()
 }
 
 // FrameMedicalRecord UI Implementation
-void ReceptionistWindow::loadAvailableDoctorsToTable()
+void ReceptionistWindow::loadAvailableDoctorsToTable(QList<std::pair<int, QString>> doctors)
 {
-    QList<std::pair<int, QString>> doctors = Doctor::getAvailableDoctors();
     ui->tblAvaiDoctor->setRowCount(0);
     for (int i = 0; i < doctors.size(); i++) {
         ui->tblAvaiDoctor->insertRow(i);
@@ -1803,4 +1802,11 @@ void ReceptionistWindow::on_btnSearch_13_clicked()
 }
 
 
+
+void ReceptionistWindow::on_btnSearch_5_clicked()
+{
+    QString searchItem = ui->txtSearch_5->text();
+    qDebug() << "search doctor: " << searchItem;
+    ReceptionistWindow::loadAvailableDoctorsToTable(Doctor::getAvailableDoctorsByIDOrName(searchItem));
+}
 
