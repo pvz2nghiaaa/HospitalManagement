@@ -24,82 +24,85 @@ find_package(
     Sql
     PrintSupport
 )
+
 set(PROJECT_SOURCES
-        main.cpp
-        loginwindow.h
-        loginwindow.cpp
-        permission.h
-        permission.cpp
-        user.h
-        user.cpp
-        attendancelog.h
-        attendancelog.cpp
-        invoice.h
-        invoice.cpp
-        billableitem.h
-        billableitem.cpp
-        drug.h
-        drug.cpp
-        prescription.h
-        prescription.cpp
-        diagnosis.h
-        diagnosis.cpp
-        activitychartwidget.h
-        activitychartwidget.cpp
+    src/main.cpp
+    
+    # Models
+    src/models/user.h
+    src/models/user.cpp
+    src/models/admin.h
+    src/models/admin.cpp
+    src/models/doctor.h
+    src/models/doctor.cpp
+    src/models/receptionist.h
+    src/models/receptionist.cpp
+    src/models/patient.h
+    src/models/medicalrecord.h
+    src/models/medicalrecord.cpp
+    src/models/diagnosis.h
+    src/models/diagnosis.cpp
+    src/models/prescription.h
+    src/models/prescription.cpp
+    src/models/prescriptiondetail.h
+    src/models/drug.h
+    src/models/drug.cpp
+    src/models/drugitem.h
+    src/models/invoice.h
+    src/models/invoice.cpp
+    src/models/billableitem.h
+    src/models/billableitem.cpp
+    src/models/labtest.h
+    src/models/attendancelog.h
+    src/models/attendancelog.cpp
+    src/models/permission.h
+    src/models/permission.cpp
+
+    # Database Managers
+    src/database/billingmanager.h
+    src/database/billingmanager.cpp
+    src/database/recordmanager.h
+    src/database/recordmanager.cpp
+
+    # Widgets
+    src/widgets/activitychartwidget.h
+    src/widgets/activitychartwidget.cpp
+
+    # UI Windows & Controllers
+    src/ui/login/loginwindow.h
+    src/ui/login/loginwindow.cpp
+    src/ui/login/LoginWindow.ui
+
+    src/ui/admin/adminwindow.h
+    src/ui/admin/adminwindow.cpp
+    src/ui/admin/AdminWindow.ui
+
+    src/ui/doctor/doctorwindow.h
+    src/ui/doctor/doctorwindow.cpp
+    src/ui/doctor/DoctorWindow.ui
+    src/ui/doctor/doctor_clinical.cpp
+    src/ui/doctor/doctor_patient.cpp
+    src/ui/doctor/doctor_profile.cpp
+    src/ui/doctor/doctor_records.cpp
+
+    src/ui/receptionist/receptionistwindow.h
+    src/ui/receptionist/receptionistwindow.cpp
+    src/ui/receptionist/ReceptionistWindow.ui
+
+    # Resources & Assets
+    resources/asset/img.qrc
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(HospitalManagement
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        AdminWindow.ui
-        DoctorWindow.ui
-        ReceptionistWindow.ui
-        adminwindow.h
-        adminwindow.cpp
-        medicalrecord.h
-        medicalrecord.cpp
-        drug.h
-        drug.cpp
-        prescription.h
-        prescription.cpp
-        diagnosis.h
-        diagnosis.cpp
-        recordmanager.h
-        recordmanager.cpp
-        loginwindow.h loginwindow.cpp LoginWindow.ui
-        billingmanager.h
-        billingmanager.cpp
-        patient.h
-        medicalrecord.h
-        diagnosis.h
-        prescriptiondetail.h
-        admin.h admin.cpp
-        doctor.h doctor.cpp
-        receptionist.h receptionist.cpp
-
-
-        ReceptionistWindow.ui DoctorWindow.ui
-        doctorwindow.h doctorwindow.cpp DoctorWindow.ui
-        receptionistwindow.h receptionistwindow.cpp ReceptionistWindow.ui
-        asset/img.qrc
-        doctor.h
-        doctor_patient.cpp
-        doctor_clinical.cpp
-        doctor_records.cpp
-        doctor_profile.cpp
     )
-# Define target properties for Android with Qt 6 as:
-#    set_property(TARGET HospitalManagement APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
-# For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 else()
     if(ANDROID)
         add_library(HospitalManagement SHARED
             ${PROJECT_SOURCES}
         )
-# Define properties for Android with Qt 5 after find_package() calls as:
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
         add_executable(HospitalManagement
             ${PROJECT_SOURCES}
@@ -114,7 +117,19 @@ target_link_libraries(
     Qt${QT_VERSION_MAJOR}::Sql
     Qt${QT_VERSION_MAJOR}::PrintSupport
 )
-target_include_directories(HospitalManagement PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+# Tell the compiler to look in all source subfolders so that flat includes (e.g. #include "user.h") still resolve correctly.
+target_include_directories(HospitalManagement PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/database
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/models
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/admin
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/doctor
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/login
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/receptionist
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/widgets
+)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
