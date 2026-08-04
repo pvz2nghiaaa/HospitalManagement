@@ -27,6 +27,9 @@ bool Diagnosis::initTable() {
         if (!tableLoaded) {
             qDebug() << "Failed to create Diagnoses table:" << query.lastError().text();
         } else {
+            // Run column migration dynamically for existing databases
+            QSqlQuery migrationQuery;
+            migrationQuery.exec("ALTER TABLE Diagnoses ADD COLUMN ClinicalNote TEXT");
             qDebug() << "Diagnoses table is initialized";
         }
         return tableLoaded;
