@@ -9,5 +9,6 @@ public:
     bool prescribeMedicine(int patientId, QString medicineName);
 
     static QList<std::pair<int, QString>> getAvailableDoctors();
+    static QList<std::pair<int, QString>> getAvailableDoctorsByIDOrName(QString searchItem);
     static bool isDoctorAvailable(int doctorId);
 };
