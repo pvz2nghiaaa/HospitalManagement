@@ -27,6 +27,14 @@ QList<QString> Doctor::GetDiseasesList() {
     return diseases;
 }
 
+bool Doctor::AddNewDisease(const QString& conditionName, const QString& icdCode) {
+    QSqlQuery query;
+    query.prepare("INSERT OR IGNORE INTO Diseases (ConditionName, ICDCode) VALUES (:name, :code)");
+    query.bindValue(":name", conditionName);
+    query.bindValue(":code", icdCode);
+    return query.exec();
+}
+
 bool Doctor::GetLatestDiagnosis(int patientId, QString& conditionName, QString& icdCode, QString& severity) {
     if (!QSqlDatabase::database().isOpen()) return false;
 
