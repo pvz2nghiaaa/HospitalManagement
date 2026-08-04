@@ -236,7 +236,7 @@ QPushButton:hover {
      <enum>QFrame::Shape::NoFrame</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="pagePatient">
      <widget class="QFrame" name="frameDashboard_2">
@@ -442,7 +442,7 @@ QPushButton#btnComplete:hover {
         </rect>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="tab_3">
         <attribute name="title">
@@ -612,7 +612,7 @@ QPushButton#btnComplete:hover {
           <rect>
            <x>140</x>
            <y>20</y>
-           <width>180</width>
+           <width>321</width>
            <height>28</height>
           </rect>
          </property>
@@ -631,19 +631,6 @@ QPushButton#btnComplete:hover {
            <string>Hypertension</string>
           </property>
          </item>
-        </widget>
-        <widget class="QPushButton" name="btnNewDisease">
-         <property name="geometry">
-          <rect>
-           <x>330</x>
-           <y>20</y>
-           <width>131</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>➕ Add Disease</string>
-         </property>
         </widget>
         <widget class="QLabel" name="label_8">
          <property name="geometry">

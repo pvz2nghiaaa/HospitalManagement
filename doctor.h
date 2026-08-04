@@ -21,12 +21,14 @@ public:
     static QList<Patient> SearchPatientBy(const QString& keyword);
     static Patient GetPatientDetails(int patientID);
     static bool UpdatePatientInfo(int id, const QString& fullName, const QString& birthDate, const QString& sex, const QString& address);
+    static bool GetLatestDiagnosis(int patientId, QString& conditionName, QString& icdCode, QString& severity);
 
     static QList<QString> GetDiseasesList();
     static bool AddNewDisease(const QString& conditionName, const QString& icdCode);
+    static QString GetICDCodeByName(const QString& conditionName);
     static bool SaveDiagnosis(int recordId, const QString& conditionName, const QString& icdCode, const QString& severity, const QString& clinicalNote, const QString& dateDiagnosed);
     static bool MarkRecordComplete(int recordId);
-
+    static bool CheckDoctorPatientPermission(int patientId);
     static QList<QString> GetDrugsList();
     static bool AddPrescriptionItem(int recordId, int drugId, int quantity, const QString& instruction);
     static bool RemovePrescriptionItem(int Prescription);
