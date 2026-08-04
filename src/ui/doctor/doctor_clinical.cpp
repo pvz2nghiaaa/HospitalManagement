@@ -19,7 +19,7 @@ int Doctor::GetDrugIdByName(const QString& drugName) {
 
 QList<QString> Doctor::GetDiseasesList() {
     QList<QString> diseases;
-    QSqlQuery query("SELECT ConditionName FROM Diseases LIMIT 2000");
+    QSqlQuery query("SELECT ConditionName FROM Diseases");
 
     while (query.next()) {
         diseases.append(query.value(0).toString());

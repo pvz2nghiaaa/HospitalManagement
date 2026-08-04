@@ -78,10 +78,18 @@ DoctorWindow::DoctorWindow(QWidget *parent)
     ui->tblMedicalRecords->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->cbDisease->setEditable(true);
     QStringList diseaseList = Doctor::GetDiseasesList();
-    ui->cbDisease->addItems(diseaseList);
-
+    
+    // Add only a small subset to the combobox visual items list to avoid GUI lag
+    QStringList limitedList;
+    for (int i = 0; i < qMin(100, diseaseList.size()); ++i) {
+        limitedList.append(diseaseList[i]);
+    }
+    ui->cbDisease->addItems(limitedList);
+ 
+    // Use the full 70,000+ disease list in the QCompleter with substring search support
     QCompleter *completer = new QCompleter(diseaseList, this);
     completer->setCaseSensitivity(Qt::CaseInsensitive);
+    completer->setFilterMode(Qt::MatchContains); // Matches anywhere in the condition name!
     completer->setCompletionMode(QCompleter::PopupCompletion);
     ui->cbDisease->setCompleter(completer);
 
