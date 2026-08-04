@@ -7,9 +7,19 @@
 QList<Patient> Doctor::SearchPatientBy(const QString& keyword) {
     QList<Patient> results;
     QSqlQuery query;
-    query.prepare("SELECT * FROM Patients WHERE FullName LIKE :search OR ID = :id");
+
+    // 1. Lấy ID của Bác sĩ đang đăng nhập hiện tại
+    int currentDoctorId = User::GetActiveUser().GetID();
+
+    // 2. Gom nhóm (FullName OR ID) bằng dấu ngoặc, sau đó mới AND với DoctorID
+    query.prepare("SELECT DISTINCT p.* FROM Patients p "
+                  "JOIN MedicalRecords m ON p.ID = m.PatientID "
+                  "JOIN Diagnoses d ON m.RecordID = d.RecordID "
+                  "WHERE (p.FullName LIKE :search OR p.ID = :id) "
+                  "AND d.DoctorID = :doctorId");
     query.bindValue(":search", "%" + keyword + "%");
     query.bindValue(":id", keyword.toInt());
+    query.bindValue(":doctorId", currentDoctorId);
 
     if (query.exec()) {
         while (query.next()) {
@@ -25,6 +35,7 @@ QList<Patient> Doctor::SearchPatientBy(const QString& keyword) {
     } else {
         qDebug() << "Search Error SQL:" << query.lastError().text();
     }
+
     return results;
 }
 

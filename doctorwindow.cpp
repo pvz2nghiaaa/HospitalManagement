@@ -73,6 +73,19 @@ DoctorWindow::DoctorWindow(QWidget *parent)
     header->resizeSection(5, 100);
     ui->tblMedicalRecords->setWordWrap(true);
     ui->tblMedicalRecords->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->cbDisease->setEditable(true);
+    QStringList diseaseList = Doctor::GetDiseasesList();
+    ui->cbDisease->addItems(diseaseList);
+
+    QCompleter *completer = new QCompleter(diseaseList, this);
+    completer->setCaseSensitivity(Qt::CaseInsensitive);
+    completer->setCompletionMode(QCompleter::PopupCompletion);
+    ui->cbDisease->setCompleter(completer);
+
+    connect(ui->cbDisease, &QComboBox::editTextChanged, this, [=](const QString& text) {
+        QString icd = Doctor::GetICDCodeByName(text);
+        ui->lineEdit->setText(icd);
+    });
 }
 
 DoctorWindow::~DoctorWindow()
@@ -307,6 +320,22 @@ void DoctorWindow::on_tblPatient_cellClicked(int row, int column) {
     }
     currentRecordId = p.ID;
     qDebug() << "Patient with ID:" << currentRecordId;
+    QString lastCondition, lastICD, lastSeverity;
+
+    if (Doctor::GetLatestDiagnosis(p.ID, lastCondition, lastICD, lastSeverity)) {
+        ui->cbDisease->blockSignals(true);
+        ui->cbDisease->setCurrentText(lastCondition);
+        ui->cbDisease->blockSignals(false);
+
+        ui->lineEdit->setText(lastICD);
+        ui->cbSeverity->setCurrentText(lastSeverity);
+    }
+    else {
+        // Nếu là bệnh nhân mới tinh (chưa có hồ sơ chẩn đoán), làm trắng form
+        ui->cbDisease->setCurrentText("");
+        ui->lineEdit->clear();
+        ui->cbSeverity->setCurrentIndex(0);
+    }
 }
 
 void DoctorWindow::on_btnUpdatePatient_clicked() {
@@ -359,24 +388,6 @@ void DoctorWindow::on_btnSearchActivity_clicked()
         ui->tblMyActivity->setItem(i, 2, itemAction);
         ui->tblMyActivity->setItem(i, 3, itemDesc);
     }
-}
-
-void DoctorWindow::on_btnNewDisease_clicked()
-{
-    bool okName, okCode;
-    QString newName = QInputDialog::getText(this, "Add new disease", "Codition name: ", QLineEdit::Normal, "", &okName);
-    if (!okName || newName.trimmed().isEmpty()) return;
-    QString newCode = QInputDialog::getText(this, "Add new disease", "Codition code(ICD): ", QLineEdit::Normal, "", &okCode);
-    if (!okCode || newCode.trimmed().isEmpty()) return;
-
-    if (Doctor::AddNewDisease(newName.trimmed(), newCode.trimmed())){
-        QMessageBox::information(this, "Successfully", "Added new disease successfully!");
-        ui->cbDisease->clear();
-        ui->cbDisease->addItems(Doctor::GetDiseasesList());
-        ui->cbDisease->setCurrentText(newName.trimmed());
-    }
-    else
-        QMessageBox::warning(this, "Error", "Can not add new disease. Check again!!");
 }
 
 void DoctorWindow::on_btnSaveDiagnosis_clicked()

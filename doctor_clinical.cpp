@@ -26,40 +26,57 @@ QList<QString> Doctor::GetDiseasesList() {
     }
     return diseases;
 }
-bool Doctor::AddNewDisease(const QString& conditionName, const QString& icdCode) {
-    QSqlQuery query;
-    query.prepare("INSERT INTO Diseases (ConditionName, ICDCode) VALUES (?, ?)");
-    query.addBindValue(conditionName);
-    query.addBindValue(icdCode);
 
-    if (query.exec()) {
-        qDebug() << "Added new disease successfully:" << conditionName;
+bool Doctor::GetLatestDiagnosis(int patientId, QString& conditionName, QString& icdCode, QString& severity) {
+    if (!QSqlDatabase::database().isOpen()) return false;
+
+    QSqlQuery query;
+    query.prepare("SELECT d.ConditionName, d.ICDCode, d.Severity "
+                  "FROM Diagnoses d "
+                  "JOIN MedicalRecords m ON d.RecordID = m.RecordID "
+                  "WHERE m.PatientID = :patientId "
+                  "ORDER BY m.RecordID DESC LIMIT 1");
+
+    query.bindValue(":patientId", patientId);
+    if (query.exec() && query.next()) {
+        conditionName = query.value("ConditionName").toString();
+        icdCode = query.value("ICDCode").toString();
+        severity = query.value("Severity").toString();
         return true;
-    } else {
-        qDebug() << "Error AddNewDisease:" << query.lastError().text();
-        return false;
     }
+
+    return false;
+}
+QString Doctor::GetICDCodeByName(const QString& conditionName) {
+    QSqlQuery query;
+    query.prepare("SELECT ICDCode FROM Diseases WHERE ConditionName = :name");
+    query.bindValue(":name", conditionName);
+
+    if (query.exec() && query.next()) {
+        return query.value(0).toString();
+    }
+    return "";
 }
 
-bool Doctor::SaveDiagnosis(int diagnosisID, const QString& conditionName, const QString& icdCode, const QString& severity, const QString& doctorID, const QString& recordID) {
+bool Doctor::SaveDiagnosis(int recordId, const QString& conditionName, const QString& icdCode, const QString& severity, const QString& clinicalNote, const QString& dateDiagnosed) {
+    if (!QSqlDatabase::database().isOpen()) return false;
+
+    int doctorId = User::GetActiveUser().GetID();
 
     QSqlQuery query;
-    query.prepare("INSERT INTO Diagnoses (DiagnosisID, ConditionName, ICDCode, Severity, DoctorID, RecordID) "
-                  "VALUES (?, ?, ?, ?, ?, ?)");
+    query.prepare("INSERT INTO Diagnoses (ConditionName, ICDCode, Severity, DoctorID, RecordID, ClinicalNote) "
+                  "VALUES (:name, :code, :severity, :doctorId, :recordId, :note)");
 
-    query.addBindValue(diagnosisID);
-    query.addBindValue(conditionName);
-    query.addBindValue(icdCode);
-    query.addBindValue(severity);
-    query.addBindValue(doctorID);
-    query.addBindValue(recordID);
+    query.bindValue(":name", conditionName);
+    query.bindValue(":code", icdCode);
+    query.bindValue(":severity", severity);
+    query.bindValue(":doctorId", doctorId);
+    query.bindValue(":recordId", recordId);
+    query.bindValue(":note", clinicalNote);
 
     if (query.exec()) {
-        qDebug() << "Saved diagnosis successfully for RecordID:" << recordID;
         return true;
-    }
-    else
-    {
+    } else {
         qDebug() << "=== LỖI DATABASE KHI LƯU CHẨN ĐOÁN ===";
         qDebug() << query.lastError().text();
         qDebug() << "Câu query đang chạy:" << query.lastQuery();
