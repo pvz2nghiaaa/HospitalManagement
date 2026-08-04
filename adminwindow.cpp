@@ -1,7 +1,7 @@
 #include "adminwindow.h"
 #include "./ui_AdminWindow.h"
 #include <QMessageBox>
-#include "LoginWindow.h"
+#include "loginwindow.h"
 #include "user.h"
 #include <QTimer>
 #include "patient.h"
@@ -42,25 +42,24 @@ AdminWindow::AdminWindow(QWidget *parent) :
 
     QTimer* timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &AdminWindow::updateDashboardInfo);
-    timer->start(7000); // cứ cách 7 giây thì dashboard update 1 lần
+    timer->start(7000); // 7s
 }
 
 AdminWindow::~AdminWindow()
 {
     delete ui;
 }
+
 void AdminWindow::on_btnDashboard_clicked()
 {
     navigateToPage(0, ui->btnDashboard);
 }
-
 
 void AdminWindow::on_btnStaffManagement_clicked()
 {
     navigateToPage(1, ui->btnStaffManagement);
     refreshStaffDashboard(User::GetAllUser());
 }
-
 
 void AdminWindow::on_btnPermissionManagement_clicked()
 {
@@ -97,29 +96,24 @@ void AdminWindow::refreshPermissionTable(vector<tuple<int, QString, QString, QLi
         QWidget* roleWidget = nullptr;
         if (role == "Admin") {
             roleWidget = createBadgeWidget("Admin", QColor(34, 211, 238), QColor(6, 182, 212));
-        } else if (role == "Doctor") {
-            roleWidget = createBadgeWidget("Doctor", QColor(45, 212, 191), QColor(45, 212, 191));
+        } else if (role == "Doctor" || role == "doctor") {
+            roleWidget = createBadgeWidget("Doctor", QColor(168, 85, 247), QColor(147, 51, 234));
         } else {
-            roleWidget = createBadgeWidget("Receptionist", QColor(165, 180, 252), QColor(129, 140, 248));
+            roleWidget = createBadgeWidget("Receptionist", QColor(251, 146, 60), QColor(234, 88, 12));
         }
         ui->tblPermission->setCellWidget(i, 2, roleWidget);
-
-        // Col 3: Permissions (Modern visual group-colored chips)
-        QList<Permission> perms = get<3>(list[i]);
-        QStringList readablePerms;
-        for (const Permission &p : perms) {
-            readablePerms.push_back(Permission::permissionToReadableString(p));
+        
+        // Col 3: List Permission (Zebra-striped background automatically matches row alternate)
+        QTableWidgetItem* perItem = new QTableWidgetItem();
+        QString s = "";
+        QList<Permission> permissionOfUser = get<3>(list[i]);
+        for (int j = 0; j < permissionOfUser.size(); j++){
+            s += Permission::permissionToReadableString(permissionOfUser[j]) + "  |  ";
         }
-        QString joinedPerms = readablePerms.isEmpty() ? "No Permissions" : readablePerms.join(", ");
-        
-        QTableWidgetItem* permsSortItem = new QTableWidgetItem(""); // Set text to empty to prevent selection text overlay
-        permsSortItem->setData(Qt::UserRole, joinedPerms); // Store actual value in UserRole
-        ui->tblPermission->setItem(i, 3, permsSortItem);
-        
-        QWidget* chipsWidget = createPermissionChipsWidget(perms);
-        ui->tblPermission->setCellWidget(i, 3, chipsWidget);
+        perItem->setText(s);
+        perItem->setForeground(QColor(241, 245, 249)); // Off-white
+        ui->tblPermission->setItem(i, 3, perItem);
     }
-    ui->tblPermission->resizeRowsToContents(); // adjust its height according to the content
 }
 
 void AdminWindow::refreshStaffDashboard(vector<tuple<int, QString, QString, QString, bool, QString>> listUser){
@@ -171,10 +165,10 @@ void AdminWindow::refreshStaffDashboard(vector<tuple<int, QString, QString, QStr
         QWidget* roleWidget = nullptr;
         if (role == "Admin") {
             roleWidget = createBadgeWidget("Admin", QColor(34, 211, 238), QColor(6, 182, 212));
-        } else if (role == "Doctor") {
-            roleWidget = createBadgeWidget("Doctor", QColor(45, 212, 191), QColor(45, 212, 191));
+        } else if (role == "Doctor" || role == "doctor") {
+            roleWidget = createBadgeWidget("Doctor", QColor(168, 85, 247), QColor(147, 51, 234));
         } else {
-            roleWidget = createBadgeWidget("Receptionist", QColor(165, 180, 252), QColor(129, 140, 248));
+            roleWidget = createBadgeWidget("Receptionist", QColor(251, 146, 60), QColor(234, 88, 12));
         }
         ui->tblStaff->setCellWidget(i, 5, roleWidget);
     }
@@ -269,6 +263,7 @@ void AdminWindow::navigateToPage(int pageIndex, QPushButton* activeBtn){
         ui->btnActivityLogs,
         ui->btnReport
     };
+    
     for (QPushButton* btn: sidebarButtons){
         btn->setProperty("active", false); // "active" properties along with its style is declared in .ui
         btn->style()->unpolish(btn); // refresh stylesheet
@@ -299,6 +294,7 @@ void AdminWindow::updateDashboardInfo() {
     ui->totalPatients->setText(QString::number(Patient::GetTotalPatients()));
     ui->totalRecords->setText(QString::number(MedicalRecord::GetTotalRecord()));
     ui->totalInvoices->setText(QString::number(Invoice::GetTotalInvoices()));
+
 
     // Update Recent Activity dashboard table Widget
     QList<AttendanceLog> recentLogs = AttendanceLog::GetRecentLogs();
@@ -1315,4 +1311,5 @@ void AdminWindow::exportLogsToPDF(const QString &filePath, const QDate &from, co
     painter.setPen(QColor(148, 163, 184));
     painter.drawText(QRect(0, h - 35 * dpiScale, w, 20 * dpiScale), Qt::AlignCenter, QString("Page %1").arg(pageNum - 1));
 }
+
 

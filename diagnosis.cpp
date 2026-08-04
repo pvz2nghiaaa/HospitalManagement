@@ -21,11 +21,15 @@ bool Diagnosis::initTable() {
                                  "Severity TEXT, "
                                  "DoctorID INTEGER, "
                                  "RecordID INTEGER, "
+                                 "ClinicalNote TEXT, "
                                  "FOREIGN KEY(DoctorID) REFERENCES User(UserID), "
                                  "FOREIGN KEY(RecordID) REFERENCES MedicalRecords(RecordID))");
         if (!tableLoaded) {
             qDebug() << "Failed to create Diagnoses table:" << query.lastError().text();
         } else {
+            // Run column migration dynamically for existing databases
+            QSqlQuery migrationQuery;
+            migrationQuery.exec("ALTER TABLE Diagnoses ADD COLUMN ClinicalNote TEXT");
             qDebug() << "Diagnoses table is initialized";
         }
         return tableLoaded;
@@ -60,6 +64,13 @@ Diagnosis& Diagnosis::SetSeverity(const QString &sev) { severity = sev; return *
 Diagnosis& Diagnosis::SetDoctorID(int docID) { doctorID = docID; return *this; }
 Diagnosis& Diagnosis::SetRecordID(int recID) { recordID = recID; return *this; }
 Diagnosis& Diagnosis::SetPrescription(const Prescription &p) { prescription = p; return *this; }
+
+QString Diagnosis::getClinicalNote() const { return clinicalNote; }
+void Diagnosis::setClinicalNote(const QString &note) { clinicalNote = note; }
+Diagnosis& Diagnosis::SetClinicalNote(const QString &note) {
+    clinicalNote = note;
+    return *this;
+}
 
 bool Diagnosis::createDiagnosis(int doctorID, int recordID, const QString &conditionName)
 {

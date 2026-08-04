@@ -236,7 +236,7 @@ QPushButton:hover {
      <enum>QFrame::Shape::NoFrame</enum>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="pagePatient">
      <widget class="QFrame" name="frameDashboard_2">
@@ -394,6 +394,9 @@ QPushButton#btnComplete:hover {
          <height>28</height>
         </rect>
        </property>
+       <property name="text">
+        <string/>
+       </property>
        <property name="placeholderText">
         <string>Enter name/ID</string>
        </property>
@@ -403,7 +406,7 @@ QPushButton#btnComplete:hover {
         <rect>
          <x>310</x>
          <y>80</y>
-         <width>90</width>
+         <width>101</width>
          <height>28</height>
         </rect>
        </property>
@@ -420,8 +423,11 @@ QPushButton#btnComplete:hover {
          <height>380</height>
         </rect>
        </property>
+       <attribute name="horizontalHeaderVisible">
+        <bool>true</bool>
+       </attribute>
        <attribute name="horizontalHeaderDefaultSectionSize">
-        <number>140</number>
+        <number>80</number>
        </attribute>
        <attribute name="horizontalHeaderStretchLastSection">
         <bool>true</bool>
@@ -450,7 +456,7 @@ QPushButton#btnComplete:hover {
         </rect>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab_3">
         <attribute name="title">
@@ -620,7 +626,7 @@ QPushButton#btnComplete:hover {
           <rect>
            <x>140</x>
            <y>20</y>
-           <width>180</width>
+           <width>321</width>
            <height>28</height>
           </rect>
          </property>
@@ -639,19 +645,6 @@ QPushButton#btnComplete:hover {
            <string>Hypertension</string>
           </property>
          </item>
-        </widget>
-        <widget class="QPushButton" name="btnNewDisease">
-         <property name="geometry">
-          <rect>
-           <x>330</x>
-           <y>20</y>
-           <width>131</width>
-           <height>28</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>➕ Add Disease</string>
-         </property>
         </widget>
         <widget class="QLabel" name="label_8">
          <property name="geometry">
@@ -676,7 +669,7 @@ QPushButton#btnComplete:hover {
           </rect>
          </property>
          <property name="readOnly">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
         </widget>
         <widget class="QLabel" name="label_10">
@@ -834,7 +827,7 @@ QPushButton#btnComplete:hover {
            <x>20</x>
            <y>60</y>
            <width>500</width>
-           <height>160</height>
+           <height>201</height>
           </rect>
          </property>
          <attribute name="horizontalHeaderDefaultSectionSize">
@@ -842,6 +835,9 @@ QPushButton#btnComplete:hover {
          </attribute>
          <attribute name="horizontalHeaderStretchLastSection">
           <bool>true</bool>
+         </attribute>
+         <attribute name="verticalHeaderVisible">
+          <bool>false</bool>
          </attribute>
          <column>
           <property name="text">
@@ -879,11 +875,11 @@ QPushButton#btnComplete:hover {
           </property>
          </column>
         </widget>
-        <widget class="QPushButton" name="pushButton_4">
+        <widget class="QPushButton" name="btnSavePrescription">
          <property name="geometry">
           <rect>
            <x>180</x>
-           <y>260</y>
+           <y>280</y>
            <width>180</width>
            <height>32</height>
           </rect>
@@ -906,21 +902,14 @@ QPushButton#btnComplete:hover {
            <number>0</number>
           </property>
           <item>
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="btnAddDrug">
             <property name="text">
              <string>➕ Add Drug</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_2">
-            <property name="text">
-             <string>✏️ Edit</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton_3">
+           <widget class="QPushButton" name="btnRemoveDrug">
             <property name="text">
              <string>🗑️ Remove</string>
             </property>
@@ -1145,18 +1134,28 @@ QPushButton#btnCloseRecord:hover {
         <rect>
          <x>440</x>
          <y>70</y>
-         <width>100</width>
+         <width>111</width>
          <height>28</height>
         </rect>
        </property>
+       <property name="keyboardTracking">
+        <bool>true</bool>
+       </property>
        <property name="displayFormat">
         <string>dd-MM-yyyy</string>
+       </property>
+       <property name="date">
+        <date>
+         <year>1970</year>
+         <month>1</month>
+         <day>1</day>
+        </date>
        </property>
       </widget>
       <widget class="QPushButton" name="btnSearch_5">
        <property name="geometry">
         <rect>
-         <x>555</x>
+         <x>580</x>
          <y>70</y>
          <width>101</width>
          <height>28</height>
@@ -1169,7 +1168,7 @@ QPushButton#btnCloseRecord:hover {
       <widget class="QPushButton" name="btnRefreshRecords">
        <property name="geometry">
         <rect>
-         <x>670</x>
+         <x>700</x>
          <y>70</y>
          <width>101</width>
          <height>28</height>
@@ -1184,8 +1183,8 @@ QPushButton#btnCloseRecord:hover {
         <rect>
          <x>30</x>
          <y>120</y>
-         <width>690</width>
-         <height>120</height>
+         <width>771</width>
+         <height>161</height>
         </rect>
        </property>
        <attribute name="horizontalHeaderDefaultSectionSize">
@@ -1227,19 +1226,14 @@ QPushButton#btnCloseRecord:hover {
          <string>Status</string>
         </property>
        </column>
-       <column>
-        <property name="text">
-         <string>Action</string>
-        </property>
-       </column>
       </widget>
       <widget class="QGroupBox" name="groupRecordDetail">
        <property name="geometry">
         <rect>
          <x>30</x>
-         <y>260</y>
-         <width>690</width>
-         <height>260</height>
+         <y>290</y>
+         <width>731</width>
+         <height>241</height>
         </rect>
        </property>
        <property name="title">
@@ -1249,7 +1243,7 @@ QPushButton#btnCloseRecord:hover {
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>35</y>
+          <y>50</y>
           <width>80</width>
           <height>25</height>
          </rect>
@@ -1262,8 +1256,8 @@ QPushButton#btnCloseRecord:hover {
         <property name="geometry">
          <rect>
           <x>110</x>
-          <y>35</y>
-          <width>110</width>
+          <y>50</y>
+          <width>51</width>
           <height>28</height>
          </rect>
         </property>
@@ -1271,8 +1265,8 @@ QPushButton#btnCloseRecord:hover {
        <widget class="QLabel" name="label_15">
         <property name="geometry">
          <rect>
-          <x>240</x>
-          <y>35</y>
+          <x>180</x>
+          <y>50</y>
           <width>91</width>
           <height>25</height>
          </rect>
@@ -1284,9 +1278,9 @@ QPushButton#btnCloseRecord:hover {
        <widget class="QLineEdit" name="txtRecordID_2">
         <property name="geometry">
          <rect>
-          <x>340</x>
-          <y>35</y>
-          <width>110</width>
+          <x>280</x>
+          <y>50</y>
+          <width>161</width>
           <height>28</height>
          </rect>
         </property>
@@ -1295,7 +1289,7 @@ QPushButton#btnCloseRecord:hover {
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>75</y>
+          <y>90</y>
           <width>80</width>
           <height>25</height>
          </rect>
@@ -1308,8 +1302,8 @@ QPushButton#btnCloseRecord:hover {
         <property name="geometry">
          <rect>
           <x>110</x>
-          <y>75</y>
-          <width>110</width>
+          <y>90</y>
+          <width>51</width>
           <height>28</height>
          </rect>
         </property>
@@ -1317,8 +1311,8 @@ QPushButton#btnCloseRecord:hover {
        <widget class="QLabel" name="label_16">
         <property name="geometry">
          <rect>
-          <x>240</x>
-          <y>75</y>
+          <x>180</x>
+          <y>90</y>
           <width>91</width>
           <height>25</height>
          </rect>
@@ -1330,9 +1324,9 @@ QPushButton#btnCloseRecord:hover {
        <widget class="QLineEdit" name="txtRecordID_3">
         <property name="geometry">
          <rect>
-          <x>340</x>
-          <y>75</y>
-          <width>110</width>
+          <x>280</x>
+          <y>90</y>
+          <width>161</width>
           <height>28</height>
          </rect>
         </property>
@@ -1341,7 +1335,7 @@ QPushButton#btnCloseRecord:hover {
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>115</y>
+          <y>130</y>
           <width>80</width>
           <height>25</height>
          </rect>
@@ -1354,7 +1348,7 @@ QPushButton#btnCloseRecord:hover {
         <property name="geometry">
          <rect>
           <x>110</x>
-          <y>115</y>
+          <y>130</y>
           <width>110</width>
           <height>28</height>
          </rect>
@@ -1370,21 +1364,21 @@ QPushButton#btnCloseRecord:hover {
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>155</y>
+          <y>170</y>
           <width>80</width>
           <height>25</height>
          </rect>
         </property>
         <property name="text">
-         <string>Diagnos</string>
+         <string>Diagnosis</string>
         </property>
        </widget>
        <widget class="QLineEdit" name="txtRecordID_5">
         <property name="geometry">
          <rect>
           <x>110</x>
-          <y>155</y>
-          <width>341</width>
+          <y>170</y>
+          <width>331</width>
           <height>28</height>
          </rect>
         </property>
@@ -1392,8 +1386,8 @@ QPushButton#btnCloseRecord:hover {
        <widget class="QLabel" name="label_23">
         <property name="geometry">
          <rect>
-          <x>470</x>
-          <y>35</y>
+          <x>460</x>
+          <y>40</y>
           <width>100</width>
           <height>25</height>
          </rect>
@@ -1405,10 +1399,10 @@ QPushButton#btnCloseRecord:hover {
        <widget class="QTableWidget" name="tblRecordPrescription">
         <property name="geometry">
          <rect>
-          <x>470</x>
-          <y>65</y>
-          <width>200</width>
-          <height>170</height>
+          <x>460</x>
+          <y>70</y>
+          <width>256</width>
+          <height>151</height>
          </rect>
         </property>
         <attribute name="horizontalHeaderDefaultSectionSize">
@@ -1435,8 +1429,8 @@ QPushButton#btnCloseRecord:hover {
       <widget class="QPushButton" name="btnPrintRecord">
        <property name="geometry">
         <rect>
-         <x>770</x>
-         <y>270</y>
+         <x>790</x>
+         <y>320</y>
          <width>91</width>
          <height>51</height>
         </rect>
@@ -1448,8 +1442,8 @@ QPushButton#btnCloseRecord:hover {
       <widget class="QPushButton" name="btnCloseRecord">
        <property name="geometry">
         <rect>
-         <x>770</x>
-         <y>350</y>
+         <x>790</x>
+         <y>400</y>
          <width>91</width>
          <height>51</height>
         </rect>
@@ -1603,7 +1597,13 @@ background-color: rgb(15, 23, 42);
 color: rgb(148, 163, 184);</string>
          </property>
          <property name="text">
-          <string>AVATAR</string>
+          <string/>
+         </property>
+         <property name="pixmap">
+          <pixmap resource="asset/img.qrc">:/avatar.jpeg</pixmap>
+         </property>
+         <property name="scaledContents">
+          <bool>true</bool>
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -1760,7 +1760,7 @@ color: rgb(148, 163, 184);</string>
           <rect>
            <x>30</x>
            <y>70</y>
-           <width>401</width>
+           <width>501</width>
            <height>280</height>
           </rect>
          </property>
@@ -1859,7 +1859,7 @@ color: rgb(148, 163, 184);</string>
           <rect>
            <x>200</x>
            <y>20</y>
-           <width>511</width>
+           <width>601</width>
            <height>330</height>
           </rect>
          </property>
@@ -1900,6 +1900,8 @@ color: rgb(148, 163, 184);</string>
    </widget>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="asset/img.qrc"/>
+ </resources>
  <connections/>
 </ui>

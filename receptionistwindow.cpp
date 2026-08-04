@@ -130,10 +130,10 @@ ReceptionistWindow::ReceptionistWindow(QWidget* parent)
     ui->tblMyActivityLogs->setSelectionMode(
         QAbstractItemView::NoSelection
     );
-    ui->tblMyActivityLogs->setColumnCount(2);
+    ui->tblMyActivityLogs->setColumnCount(4);
 
     ui->tblMyActivityLogs->setHorizontalHeaderLabels(
-        QStringList() << "Date" << "Status"
+        QStringList() << "Date" << "Time" << "Action" << "Description"
     );
 
     ui->tblMyActivityLogs->horizontalHeader()
@@ -1143,32 +1143,40 @@ void ReceptionistWindow::loadMyActivityLogs()
 
     ui->tblMyActivityLogs->clearContents();
     ui->tblMyActivityLogs->setRowCount(logs.size());
-    ui->tblMyActivityLogs->setColumnCount(2);
+    ui->tblMyActivityLogs->setColumnCount(4);
 
     ui->tblMyActivityLogs->setHorizontalHeaderLabels(
-        QStringList() << "Date" << "Status"
+        QStringList() << "Date" << "Time" << "Action" << "Description"
     );
 
     for (int i = 0; i < logs.size(); i++)
     {
-        QString status;
+        QString fullDateString = logs[i].getDate();
+        QString displayDate = fullDateString;
+        QString displayTime = "-";
 
-        if (logs[i].getIsPresent())
-            status = "Present";
-        else
-            status = "Absent";
+        int spaceIdx = fullDateString.indexOf(' ');
+        if (spaceIdx != -1) {
+            displayDate = fullDateString.left(spaceIdx);
+            displayTime = fullDateString.mid(spaceIdx + 1);
+        }
 
-        QTableWidgetItem* dateItem =
-            new QTableWidgetItem(logs[i].getDate());
+        QString status = logs[i].getIsPresent() ? "Present" : "Absent";
 
-        QTableWidgetItem* statusItem =
-            new QTableWidgetItem(status);
+        QTableWidgetItem* dateItem = new QTableWidgetItem(displayDate);
+        QTableWidgetItem* timeItem = new QTableWidgetItem(displayTime);
+        QTableWidgetItem* actionItem = new QTableWidgetItem("Attendance");
+        QTableWidgetItem* descItem = new QTableWidgetItem(status);
 
         dateItem->setTextAlignment(Qt::AlignCenter);
-        statusItem->setTextAlignment(Qt::AlignCenter);
+        timeItem->setTextAlignment(Qt::AlignCenter);
+        actionItem->setTextAlignment(Qt::AlignCenter);
+        descItem->setTextAlignment(Qt::AlignCenter);
 
         ui->tblMyActivityLogs->setItem(i, 0, dateItem);
-        ui->tblMyActivityLogs->setItem(i, 1, statusItem);
+        ui->tblMyActivityLogs->setItem(i, 1, timeItem);
+        ui->tblMyActivityLogs->setItem(i, 2, actionItem);
+        ui->tblMyActivityLogs->setItem(i, 3, descItem);
     }
 
     ui->tblMyActivityLogs->horizontalHeader()

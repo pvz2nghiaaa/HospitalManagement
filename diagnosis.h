@@ -14,6 +14,7 @@ private:
     QString severity;
     int doctorID;
     int recordID;
+    QString clinicalNote;
     Prescription prescription;
 
 public:
@@ -35,6 +36,7 @@ public:
     int getRecordID() const;
     Prescription getPrescription() const;
     Prescription& getPrescriptionRef();
+    QString getClinicalNote() const;
 
     // Setters
     void setDiagnosisID(int id);
@@ -44,7 +46,7 @@ public:
     void setDoctorID(int docID);
     void setRecordID(int recID);
     void setPrescription(const Prescription &p);
-
+    void setClinicalNote(const QString &note);
     // Fluent Setters
     Diagnosis& SetDiagnosisID(int id);
     Diagnosis& SetConditionName(const QString &cName);
@@ -53,4 +55,5 @@ public:
     Diagnosis& SetDoctorID(int docID);
     Diagnosis& SetRecordID(int recID);
     Diagnosis& SetPrescription(const Prescription &p);
+    Diagnosis& SetClinicalNote(const QString &note);
 };

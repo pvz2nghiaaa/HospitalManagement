@@ -4,6 +4,8 @@
 #include <QDebug>
 #include <QString>
 #include <QDate>
+#include <QVariant>
+#include <tuple>
 #include "permission.h"
 #include "user.h"
 
@@ -36,6 +38,7 @@ public:
         qDebug() << "Failed to get total patients from Patients";
         return 0;
     }
+
 
     static bool createPatient(QString fullName, QString phoneNo, QString birthDate, QString sex, QString address) {
         if (!User::GetActiveUser().hasPermission(Permission::createPatient)) {
@@ -148,4 +151,5 @@ public:
         }
         return false;
     }
+
 };
