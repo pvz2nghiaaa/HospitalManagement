@@ -39,7 +39,6 @@ private slots:
     void on_btnUpdatePatient_clicked();
 
     void on_btnSearchActivity_clicked();
-    void on_btnNewDisease_clicked();
     void on_btnSaveDiagnosis_clicked();
     void on_btnComplete_clicked();
 
