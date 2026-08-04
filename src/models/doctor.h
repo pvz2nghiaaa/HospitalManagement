@@ -11,6 +11,7 @@
 #include "medicalrecord.h"
 #include "attendancelog.h"
 
+
 class Doctor : public User{
 public:
     static int GetDrugIdByName(const QString& drugName);
@@ -37,8 +38,9 @@ public:
     static QList<MedicalRecord> SearchRecordsBy(const QString& keyword, const QString& status, const QString& date);
     static MedicalRecord GetRecordDetails(int recordId);
     static QList<Prescription> GetRecordPrescriptions(int recordId);
-    static void GetRecordExtraInfo(int recordId, QString& patientName, QString& doctorName, QString& doctorId, QString& diagnosis);
+    static void GetRecordExtraInfo(int recordId, QString& patientName, QList<QString>& doctorNames, QList<QString>& doctorIds, QList<QString>& diagnoses);
     static void PrintRecord(int recordId, const QString& filePath);
+    static void GetAllDiagnosesForRecord(const MedicalRecord& rec, QList<QString>& outDoctors, QList<QString>& outDiagnoses);
 
     static User& GetMyProfileInfo();
     static QList<Permission> GetMyPermissions();
