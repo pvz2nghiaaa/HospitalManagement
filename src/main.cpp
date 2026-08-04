@@ -71,6 +71,15 @@ bool setupDatabase() {
 
 
 void insertSampleData() {
+    // Check if database has already been seeded to prevent duplicate inserts on subsequent runs
+    QSqlQuery checkSeedQuery("SELECT COUNT(*) FROM User");
+    if (checkSeedQuery.exec() && checkSeedQuery.next()) {
+        if (checkSeedQuery.value(0).toInt() > 0) {
+            qDebug() << "=> Database already seeded. Skipping sample data insertion.";
+            return;
+        }
+    }
+
     QSqlDatabase::database().transaction();
     QSqlQuery query;
     // Insert Admin
