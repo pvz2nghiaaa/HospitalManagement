@@ -48,6 +48,33 @@ QList<std::pair<int, QString>> Doctor::getAvailableDoctors()
     return doctors;
 }
 
+QList<std::pair<int, QString>> Doctor::getAvailableDoctorsByIDOrName(QString searchItem)
+{
+    QList<std::pair<int, QString>> doctors;
+    QSqlQuery query;
+    query.prepare("SELECT User.UserID, User.FullName FROM User "
+                  "INNER JOIN AttendanceLogs ON User.UserID = AttendanceLogs.EmployeeID "
+                  "WHERE (User.Role = 'Doctor' OR User.Role = 'doctor') "
+                  "AND User.IsActive = 1 "
+                  "AND AttendanceLogs.Date = :today "
+                  "AND AttendanceLogs.IsPresent = 1 "
+                  "AND (User.UserID = :searchID OR User.FullName LIKE :searchName)");
+    query.bindValue(":today", QDate::currentDate().toString("dd-MM-yyyy"));
+    query.bindValue(":searchID", searchItem);
+    query.bindValue(":searchName", "%" + searchItem + "%");
+
+    if (query.exec()) {
+        while (query.next()) {
+            int id = query.value(0).toInt();
+            QString name = query.value(1).toString();
+            doctors.append({id, name});
+        }
+    } else {
+        qDebug() << "Failed to fetch available doctors:" << query.lastError().text();
+    }
+    return doctors;
+}
+
 bool Doctor::isDoctorAvailable(int doctorId)
 {
     QList<std::pair<int, QString>> doctors = getAvailableDoctors();
@@ -56,3 +83,4 @@ bool Doctor::isDoctorAvailable(int doctorId)
     }
     return false;
 }
+

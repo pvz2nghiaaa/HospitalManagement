@@ -257,7 +257,7 @@ QPushButton:hover {
      <enum>QFrame::Shape::NoFrame</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="pagePatient">
      <widget class="QFrame" name="frameDashboard_2">
