@@ -19,12 +19,20 @@ int Doctor::GetDrugIdByName(const QString& drugName) {
 
 QList<QString> Doctor::GetDiseasesList() {
     QList<QString> diseases;
-    QSqlQuery query("SELECT ConditionName FROM Diseases");
+    QSqlQuery query("SELECT ConditionName FROM Diseases LIMIT 2000");
 
     while (query.next()) {
         diseases.append(query.value(0).toString());
     }
     return diseases;
+}
+
+bool Doctor::AddNewDisease(const QString& conditionName, const QString& icdCode) {
+    QSqlQuery query;
+    query.prepare("INSERT OR IGNORE INTO Diseases (ConditionName, ICDCode) VALUES (:name, :code)");
+    query.bindValue(":name", conditionName);
+    query.bindValue(":code", icdCode);
+    return query.exec();
 }
 
 bool Doctor::GetLatestDiagnosis(int patientId, QString& conditionName, QString& icdCode, QString& severity) {
