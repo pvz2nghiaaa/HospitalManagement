@@ -91,11 +91,26 @@ DoctorWindow::DoctorWindow(QWidget *parent)
     completer->setCaseSensitivity(Qt::CaseInsensitive);
     completer->setFilterMode(Qt::MatchContains); // Matches anywhere in the condition name!
     completer->setCompletionMode(QCompleter::PopupCompletion);
-    ui->cbDisease->setCompleter(completer);
+    
+    // Attach or detach completer initially based on length
+    if (ui->cbDisease->currentText().length() < 3) {
+        ui->cbDisease->setCompleter(nullptr);
+    } else {
+        ui->cbDisease->setCompleter(completer);
+    }
 
     connect(ui->cbDisease, &QComboBox::editTextChanged, this, [=](const QString& text) {
         QString icd = Doctor::GetICDCodeByName(text);
         ui->lineEdit->setText(icd);
+        
+        // Dynamically toggle the completer to prevent CPU/rendering overhead for short prefixes
+        if (text.length() < 3) {
+            ui->cbDisease->setCompleter(nullptr);
+        } else {
+            if (ui->cbDisease->completer() != completer) {
+                ui->cbDisease->setCompleter(completer);
+            }
+        }
     });
 }
 
