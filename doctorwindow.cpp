@@ -48,6 +48,7 @@ DoctorWindow::DoctorWindow(QWidget *parent)
 
     loadProfileData();
     navigateToPage(0, ui->btnDashboard);
+    on_btnSearch_4_clicked();
 
     ui->txtRecordID->setReadOnly(true);
     ui->txtRecordID_2->setReadOnly(true);
@@ -96,11 +97,13 @@ DoctorWindow::~DoctorWindow()
 void DoctorWindow::on_btnDashboard_clicked()
 {
     navigateToPage(0, ui->btnDashboard);
+    on_btnSearch_4_clicked();
 }
 
 void DoctorWindow::on_btnPatients_clicked()
 {
     navigateToPage(1, ui->btnPatients);
+    on_btnSearch_5_clicked();
 }
 
 void DoctorWindow::on_btnDoctors_clicked()
