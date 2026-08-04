@@ -71,3 +71,19 @@ Diagnosis& Diagnosis::SetClinicalNote(const QString &note) {
     clinicalNote = note;
     return *this;
 }
+
+bool Diagnosis::createDiagnosis(int doctorID, int recordID, const QString &conditionName)
+{
+    QSqlQuery query;
+    query.prepare("INSERT INTO Diagnoses (ConditionName, ICDCode, Severity, DoctorID, RecordID) "
+                  "VALUES (:cName, '', 'Pending', :docID, :recID)");
+    query.bindValue(":cName", conditionName);
+    query.bindValue(":docID", doctorID);
+    query.bindValue(":recID", recordID);
+    if (!query.exec()) {
+        qDebug() << "Failed to create Diagnosis:" << query.lastError().text();
+        return false;
+    }
+    qDebug() << "Diagnosis created successfully for RecordID:" << recordID << "with DoctorID:" << doctorID;
+    return true;
+}

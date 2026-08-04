@@ -5,10 +5,12 @@
 #include <QVariant>
 #include <QSqlError>
 #include <QDebug>
+#include "user.h"
+#include "permission.h"
 
 Invoice::Invoice(int recordID, int patientID)
     : invoiceID(-1), recordID(recordID), patientID(patientID), totalAmount(0.0), isPaid(false) {
-    dateIssued = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss");
+    dateIssued = QDateTime::currentDateTime().toString("dd-MM-yyyy HH:mm:ss");
 }
 
 Invoice::~Invoice() {
@@ -40,6 +42,10 @@ bool Invoice::initTable() {
     return success;
 }
 int Invoice::GetTotalInvoices(){
+    if (!User::GetActiveUser().hasPermission(Permission::viewLog)){
+        qDebug() << "User does not have permission to view total invoices";
+        return 0;
+    }
     QSqlQuery query;
     query.prepare("SELECT COUNT(*) AS cnt FROM Invoices");
     if (query.exec() && query.next())

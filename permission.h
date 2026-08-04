@@ -32,8 +32,11 @@ public:
     operator Type() const; // automatically convert Permission to Type
     static bool initTable();
     static bool changeUserPermission(User& other, Permission per, bool isOn);
+    static bool changeUserPermission(int userID, Permission per, bool isOn);
     static QList<Permission> GetActiveUserPermission();
+    static QList<Permission> GetUserPermission(int userID);
     int toUnderlying() const; // convert enum type to int, for example, Permission::viewlog -> int(0)
+    static QString permissionToReadableString(Permission::Type type);
 private:
     Type Val;
 };

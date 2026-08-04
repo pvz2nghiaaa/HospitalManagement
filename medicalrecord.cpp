@@ -1,4 +1,6 @@
 #include "medicalrecord.h"
+#include "user.h"
+#include "permission.h"
 
 MedicalRecord::MedicalRecord() : RecordID(-1), IsComplete(false), PatientID(-1) {}
 
@@ -44,6 +46,10 @@ bool MedicalRecord::MarkComplete() {
 }
 
 int MedicalRecord::GetTotalRecord(){
+    if (!User::GetActiveUser().hasPermission(Permission::viewLog)){
+        qDebug() << "User does not have permission to view dashboard info";
+        return 0;
+    }
     QSqlQuery query;
     query.prepare("SELECT COUNT(*) AS records FROM MedicalRecords");
     if (query.exec() && query.next()){
@@ -70,3 +76,18 @@ int MedicalRecord::GetPatientID() { return PatientID; }
 QString MedicalRecord::GetPatientName() { return patientName; }
 QString MedicalRecord::GetDoctorName() { return doctorName; }
 QString MedicalRecord::GetDiagnosis() { return diagnosis; }
+
+int MedicalRecord::createRecord(int patientID, QString date)
+{
+    QSqlQuery query;
+    query.prepare("INSERT INTO MedicalRecords (Date, IsComplete, PatientID) VALUES (:date, 0, :patientID)");
+    query.bindValue(":date", date);
+    query.bindValue(":patientID", patientID);
+    if (query.exec()) {
+        int recId = query.lastInsertId().toInt();
+        qDebug() << "MedicalRecord created successfully with RecordID:" << recId;
+        return recId;
+    }
+    qDebug() << "Failed to create MedicalRecord:" << query.lastError().text();
+    return -1;
+}

@@ -70,7 +70,10 @@ bool DrugItem::initTable() {
     bool success = query.exec(
         "CREATE TABLE IF NOT EXISTS Drugs ("
         "DrugID INTEGER PRIMARY KEY AUTOINCREMENT, "
-        "Name TEXT, Unit TEXT, Price REAL)"
+        "Name TEXT, "
+        "Unit TEXT, "
+        "Price REAL, "
+        "StockQuantity INTEGER NOT NULL DEFAULT 0)"
         );
     if (!success) qDebug() << "Failed to create table Drugs:" << query.lastError().text();
     return success;

@@ -25,6 +25,7 @@ public:
 
     // Database initialization
     static bool initTable();
+    static bool createDiagnosis(int doctorID, int recordID, const QString &conditionName);
 
     // Getters
     int getDiagnosisID() const;

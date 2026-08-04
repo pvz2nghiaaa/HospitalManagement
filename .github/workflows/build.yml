@@ -10,6 +10,7 @@ jobs:
   build-windows:
     name: Build on Windows (Qt 6)
     runs-on: windows-latest
+    environment: production
 
     steps:
       - name: Checkout repository

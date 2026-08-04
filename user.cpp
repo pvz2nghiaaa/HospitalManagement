@@ -1,5 +1,8 @@
 #include "user.h"
 #include <QDebug>
+#include <QDate>
+#include "permission.h"
+#include "attendancelog.h"
 
 User::User() {}
 
@@ -49,8 +52,11 @@ bool User::login(QString nUsername, QString nPassword) {
             .SetPhoneNumber(query.value("PhoneNumber").toString())
             .SetIsActive(query.value("IsActive").toBool())
             .SetRole(query.value("Role").toString());
-        if (GetActiveUser().GetIsActive() && GetActiveUser().UpdatePermissionFromDatabase())
+        if (GetActiveUser().GetIsActive() &&
+            GetActiveUser().UpdatePermissionFromDatabase())
+        {
             return true;
+        }
         logout();
         return false;
     }
@@ -58,15 +64,21 @@ bool User::login(QString nUsername, QString nPassword) {
 }
 
 void User::logout(){
-    GetActiveUser().SetID(-1)
+    GetActiveUser()
+        .SetID(-1)
         .SetUsername("")
         .SetEncryptedPassword("")
         .SetFullName("")
         .SetPhoneNumber("")
+        .SetRole("")
         .SetIsActive(false);
 }
 
 int User::GetTotalStaff(){
+    if (!User::GetActiveUser().hasPermission(Permission::viewLog)){
+        qDebug() << "User does not have permission to view staff info";
+        return 0;
+    }
     QSqlQuery query;
     query.prepare("SELECT COUNT(*) AS valid_staffs FROM User "
                   "WHERE Role NOT IN ('Admin') AND IsActive = 1");
@@ -77,11 +89,209 @@ int User::GetTotalStaff(){
     return 0;
 }
 
+vector<tuple<int, QString, QString, QString, bool, QString>> User::GetAllUser() {
+    vector<tuple<int, QString, QString, QString, bool, QString>> listUser;
+
+    if (!User::GetActiveUser().hasPermission(Permission::manageUsers) && User::GetActiveUser().GetRole() != "Receptionist")
+        return listUser;
+
+    QSqlQuery query;
+    query.prepare("SELECT * FROM User");
+    if (query.exec())
+        while(query.next()){
+            listUser.push_back(
+                tuple<int, QString, QString, QString, bool, QString> {
+                    query.value("UserID").toInt(),
+                    query.value("Username").toString(),
+                    query.value("FullName").toString(),
+                    query.value("PhoneNumber").toString(),
+                    query.value("IsActive").toBool(),
+                    query.value("Role").toString()
+                }
+            );
+        }
+    else qDebug() << "Error: " << query.lastError().text();
+    return listUser;
+}
+
+vector<tuple<int, QString, QString, QString, bool, QString>> User::SearchUserBy(QString name) {
+    vector<tuple<int, QString, QString, QString, bool, QString>> listUser;
+
+    if (!User::GetActiveUser().hasPermission(Permission::manageUsers))
+        return listUser;
+
+    QSqlQuery query;
+    query.prepare("SELECT * FROM User WHERE Fullname = :name");
+    query.bindValue(":name", name);
+    if (query.exec())
+        while(query.next()){
+            listUser.push_back(
+                tuple<int, QString, QString, QString, bool, QString> {
+                    query.value("UserID").toInt(),
+                    query.value("Username").toString(),
+                    query.value("FullName").toString(),
+                    query.value("PhoneNumber").toString(),
+                    query.value("IsActive").toBool(),
+                    query.value("Role").toString()
+                }
+                );
+        }
+    else qDebug() << "Error: " << query.lastError().text();
+    return listUser;
+}
+
+vector<tuple<int, QString, QString, QString, bool, QString>> User::SearchUserBy(QString name, QString role) {
+    vector<tuple<int, QString, QString, QString, bool, QString>> listUser;
+
+    if (!User::GetActiveUser().hasPermission(Permission::manageUsers))
+        return listUser;
+
+    QSqlQuery query;
+    query.prepare("SELECT * FROM User WHERE Fullname = :name AND Role = :role");
+    query.bindValue(":name", name);
+    query.bindValue(":role", role);
+    if (query.exec())
+        while(query.next()){
+            listUser.push_back(
+                tuple<int, QString, QString, QString, bool, QString> {
+                    query.value("UserID").toInt(),
+                    query.value("Username").toString(),
+                    query.value("FullName").toString(),
+                    query.value("PhoneNumber").toString(),
+                    query.value("IsActive").toBool(),
+                    query.value("Role").toString()
+                }
+                );
+        }
+    else qDebug() << "Error: " << query.lastError().text();
+    return listUser;
+}
+vector<tuple<int, QString, QString, QString, bool, QString>> User::SearchUserByRole(QString role) {
+    vector<tuple<int, QString, QString, QString, bool, QString>> listUser;
+
+    if (!User::GetActiveUser().hasPermission(Permission::manageUsers))
+        return listUser;
+
+    QSqlQuery query;
+    query.prepare("SELECT * FROM User WHERE Role = :role");
+    query.bindValue(":role", role);
+    if (query.exec())
+        while(query.next()){
+            listUser.push_back(
+                tuple<int, QString, QString, QString, bool, QString> {
+                    query.value("UserID").toInt(),
+                    query.value("Username").toString(),
+                    query.value("FullName").toString(),
+                    query.value("PhoneNumber").toString(),
+                    query.value("IsActive").toBool(),
+                    query.value("Role").toString()
+                }
+                );
+        }
+    else qDebug() << "Error: " << query.lastError().text();
+    return listUser;
+}
+
+vector<tuple<int, QString, QString, QList<Permission> > > User::SearchPermissionBy(QString name) {
+    vector<tuple<int, QString, QString, QList<Permission> > > listPermission;
+
+    if (!User::GetActiveUser().hasPermission(Permission::manageUsers))
+        return listPermission;
+
+    QSqlQuery query;
+    query.prepare("SELECT * FROM User WHERE Fullname = :name");
+    query.bindValue(":name", name);
+    if (query.exec())
+        while(query.next()){
+            listPermission.push_back(
+                tuple<int, QString, QString, QList<Permission> > {
+                    query.value("UserID").toInt(),
+                    query.value("FullName").toString(),
+                    query.value("Role").toString(),
+                    Permission::GetUserPermission(query.value("UserID").toInt())
+                }
+            );
+        }
+    else qDebug() << "Error: " << query.lastError().text();
+    return listPermission;
+}
+
+vector<tuple<int, QString, QString, QList<Permission> > > User::SearchPermissionBy(QString name, QString role) {
+    vector<tuple<int, QString, QString, QList<Permission> > > listPermission;
+
+    if (!User::GetActiveUser().hasPermission(Permission::manageUsers))
+        return listPermission;
+
+    QSqlQuery query;
+    query.prepare("SELECT * FROM User WHERE Fullname = :name AND Role = :role");
+    query.bindValue(":name", name);
+    query.bindValue(":role", role);
+    if (query.exec())
+        while(query.next()){
+            listPermission.push_back(
+                tuple<int, QString, QString, QList<Permission> > {
+                    query.value("UserID").toInt(),
+                    query.value("FullName").toString(),
+                    query.value("Role").toString(),
+                    Permission::GetUserPermission(query.value("UserID").toInt())
+                }
+                );
+        }
+    else qDebug() << "Error: " << query.lastError().text();
+    return listPermission;
+}
+
+vector<tuple<int, QString, QString, QList<Permission> > > User::SearchPermissionByRole(QString role) {
+    vector<tuple<int, QString, QString, QList<Permission> > > listPermission;
+
+    if (!User::GetActiveUser().hasPermission(Permission::manageUsers))
+        return listPermission;
+
+    QSqlQuery query;
+    query.prepare("SELECT * FROM User WHERE Role = :role");
+    query.bindValue(":role", role);
+    if (query.exec())
+        while(query.next()){
+            listPermission.push_back(
+                tuple<int, QString, QString, QList<Permission> > {
+                    query.value("UserID").toInt(),
+                    query.value("FullName").toString(),
+                    query.value("Role").toString(),
+                    Permission::GetUserPermission(query.value("UserID").toInt())
+                }
+            );
+        }
+    else qDebug() << "Error: " << query.lastError().text();
+    return listPermission;
+}
+
 bool User::UpdatePermissionFromDatabase(){
     ListPermission = Permission::GetActiveUserPermission();
     if (ListPermission.empty())
         return false;
     return true;
+}
+
+vector<tuple<int, QString, QString, QList<Permission> > > User::GetAllUserPermission() {
+    vector<tuple<int, QString, QString, QList<Permission> > > list;
+    if (!User::GetActiveUser().hasPermission(Permission::manageUsers))
+        return list;
+
+    QSqlQuery query;
+    query.prepare("SELECT * FROM User");
+    if (query.exec())
+        while(query.next()){
+            list.push_back(
+                tuple<int, QString, QString, QList<Permission> > {
+                    query.value("UserID").toInt(),
+                    query.value("FullName").toString(),
+                    query.value("Role").toString(),
+                    Permission::GetUserPermission(query.value("UserID").toInt())
+                }
+                );
+        }
+    else qDebug() << "Error: " << query.lastError().text();
+    return list;
 }
 
 QString User::GetEncryptPassword(QString nPassword){
@@ -153,4 +363,17 @@ bool User::GetIsActive() {
 }
 QString User::GetRole() {
     return Role;
+}
+
+QString User::GetUsernameById(int userID) {
+    if (!User::GetActiveUser().hasPermission(Permission::manageUsers))
+        return "Unknown";
+
+    QSqlQuery query;
+    query.prepare("SELECT Username FROM User WHERE UserID = :id");
+    query.bindValue(":id", userID);
+    if (query.exec() && query.next()) {
+        return query.value("Username").toString();
+    }
+    return "Unknown";
 }
