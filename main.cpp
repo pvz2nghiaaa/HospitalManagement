@@ -117,7 +117,7 @@ void insertSampleData() {
         }
 
         // ---> BỔ SUNG: THÊM DỮ LIỆU ATTENDANCE LOG MẪU CHO BÁC SĨ NÀY <---
-        QList<QString> sampleDates = {"2026-07-20", "2026-07-21", "2026-07-22", "2026-07-23", "2026-07-24", "2026-07-25"};
+        QList<QString> sampleDates = {"20-07-2026", "21-07-2026", "22-07-2026", "23-07-2026", "24-07-2026", "25-07-2026"};
         QList<int> sampleStatus = {1, 1, 0, 1, 1, 1}; // 1 = Present (Có mặt), 0 = Absent (Vắng)
 
         for (int i = 0; i < sampleDates.size(); ++i) {
