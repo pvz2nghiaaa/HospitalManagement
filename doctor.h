@@ -32,10 +32,10 @@ public:
     static bool RemovePrescriptionItem(int Prescription);
     static bool SavePrescription(int recordId, const QString& dateIssued, const QList<Prescription>& items);
 
-    static QList<MedicalRecord> SearchRecordsBy(const QString& keyword, const QString& status);
+    static QList<MedicalRecord> SearchRecordsBy(const QString& keyword, const QString& status, const QString& date);
     static MedicalRecord GetRecordDetails(int recordId);
     static QList<Prescription> GetRecordPrescriptions(int recordId);
-    static void GetRecordExtraInfo(int recordId, QString& patientName, QString& doctorName, QString& diagnosis);
+    static void GetRecordExtraInfo(int recordId, QString& patientName, QString& doctorName, QString& doctorId, QString& diagnosis);
     static void PrintRecord(int recordId, const QString& filePath);
 
     static User& GetMyProfileInfo();

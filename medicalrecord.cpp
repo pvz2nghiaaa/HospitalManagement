@@ -57,8 +57,8 @@ int MedicalRecord::GetTotalRecord(){
 MedicalRecord& MedicalRecord::SetRecordID(int nRecordID) { RecordID = nRecordID; return *this; }
 MedicalRecord& MedicalRecord::SetDate(QString nDate) { Date = nDate; return *this; }
 MedicalRecord& MedicalRecord::SetIsComplete(bool nIsComplete) { IsComplete = nIsComplete; return *this; }
-MedicalRecord& MedicalRecord::SetPatientID(int nPatientID) { PatientID = nPatientID; return *this; }
-
+MedicalRecord& MedicalRecord::SetPatientName(const QString& name) { patientName = name; return *this; }
+MedicalRecord& MedicalRecord::SetPatientID(int id) { this->PatientID = id; return *this; }
 MedicalRecord& MedicalRecord::SetDoctorName(const QString& name) {  doctorName = name; return *this; }
 MedicalRecord& MedicalRecord::SetDiagnosis(const QString& diag) { diagnosis = diag; return *this; }
 
@@ -67,6 +67,6 @@ int MedicalRecord::GetRecordID() { return RecordID; }
 QString MedicalRecord::GetDate() { return Date; }
 bool MedicalRecord::GetIsComplete() { return IsComplete; }
 int MedicalRecord::GetPatientID() { return PatientID; }
-
+QString MedicalRecord::GetPatientName() { return patientName; }
 QString MedicalRecord::GetDoctorName() { return doctorName; }
 QString MedicalRecord::GetDiagnosis() { return diagnosis; }

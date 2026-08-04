@@ -2,32 +2,74 @@
 #include <QSqlQuery>
 #include <QVariant>
 
-QList<MedicalRecord> Doctor::SearchRecordsBy(const QString& keyword, const QString& status) {
+QList<MedicalRecord> Doctor::SearchRecordsBy(const QString& keyword, const QString& status, const QString& date) {
     QList<MedicalRecord> records;
     QSqlQuery query;
-    
-    QString sql = "SELECT m.RecordID, m.Date, m.IsComplete, m.PatientID, "
-                  "u.FullName AS DoctorName, d.ConditionName "
-                  "FROM MedicalRecords m "
-                  "JOIN Patients p ON m.PatientID = p.ID "
-                  "LEFT JOIN Diagnoses d ON m.RecordID = d.RecordID "
-                  "LEFT JOIN User u ON d.DoctorID = u.UserID "
-                  "WHERE 1=1 ";
+
+    // QString sql = "SELECT m.RecordID, m.Date, m.IsComplete, m.PatientID, p.FullName AS PatientName, "
+    //               "u.FullName AS DoctorName, d.ConditionName "
+    //               "FROM MedicalRecords m "
+    //               "JOIN Patients p ON m.PatientID = p.ID "
+    //               "LEFT JOIN Diagnoses d ON m.RecordID = d.RecordID "
+    //               "LEFT JOIN User u ON d.DoctorID = u.UserID "
+    //               "WHERE 1=1 ";
+
+    bool isNumeric = false;
+    int idKeyword = 0;
+    if (!keyword.isEmpty()) {
+        idKeyword = keyword.toInt(&isNumeric);
+    }
+
+    QString sql = "SELECT m.RecordID, m.Date, m.IsComplete, m.PatientID, p.FullName AS PatientName, "
+                  "u.FullName AS DoctorName, d.ConditionName";
+
+    if (!keyword.isEmpty() && !isNumeric) {
+        sql += ", CASE "
+               "  WHEN p.FullName = :exact_keyword THEN 1 "
+               "  WHEN p.FullName LIKE :start_keyword THEN 2 "
+               "  ELSE 3 "
+               "END AS Score ";
+    } else {
+        sql += ", 3 AS Score ";
+    }
+
+    sql += "FROM MedicalRecords m "
+           "JOIN Patients p ON m.PatientID = p.ID "
+           "LEFT JOIN Diagnoses d ON m.RecordID = d.RecordID "
+           "LEFT JOIN User u ON d.DoctorID = u.UserID "
+           "WHERE 1=1 ";
 
     if (!keyword.isEmpty()) {
-        sql += "AND (p.FullName LIKE :keyword OR p.ID = :id_keyword) ";
+        if (isNumeric) {
+            sql += "AND p.ID = :id_keyword ";
+        } else {
+            sql += "AND p.FullName LIKE :keyword ";
+        }
     }
 
     if (status != "All") {
         sql += "AND m.IsComplete = :status ";
     }
+    if (!date.isEmpty()) {
+        sql += "AND m.Date = :date ";
+    }
 
-    sql += "ORDER BY m.RecordID DESC";
+    if (!keyword.isEmpty() && !isNumeric) {
+        sql += "ORDER BY Score ASC, PatientName COLLATE NOCASE ASC, m.Date DESC";
+    } else {
+        sql += "ORDER BY m.Date DESC";
+    }
+
     query.prepare(sql);
 
     if (!keyword.isEmpty()) {
-        query.bindValue(":keyword", "%" + keyword + "%");
-        query.bindValue(":id_keyword", keyword.toInt());
+        if (isNumeric) {
+            query.bindValue(":id_keyword", idKeyword);
+        } else {
+            query.bindValue(":keyword", "%" + keyword + "%");
+            query.bindValue(":exact_keyword", keyword);
+            query.bindValue(":start_keyword", keyword + "%");
+        }
     }
 
     if (status == "Completed") {
@@ -36,31 +78,34 @@ QList<MedicalRecord> Doctor::SearchRecordsBy(const QString& keyword, const QStri
         query.bindValue(":status", 0);
     }
 
+    if (!date.isEmpty() && date != "01-01-1970" && date != "01-01-2000") {
+        query.bindValue(":date", date);
+    }
+
     if (query.exec()) {
         while (query.next()) {
             MedicalRecord rec;
-            
+
             rec.SetRecordID(query.value("RecordID").toInt())
-               .SetDate(query.value("Date").toString())
-               .SetIsComplete(query.value("IsComplete").toBool())
-               .SetPatientID(query.value("PatientID").toInt());
-            
+                .SetDate(query.value("Date").toString())
+                .SetIsComplete(query.value("IsComplete").toBool())
+                .SetPatientID(query.value("PatientID").toInt())
+                .SetPatientName(query.value("PatientName").toString());
 
             QString dName = query.value("DoctorName").toString();
             if (!dName.isEmpty()) dName = "Dr. " + dName;
-            
+
             rec.SetDoctorName(dName)
-               .SetDiagnosis(query.value("ConditionName").toString());
+                .SetDiagnosis(query.value("ConditionName").toString());
 
             records.append(rec);
         }
     } else {
         qDebug() << "SearchRecordsBy error:" << query.lastError().text();
     }
-    
+
     return records;
 }
-
 
 MedicalRecord Doctor::GetRecordDetails(int recordId) {
     MedicalRecord record;
@@ -134,13 +179,13 @@ QList<Prescription> Doctor::GetRecordPrescriptions(int recordId) {
     return items;
 }
 
-void Doctor::GetRecordExtraInfo(int recordId, QString& patientName, QString& doctorName, QString& diagnosis) {
+void Doctor::GetRecordExtraInfo(int recordId, QString& patientName, QString& doctorName, QString& doctorId, QString& diagnosis) {
     patientName = "Unknown";
     doctorName = "Unknown";
     diagnosis = "N/A";
 
     QSqlQuery q;
-    q.prepare("SELECT p.FullName AS PatientName, u.FullName AS DoctorName, d.ConditionName "
+    q.prepare("SELECT p.FullName AS PatientName, u.FullName AS DoctorName, d.ConditionName, d.DoctorID "
               "FROM MedicalRecords m "
               "JOIN Patients p ON m.PatientID = p.ID "
               "LEFT JOIN Diagnoses d ON m.RecordID = d.RecordID "
@@ -152,6 +197,7 @@ void Doctor::GetRecordExtraInfo(int recordId, QString& patientName, QString& doc
         patientName = q.value("PatientName").toString();
         doctorName = q.value("DoctorName").toString();
         diagnosis = q.value("ConditionName").toString();
+        doctorId = q.value("DoctorID").toString();
     } else {
         qDebug() << "GetRecordExtraInfo error:" << q.lastError().text();
     }

@@ -23,17 +23,17 @@ DoctorWindow::DoctorWindow(QWidget *parent)
     , ui(new Ui::DoctorWindow)
 {
     ui->setupUi(this);
-
-    ui->dateIssued->setDisplayFormat("dd-MM-yyyy");
     ui->dateIssued->setDate(QDate::currentDate());
+
+    QHeaderView *header = ui->tblPatient->horizontalHeader();
+    header->setSectionResizeMode(0, QHeaderView::Fixed);
+    header->resizeSection(0, 70);
+    header->setSectionResizeMode(1, QHeaderView::Stretch);
 
     ui->lblAdmin->setText("Dr. " + User::GetActiveUser().GetFullName() + " (Online)");
     navigateToPage(0, ui->btnDashboard);
 
-    ui->tblPatient->setColumnCount(6);
-    ui->tblPatient->setHorizontalHeaderLabels({"ID", "Full Name", "Phone", "BirthDate", "Sex", "Address"});
-    ui->tblPatient->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
+    ui->tblRecordPrescription->setWordWrap(true);
 
     ui->lineEdit_2->setReadOnly(true); // Doctor ID
     ui->lineEdit_3->setReadOnly(true); // Full Name
@@ -43,8 +43,6 @@ DoctorWindow::DoctorWindow(QWidget *parent)
     ui->tblMyActivity->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tblMyPermissions->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    ui->dateEdit_2->setDisplayFormat("dd-MM-yyyy");
-    ui->dateEdit_3->setDisplayFormat("dd-MM-yyyy");
     ui->dateEdit_2->setDate(QDate::currentDate().addDays(-30));
     ui->dateEdit_3->setDate(QDate::currentDate());
 
@@ -59,6 +57,22 @@ DoctorWindow::DoctorWindow(QWidget *parent)
 
     ui->tblRecordPrescription->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tblMedicalRecords->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    header = ui->tblMedicalRecords->horizontalHeader();
+
+    // medicalrecord table
+    header->setSectionResizeMode(0, QHeaderView::Fixed); // id
+    header->resizeSection(0, 65);
+    header->setSectionResizeMode(1, QHeaderView::Interactive); // patient
+    header->resizeSection(1, 160);
+    header->setSectionResizeMode(2, QHeaderView::Fixed); // date
+    header->resizeSection(2, 110);
+    header->setSectionResizeMode(3, QHeaderView::Interactive); // doctor
+    header->resizeSection(3, 160);
+    header->setSectionResizeMode(4, QHeaderView::Stretch); // Diagnosis
+    header->setSectionResizeMode(5, QHeaderView::Fixed); // status
+    header->resizeSection(5, 100);
+    ui->tblMedicalRecords->setWordWrap(true);
+    ui->tblMedicalRecords->setSelectionBehavior(QAbstractItemView::SelectRows);
 }
 
 DoctorWindow::~DoctorWindow()
@@ -111,15 +125,18 @@ void DoctorWindow::on_btnLogout_clicked()
     this->close();
 }
 
-void DoctorWindow::on_btnSearch_5_clicked()
+void DoctorWindow::on_btnSearch_5_clicked() // search medical record
 {
     QString keyword = ui->txtSearch_5->text();
     QString status = ui->cbStatusFilter->currentText();
-
+    QDate date = ui->dateFilter->date();
+    QString dateFilter = "";
+    if (date != QDate(1970, 1, 1)) {
+        dateFilter = date.toString("yyyy-MM-dd");
+    }
     qDebug() << "=== ĐANG CHẠY HÀM SEARCH ===";
-    qDebug() << "Keyword:" << keyword << "| Status:" << status;
-
-    QList<MedicalRecord> records = Doctor::SearchRecordsBy(keyword, status);
+    qDebug() << "Keyword:" << keyword << "| Status:" << status << "| Date:" << dateFilter;
+    QList<MedicalRecord> records = Doctor::SearchRecordsBy(keyword, status, dateFilter);
 
     qDebug() << "Số bệnh án tìm thấy trong DB:" << records.size();
 
@@ -130,9 +147,8 @@ void DoctorWindow::on_btnSearch_5_clicked()
         MedicalRecord rec = records[i];
 
         ui->tblMedicalRecords->setItem(i, 0, new QTableWidgetItem(QString::number(rec.GetRecordID())));
-        ui->tblMedicalRecords->setItem(i, 1, new QTableWidgetItem(QString::number(rec.GetPatientID())));
+        ui->tblMedicalRecords->setItem(i, 1, new QTableWidgetItem(rec.GetPatientName()));
         ui->tblMedicalRecords->setItem(i, 2, new QTableWidgetItem(rec.GetDate()));
-
         ui->tblMedicalRecords->setItem(i, 3, new QTableWidgetItem(rec.GetDoctorName()));
         ui->tblMedicalRecords->setItem(i, 4, new QTableWidgetItem(rec.GetDiagnosis()));
 
@@ -167,11 +183,12 @@ void DoctorWindow::on_tblMedicalRecords_cellClicked(int row, int column)
     QDate visitDate = QDate::fromString(rec.GetDate(), "dd-MM-yyyy");
     ui->dateEdit->setDate(visitDate);
 
-    QString patientName, doctorName, diagnosis;
-    Doctor::GetRecordExtraInfo(recordId, patientName, doctorName, diagnosis);
+    QString patientName, doctorName, diagnosis, doctorId;
+    Doctor::GetRecordExtraInfo(recordId, patientName, doctorName, doctorId, diagnosis);
 
     ui->txtRecordID_2->setText(patientName);
     ui->txtRecordID_3->setText(doctorName);
+    ui->txtRecordID_4->setText(doctorId);
     ui->txtRecordID_5->setText(diagnosis);
 
     QList<Prescription> rxList = Doctor::GetRecordPrescriptions(recordId);
@@ -247,17 +264,26 @@ void DoctorWindow::on_btnSearch_4_clicked() {
     QString keyword = ui->txtSearch_4->text();
     currentPatientList = Doctor::SearchPatientBy(keyword);
 
+    // ui->tblPatient->setRowCount(currentPatientList.size());
     ui->tblPatient->setRowCount(currentPatientList.size());
+
 
     for (int i = 0; i < currentPatientList.size(); ++i) {
         const Patient& p = currentPatientList[i];
-        ui->tblPatient->setItem(i, 0, new QTableWidgetItem(QString::number(p.ID)));
-        ui->tblPatient->setItem(i, 1, new QTableWidgetItem(p.FullName));
+        QTableWidgetItem *idItem = new QTableWidgetItem(QString::number(p.ID));
+        ui->tblPatient->setItem(i, 0, idItem);
+
+        QTableWidgetItem *nameItem = new QTableWidgetItem(p.FullName);
+        ui->tblPatient->setItem(i, 1, nameItem);
         // ui->tblPatient->setItem(i, 2, new QTableWidgetItem(p.Phone));
-        ui->tblPatient->setItem(i, 3, new QTableWidgetItem(p.BirthDate));
-        ui->tblPatient->setItem(i, 4, new QTableWidgetItem(p.Sex));
-        ui->tblPatient->setItem(i, 5, new QTableWidgetItem(p.Address));
+        // ui->tblPatient->setItem(i, 3, new QTableWidgetItem(p.BirthDate));
+        // ui->tblPatient->setItem(i, 4, new QTableWidgetItem(p.Sex));
+        // ui->tblPatient->setItem(i, 5, new QTableWidgetItem(p.Address));
     }
+    QHeaderView *header = ui->tblPatient->horizontalHeader();
+    header->setSectionResizeMode(0, QHeaderView::Fixed);
+    header->resizeSection(0, 70);
+    header->setSectionResizeMode(1, QHeaderView::Stretch);
 }
 
 void DoctorWindow::on_tblPatient_cellClicked(int row, int column) {
