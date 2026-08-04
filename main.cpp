@@ -152,6 +152,45 @@ void insertSampleData() {
         }
     }
 
+    // Insert Auto-increment Patients
+    query.prepare("INSERT INTO Patients (FullName, Phone, BirthDate, Sex, Address) "
+                  "VALUES (:name, :phoneNo, :dob, :sex, :addr)");
+    query.bindValue(":name", "David Smith");
+    query.bindValue(":phoneNo", "7412589630");
+    query.bindValue(":dob", "06-09-2012");
+    query.bindValue(":sex", "Male");
+    query.bindValue(":addr", "123 A Street");
+    if (query.exec()) {
+        qDebug() << "Patient 1 registered successfully";
+    } else {
+        qDebug() << "Failed to register patient:" << query.lastError().text();
+    }
+    query.prepare("INSERT INTO Patients (FullName, Phone, BirthDate, Sex, Address) "
+                  "VALUES (:name, :phoneNo, :dob, :sex, :addr)");
+    query.bindValue(":name", "Emilia Rose");
+    query.bindValue(":phoneNo", "4632105789");
+    query.bindValue(":dob", "17-12-1994");
+    query.bindValue(":sex", "Female");
+    query.bindValue(":addr", "234 B Street");
+    if (query.exec()) {
+        qDebug() << "Patient 2 registered successfully";
+    } else {
+        qDebug() << "Failed to register patient:" << query.lastError().text();
+    }
+    query.prepare("INSERT INTO Patients (FullName, Phone, BirthDate, Sex, Address) "
+                  "VALUES (:name, :phoneNo, :dob, :sex, :addr)");
+    query.bindValue(":name", "David Bob");
+    query.bindValue(":phoneNo", "9874152630");
+    query.bindValue(":dob", "23-09-1985");
+    query.bindValue(":sex", "Male");
+    query.bindValue(":addr", "471 C Street");
+    if (query.exec()) {
+        qDebug() << "Patient 3 registered successfully";
+    } else {
+        qDebug() << "Failed to register patient:" << query.lastError().text();
+    }
+
+    // Insert Explicitly Indexed Patients for Medical Records
     if (!query.exec("INSERT INTO Patients (ID, FullName, Sex, BirthDate, Address) "
                     "VALUES (201, 'Nguyen Van A', 'Male', '1990-05-15', 'Q1, TP.HCM')")) {
         qDebug() << "LỖI BỆNH NHÂN 201:" << query.lastError().text();
