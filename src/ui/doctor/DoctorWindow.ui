@@ -456,7 +456,7 @@ QPushButton#btnComplete:hover {
         </rect>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="tab_3">
         <attribute name="title">
@@ -1600,7 +1600,7 @@ color: rgb(148, 163, 184);</string>
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap resource="asset/img.qrc">:/avatar.jpeg</pixmap>
+          <pixmap resource="../../../resources/asset/img.qrc">:/avatar.jpeg</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
@@ -1901,7 +1901,7 @@ color: rgb(148, 163, 184);</string>
   </widget>
  </widget>
  <resources>
-  <include location="asset/img.qrc"/>
+  <include location="../../../resources/asset/img.qrc"/>
  </resources>
  <connections/>
 </ui>
