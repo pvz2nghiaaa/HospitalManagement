@@ -47,12 +47,10 @@ set(PROJECT_SOURCES
     src/models/prescriptiondetail.h
     src/models/drug.h
     src/models/drug.cpp
-    src/models/drugitem.h
     src/models/invoice.h
     src/models/invoice.cpp
     src/models/billableitem.h
     src/models/billableitem.cpp
-    src/models/labtest.h
     src/models/attendancelog.h
     src/models/attendancelog.cpp
     src/models/permission.h
@@ -61,8 +59,6 @@ set(PROJECT_SOURCES
     # Database Managers
     src/database/billingmanager.h
     src/database/billingmanager.cpp
-    src/database/recordmanager.h
-    src/database/recordmanager.cpp
 
     # Widgets
     src/widgets/activitychartwidget.h
